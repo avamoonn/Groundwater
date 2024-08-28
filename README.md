@@ -5,8 +5,8 @@ Ava Moon, Iris Nemechek, Colton Morris, David Karibian
 
 # Running the Project
 
-First, update you machine:
-```sudo apt-get update``
+First, update your machine:
+```sudo apt-get update```
 ```sudo apt-get upgrade```
 ```sudo apt upgrade```
 
