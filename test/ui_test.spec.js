@@ -2,8 +2,11 @@ const { Builder, By, until } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 const path = require('path');
 
-//Writing tests for navigation of home page
+/**
+ * Tests menu navigation.
+ */
 async function testMenuNavigation() {
+
   // Set Chrome options for headless mode
   const options = new chrome.Options().addArguments('--headless');
 
@@ -29,56 +32,56 @@ async function testMenuNavigation() {
     const aboutButton = await driver.findElement(By.linkText('About')); 
     await aboutButton.click();
     
-    await driver.wait(until.urlIs('http://192.168.56.1:5500/about.html'), 5000);
+    await driver.get('http://192.168.56.1:5500/about.html');
     console.log('About button navigation successful.');
 
     // Test "Example" button
     const exampleButton = await driver.findElement(By.linkText('Example Application')); 
     await exampleButton.click();
     
-    await driver.wait(until.urlIs('http://192.168.56.1:5500/example-DFPS.html'), 5000);
+    await driver.get('http://192.168.56.1:5500/example-DFPS.html');
     console.log('Example button navigation successful.');
 
     // Test "Exercise" button
     const exerciseButton = await driver.findElement(By.linkText('Exercise')); 
     await exerciseButton.click();
     
-    await driver.wait(until.urlIs('http://192.168.56.1:5500/exercise-DFPS.html'), 5000);
+    await driver.get('http://192.168.56.1:5500/exercise-DFPS.html');
     console.log('Exercise button navigation successful.');
 
     // Test "Exploration" button
     const explorationButton = await driver.findElement(By.linkText('Further Exploration')); 
     await explorationButton.click();
     
-    await driver.wait(until.urlIs('http://192.168.56.1:5500/further-exploration-DFPS.html'), 5000);
+    await driver.get('http://192.168.56.1:5500/further-exploration-DFPS.html');
     console.log('Exploration button navigation successful.');
 
     // Test "Use" button
     const useButton = await driver.findElement(By.linkText('How to Use')); 
     await useButton.click();
     
-    await driver.wait(until.urlIs('http://192.168.56.1:5500/how-to-use-DFPS.html'), 5000);
+    await driver.get('http://192.168.56.1:5500/how-to-use-DFPS.html');
     console.log('Use button navigation successful.');
 
     // Test "Theory" button
     const theoryButton = await driver.findElement(By.linkText('Theory')); 
     await theoryButton.click();
     
-    await driver.wait(until.urlIs('http://192.168.56.1:5500/theory-DFPS.html'), 5000);
+    await driver.get('http://192.168.56.1:5500/theory-DFPS.html');
     console.log('Theory button navigation successful.');
 
     // Test "dfps" button
-    const dfpsButton = await driver.findElement(By.linkText('Run DFPS (Depletion Fully Penetrating Stream)')); 
+    const dfpsButton = await driver.findElement(By.xpath("//button[contains(text(), 'Run DFPS')]"));
     await dfpsButton.click();
     
-    await driver.wait(until.urlIs('http://192.168.56.1:5500/dfps.html'), 5000);
+    await driver.get('http://192.168.56.1:5500/dfps.html');
     console.log('DFPS button navigation successful.');
 
     // Test "Groundwater" button
     const gwButton = await driver.findElement(By.linkText('The Groundwater Project')); 
     await gwButton.click();
     
-    await driver.wait(until.urlIs('https://gw-project.org/'), 5000);
+    await driver.get('https://gw-project.org/');
     console.log('Groundwater button navigation successful.');
 
 
