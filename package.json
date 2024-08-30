@@ -10,7 +10,6 @@
     "test:e2e:headless": "selenium-standalone start & jest --config=jest.e2e.config.js --runInBand"
   },
   "dependencies": {
-<<<<<<< HEAD
     "mocha": "10.7.3"
   },
   "devDependencies": {
@@ -18,27 +17,15 @@
     "jest-environment-selenium": "^2.0.0",
     "selenium-standalone": "^7.0.0",
     "selenium-webdriver": "^4.0.0-alpha.1"
-=======
-  },
-  "devDependencies": {
-    "jest": "^29.0.0",
-    "selenium-webdriver": "^4.14.0",
-    "selenium-standalone": "^7.0.0",
-    "jest-environment-selenium": "^2.0.0"
->>>>>>> 40288157b6243bfe17939c9a3d4f3f34e71fc077
   },
   "jest": {
     "testEnvironment": "node"
   },
   "jest.e2e.config.js": {
     "testEnvironment": "jest-environment-selenium",
-<<<<<<< HEAD
     "testMatch": [
       "**/__e2e__/**/*.js"
     ]
-=======
-    "testMatch": ["**/__e2e__/**/*.js"]
->>>>>>> 40288157b6243bfe17939c9a3d4f3f34e71fc077
   },
   "keywords": [],
   "authors": "Ava Moon, David Karibian, Iris Nemechek, Colton Morris"
