@@ -1,0 +1,16 @@
+{
+    "name": "test",
+    "version": "1.0.0",
+    "scripts": {
+        "test": "npx mocha test/**/*.spec.js --timeout 60000"
+    },
+    "author": "Ava Moon, Iris Nemechek, David Karibian, Colton Morris",
+    "dependencies": {
+        "npm": "10.8.2",
+        "assert": "2.1.0",
+        "selenium-webdriver": "4.23.0"
+    },
+    "devDependencies": {
+        "mocha": "10.7.3"
+    }
+}
