@@ -1,31 +1,25 @@
 {
-  "name": "your-project-name",
+  "name": "groundwater",
   "version": "1.0.0",
   "description": "A project using Jest for unit testing and Selenium for E2E testing",
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "test:unit": "jest",
-    "test:e2e": "selenium-standalone start & jest --config=jest.e2e.config.js",
-    "test:e2e:headless": "selenium-standalone start & jest --config=jest.e2e.config.js --runInBand"
+    "test:unit": "jest test/math.test.js",
+    "test:e2e": "node test/ui_test.spec.js", 
+    "test:e2e:headless": "node test/ui_test.spec.js --headless" 
   },
   "dependencies": {
+    "chromedriver": "^128.0.0",
     "mocha": "10.7.3"
   },
   "devDependencies": {
     "jest": "^29.0.0",
-    "jest-environment-selenium": "^2.0.0",
-    "selenium-standalone": "^7.0.0",
-    "selenium-webdriver": "^4.0.0-alpha.1"
+    "selenium-webdriver": "^4.24.0",
+    "selenium-standalone": "^7.0.0"
   },
   "jest": {
     "testEnvironment": "node"
-  },
-  "jest.e2e.config.js": {
-    "testEnvironment": "jest-environment-selenium",
-    "testMatch": [
-      "**/__e2e__/**/*.js"
-    ]
   },
   "keywords": [],
   "authors": "Ava Moon, David Karibian, Iris Nemechek, Colton Morris"
