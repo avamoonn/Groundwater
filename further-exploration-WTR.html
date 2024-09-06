@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+<title>WTRecharge</title>
+<link rel="icon" type="image/x-icon" href="img/wtrfurther.jpg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
+.w3-bar,h1,button {font-family: "Montserrat", sans-serif}
+</style>
+<script src="js/script.js"></script>
+</head>
+<body>
+
+
+<!-- Navbar on big screens-->
+<div class="w3-top">
+  <div class="w3-bar custom-black w3-card w3-left-align w3-large">
+<a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-indigo w3-large custom-black" href="javascript:void(0);" onclick="menuToggle()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+    <a href="index.html" class="w3-bar-item w3-button w3-padding-large">DFPS-Home</a>
+    <a href="about.html" target="DFPSabout" class="w3-bar-item w3-button w3-hide-small w3-padding-large">About</a>
+    <a href="theory-dfps.html" target="DFPStheory" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Theory</a>
+    <a href="example-dfps.html" target="DFPSexample" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Example Application</a>
+    <a href="how-to-use-dfps.html" target="DFPShowto" class="w3-bar-item w3-button w3-hide-small w3-padding-large">How to Use</a>
+    <a href="exercise-dfps.html" target="DFPSexercise" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Exercise</a>
+    <a href="further-exploration-dfps.html" target="DFPSfurther" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Further Exploration</a>
+    <a href="https://gw-project.org/" target="DFPSgwporg" class="w3-bar-item w3-button w3-hide-small w3-padding-large">The Groundwater Project</a>
+  </div>
+
+  <!-- Navbar on small screens -->
+  <div id="navSmall" class="w3-bar-block custom-black w3-hide w3-hide-large w3-hide-medium w3-large">
+    <a href="about.html" target="DFPSabout" class="w3-bar-item w3-button w3-padding-large">About</a>
+    <a href="theory-dfps.html" target="DFPStheory" class="w3-bar-item w3-button w3-padding-large">Theory</a>
+    <a href="example-dfps.html" target="DFPSexample" class="w3-bar-item w3-button w3-padding-large">Example Application</a>
+    <a href="how-to-use-dfps.html" target="DFPShowto" class="w3-bar-item w3-button w3-padding-large">How to Use</a>
+    <a href="exercise-dfps.html" target="DFPSexercise" class="w3-bar-item w3-button w3-padding-large">Exercise</a>
+    <a href="further-exploration-dfps.html" target="DFPSfurther" class="w3-bar-item w3-button w3-padding-large">Further Exploration</a>
+    <a href="https://gw-project.org/" target="DFPSgwporg" class="w3-bar-item w3-button w3-padding-large">The Groundwater Project</a>
+  </div>
+
+<!-- RUN -->
+<header class="w3-container custom-blue w3-center">
+  <div class="w3-bar">
+    <button class="w3-button w3-green w3-padding-large w3-large w3-margin w3-round-xlarge" onclick="window.open('dfps.html',)">Run DFPS (Depletion Fully Penetrating Stream)</button>
+  </div>
+</header>
+</div>
+  <br><br><br><br><br><br><br><br>
+
+<!-- Further Exploration -->
+<div class="w3-sand w3-container">
+  <div class="w3-content">
+      <h2>Further Exploration</h2>
+  </div>
+</div>
+
+<!-- Understanding Groundwater Model Non-Uniqueness -->
+<div class="w3-sand w3-container">
+  <div class="w3-content">
+      <h3>Understanding Groundwater Model Non-Uniqueness</h3>
+  </div>
+</div>
+
+<div class="w3-row-padding w3-sand w3-margin-bottom w3-container">
+  <div class="w3-content">
+    <div class="w3-whole">
+	  <p class="w3-text-dark-grey">Groundwater model non-uniqueness is the phenomenon 
+      in which different sets of model parameters produce the same groundwater 
+      system conditions. It is common practice to use groundwater models to determine 
+      system properties by matching model results to field observations such as water 
+      levels and groundwater discharge. This process is called calibrating a model. 
+      After a match is obtained the model is typically used
+      to make predictions. However, non-uniqueness can cause the calibration to 
+      produce parameters that are not representative of the system, resulting in 
+      inaccurate model predictions.
+	  </p> 
+	  <p class="w3-text-dark-grey">
+      You can explore this concept by using WTR with these two datasets:
+	  </p> 
+      <div class="w3-container w3-center">
+        <img src="img/DataSets1-2.png" alt="DataSet 1 K=0.01 R=250" class="w3-image">
+      </div>
+      <p class="w3-text-dark-grey">
+        <ul>
+          <li>How many differences can you see in the output results?</li>
+          <li>How do the water levels differ?</li>
+          <li>How do the flow rates differ?</li>
+          <li>Would you trust parameters of a model that matches the water levels, but
+              does not consider the water balance?</li>
+        </ul>
+      </p> 
+    </div>
+  </div>
+
+<!-- Finding Input Data -->
+<div class="w3-sand w3-container">
+  <div class="w3-content">
+      <h3>Finding Input Data</h3>
+  </div>
+</div>
+
+<div class="w3-row-padding w3-sand w3-margin-bottom w3-container">
+  <div class="w3-content">
+    <div class="w3-whole">
+	  <p class="w3-text-dark-grey">Many governments provide overview information regarding preciptation, 
+      runoff, and evapotranspiration. Here are a some examples from Canada:
+      <ul>
+        <li><a href="https://www150.statcan.gc.ca/n1/pub/38-20-0001/2021001/l03-eng.htm" target="_blank">Canadian Precipitation</a></li>
+        <li><a href="https://www150.statcan.gc.ca/n1/daily-quotidien/170321/mc-b001-eng.htm" target="_blank">Canadian Runoff</a></li>
+        <li><a href="https://www150.statcan.gc.ca/n1/pub/16-201-x/2017000/sec-2/m-c/m-c-2.5-eng.htm" target="_blank">Canadian Evapotranspiration</a></li>
+      </ul>
+	  </p> 
+    </div>
+</div>
+
+<!-- Additional Reading -->
+<div class="w3-sand w3-container">
+  <div class="w3-content">
+      <h3>Additional Reading</h3>
+  </div>
+</div>
+
+<!-- Links -->
+<div class="w3-row-padding w3-sand w3-margin-bottom w3-container">
+  <div class="w3-content">
+    <div class="w3-whole">
+      <p class="w3-text-dark-grey">
+        More about recharge, runoff, evapotranspiration, and aridity can be found in Groundwater Project books,
+        including the following:
+        <ul>
+          <li><a href="https://gw-project.org/books/a-glossary-of-hydrogeology/" target="_blank">A Glossary of Hydrogeology</a></li>
+          <li><a href="https://gw-project.org/books/large-aquifer-systems-around-the-world/" target="_blank">Large Aquifer Systems Around the World</a></li>
+          <li><a href="https://gw-project.org/books/groundwater-in-our-water-cycle/" target="_blank">Groundwater in Our Water Cycle: Getting to Know Earth's Most Important Fresh Water Source</a></li>
+        </ul>
+	  </p>
+	  
+    <p class="w3-text-dark-grey">
+      More information on the basics of groundwater flow can be found in Groundwater Project books, including the following:
+      <ul>
+        <li><a href="https://gw-project.org/books/hydrogeologic-properties-of-earth-materials-and-principles-of-groundwater-flow/" target="_blank">Hydrologic Properties of Earth Materials and Principles of Groundwater Flow</a></li>
+        <li><a href="https://gw-project.org/books/graphical-construction-of-groundwater-flow-nets/" target="_blank">Graphical Construction of Groundwater Flow Nets</a></li>
+        <li><a href="https://gw-project.org/books/groundwater-surface-water-exchange/ target="_blank"">Groundwater-Surface Water Exchange</a></li>
+        <li><a href="https://gw-project.org/books/conceptual-and-visual-understanding-of-hydraulic-head-and-groundwater-flow/ target="_blank"">Conceptual and Visual Understanding of Hydraulic Head and Groundwater Flow</a></li>
+      </ul>
+    </p>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="w3-container custom-dark-grey w3-padding-32">  
+  <div class="w3-row-padding w3-margin-bottom w3-container">
+    <div class="w3-content">
+      <div class="w3-whole">
+      <p class="w3-text-light-grey"><a href="https://gw-project.org/privacy-policy/" > The Groundwater Project Privacy Policy</a> 
+        &nbsp&nbsp&nbsp&nbsp This interactive educational tool does not collect any data.</p>
+      <p class="w3-text-light-grey"><a href="https://gw-project.org/terms-of-use/" > The Groundwater Project Terms of Use</a>
+          &nbsp&nbsp&nbsp&nbsp The user of WTR assumes all responsibility for how the program is used.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

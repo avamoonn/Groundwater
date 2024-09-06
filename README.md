@@ -22,7 +22,7 @@ Ensure you are running node 20.17.0:
 ```nvm use 20.17.0```
 
 Install selenium webdriver:
-```npm install selenium-webdriver@4.0.0-alpha.1```
+```npm install selenium-webdriver```
 
 Install chrome driver:
 ```npm install chromedriver```
