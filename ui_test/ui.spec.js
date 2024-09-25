@@ -1,3 +1,7 @@
+/**
+ * Tests for all new GUI functionality using selenium
+ * 
+ */
 const { Builder, By, until } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 
@@ -92,3 +96,4 @@ async function testMenuNavigation() {
 }
 
 testMenuNavigation();
+

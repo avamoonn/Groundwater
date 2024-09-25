@@ -57,6 +57,7 @@ data_form.addEventListener('reset', function() {
   results_message.innerHTML = '';
 });
 
+time_increments = calc_increments(t,n); //logarithmic
 /*
   
   // model calculations
