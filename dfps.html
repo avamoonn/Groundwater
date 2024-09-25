@@ -17,58 +17,68 @@
         body, h1, h2, h3, h4, h5, h6 {font-family: "Lato", sans-serif}
         .w3-bar, h1, button {font-family: "Montserrat", sans-serif}
 
-        /* General styling for form layout */
+        /* Flexbox for layout */
+        .form-image-container {
+            display: flex;
+            align-items: stretch; /* Ensure items stretch to equal height */
+            gap: 20px;
+        }
+
+        /* Set 60% width for form and 40% for image */
+        form {
+            flex-basis: 60%; /* Form takes 60% of available width */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .image-container {
+            flex-basis: 40%; /* Image takes 40% of available width */
+        }
+
         form div {
             margin-bottom: 15px;
         }
+
         label {
-  white-space: nowrap; /* Prevents label text from wrapping */
-  display: inline-block; /* Ensures label takes its width */
-  width: 200px; /* Adjust the width to ensure enough space for the label text */
-}
-
-/* Specific label width adjustments for groups */
-/* Flexbox for grouping elements side by side */
-
-.input-group {
-    display: flex;
-    gap: 10px; /* Adjust the space between the two inputs */
-}
-
-.input-group label {
-    white-space: nowrap; /* Prevents label text from wrapping */
-    width: 200px; /* Adjust label width as needed */
-}
-
-.input-group div {
-    flex: 1; /* Ensures both inputs take equal width */
-}
-
-/* Set specific width for input fields */
-.input-group input {
-    width: 200px; /* Set a default width for all input fields */
-}
-
-/* You can also target specific inputs if needed */
-#notation {
-    width: 150px; /* Specific width for the "notation" input */
-}
-
-#otherInput {
-    width: 250px; /* Specific width for the "otherInput" input */
-}
-
-        /* Ensuring responsiveness */
-        @media only screen and (max-width: 768px) {
-            .input-group {
-                flex-direction: column; /* Stacks the input fields vertically on smaller screens */
-            }
+            white-space: nowrap; /* Prevents label text from wrapping */
+            display: inline-block; /* Ensures label takes its width */
+            width: 200px; /* Adjust the width to ensure enough space for the label text */
         }
 
-        /* Override potential conflicts from w3.css or other CSS files */
-        .input-group label, .input-group input {
-            display: inline-block;
-            width: 100%;
+        /* Flexbox for grouping elements side by side */
+        .input-group {
+            display: flex;
+            gap: 10px; /* Adjust the space between the two inputs */
+        }
+
+        .input-group label {
+            white-space: nowrap;
+            width: 200px;
+        }
+
+        .input-group div {
+            flex: 1; /* Ensures both inputs take equal width */
+        }
+
+        /* Set specific width for input fields */
+        .input-group input {
+            width: 200px;
+        }
+
+        #notation {
+            width: 150px;
+        }
+
+        #otherInput {
+            width: 250px;
+        }
+
+        /* Image styling */
+        .image-container img {
+            max-width: 100%; /* Responsive image */
+            height: 100%; /* Ensure image stretches vertically */
+            object-fit: cover; /* Ensure the image covers the container while maintaining aspect ratio */
         }
 
         /* Buttons styling */
@@ -83,20 +93,37 @@
             background: transparent;
             color: #333;
         }
-        #data {
-   padding: 50px 20px;
-   }
-   .w3-container {
-       padding: 0;
-   }
-   .js-plotly-plot .plotly .modebar--hover > :not(.watermark) {
-       opacity: 1!important;
-   }
 
-        </style>
-        <script defer src="js/dfps.js"></script>
+        @media only screen and (max-width: 768px) {
+            .form-image-container {
+                flex-direction: column; /* Stack form and image vertically on small screens */
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .image-container img {
+                width: 100%;
+            }
+        }
+
+        #data {
+            padding: 50px 20px;
+        }
+
+        .w3-container {
+            padding: 0;
+        }
+
+        .js-plotly-plot .plotly .modebar--hover > :not(.watermark) {
+            opacity: 1!important;
+        }
+    </style>
+
+    <script defer src="js/dfps.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<script src="js/script.js"></script>
+    <script src="js/script.js"></script>
 </head>
 <body style="padding-top:100px;">
 
@@ -120,78 +147,84 @@
 
 <main id="data">
     <div id="data_div">
-        <h2>Water Table Recharge</h2>
-        <div class="w3-container w3-center">
-            <img src="img/WTR-Conceptual_mini3.jpg" alt="WaterTableRecharge flow domain" class="w3-image">
-        </div>
-        <h3>Enter Data: example values are provided as defaults</h3>
-        <form id="data_form" method="POST" action="">
-            <div>
-                <label for="d">Distance to stream, <b>d</b> (m)</label>
-                <input type="number" step="any" id="disttoS" name="in_d" value="50" placeholder="Enter Distance to Stream" required>
-            </div>
-            <div>
-                <label for="F"> Factor for map size, <b>F</b> (:)</label>
-                <input type="number" step="any" id="factor" name="in_F" value="4" placeholder="Factor" required>
-            </div>
-            <div>
-                <label for="Ka">Aquifer hydraulic conductivity, <b>K<sub>a</sub></b>, (cm/s)</label>
-                <input type="number" step="any" id="conductivity" name="in_Ka" value=".001" placeholder="Hydraulic Conductivity" required>
-            </div>
-            <div>
-                <label for="b">Aquifer thickness, <b>b</b> (m)</label>
-                <input type="number" step="any" id="thickness" name="in_b" value="10" placeholder="Aquifer Thickness" required>
-            </div>
-            <div>
-                <label for="Sy">Specific yield, <b>S<sub>y</sub></b> (:)</label>
-                <input type="number" step="any" id="Sy" name="in_Sy" value="0.15" placeholder="Specific Yield" required>
-            </div>
-            <div>
-                <label for="Qs">Streamflow rate, <b>Q<sub>s</sub></b> (m&sup3;/s)</label>
-                <input type="number" step="any" id="streamrate" name="in_Qs" value="3" placeholder="Streamflow Rate" required>
-            </div>
-            <div>
-                <label for="Qw">Pumping rate, <b>Q<sub>w</sub></b> (liters/min)</label>
-                <input type="number" id="pumprate" name="in_Qw" value="2000" placeholder="Pumping Rate" required>
-            </div>
-
-            <!-- Flexbox inputs -->
-            <div class="input-group">
+        <h2>Depletion Fully Penetrating Stream</h2>
+        
+        <div class="form-image-container">
+            <!-- Form Section -->
+            <form id="data_form" method="POST" action="">
+                <h4><b>Submit Inputs:</b> example values are provided as defaults</h4>
+                
                 <div>
-                    <label for="Ox1">Observation 1 (m) <b>O<sub>x</sub>1</b></label>
-                    <input type="number" id="ox1" name="in_ox1" value="-100" placeholder="Ox1" required>
+                    <label for="d">Distance to stream, <b>d</b> (m)</label>
+                    <input type="number" step="any" id="disttoS" name="in_d" value="50" placeholder="Enter Distance to Stream" required>
                 </div>
                 <div>
-                  <label for="Oy1"><b>O<sub>y</sub>1</b></label>
-                  <input type="number" id="oy1" name="in_oy1" value="45" placeholder="Oy1" required>
+                    <label for="F"> Factor for map size, <b>F</b> (:)</label>
+                    <input type="number" step="any" id="factor" name="in_F" value="4" placeholder="Factor" required>
                 </div>
-            </div>
+                <div>
+                    <label for="Ka">Aquifer hydraulic conductivity, <b>K<sub>a</sub></b>, (cm/s)</label>
+                    <input type="number" step="any" id="conductivity" name="in_Ka" value=".001" placeholder="Hydraulic Conductivity" required>
+                </div>
+                <div>
+                    <label for="b">Aquifer thickness, <b>b</b> (m)</label>
+                    <input type="number" step="any" id="thickness" name="in_b" value="10" placeholder="Aquifer Thickness" required>
+                </div>
+                <div>
+                    <label for="Sy">Specific yield, <b>S<sub>y</sub></b> (:)</label>
+                    <input type="number" step="any" id="Sy" name="in_Sy" value="0.15" placeholder="Specific Yield" required>
+                </div>
+                <div>
+                    <label for="Qs">Streamflow rate, <b>Q<sub>s</sub></b> (m&sup3;/s)</label>
+                    <input type="number" step="any" id="streamrate" name="in_Qs" value="3" placeholder="Streamflow Rate" required>
+                </div>
+                <div>
+                    <label for="Qw">Pumping rate, <b>Q<sub>w</sub></b> (liters/min)</label>
+                    <input type="number" id="pumprate" name="in_Qw" value="2000" placeholder="Pumping Rate" required>
+                </div>
 
-            <div class="input-group">
-              <div>
-                  <label for="Ox2">Observation 2 (m) <b>O<sub>x</sub>2</b></label>
-                  <input type="number" id="ox2" name="in_ox2" value="30" placeholder="Ox2" required>
+                <!-- Flexbox inputs -->
+                <div class="input-group">
+                    <div>
+                        <label for="Ox1">Observation 1 (m) <b>O<sub>x</sub>1</b></label>
+                        <input type="number" id="ox1" name="in_ox1" value="-100" placeholder="Ox1" required>
+                    </div>
+                    <div>
+                        <label for="Oy1"><b>O<sub>y</sub>1</b></label>
+                        <input type="number" id="oy1" name="in_oy1" value="45" placeholder="Oy1" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                  <div>
+                      <label for="Ox2">Observation 2 (m) <b>O<sub>x</sub>2</b></label>
+                      <input type="number" id="ox2" name="in_ox2" value="30" placeholder="Ox2" required>
+                  </div>
+                  <div>
+                    <label for="Oy2"><b>O<sub>y</sub>2</b></label>
+                    <input type="number" id="oy2" name="in_oy2" value="-50" placeholder="Oy2" required>
+                  </div>
               </div>
               <div>
-                <label for="Oy2"><b>O<sub>y</sub>2</b></label>
-                <input type="number" id="oy2" name="in_oy2" value="-50" placeholder="Oy2" required>
-              </div>
+                <label for="t">Pumping duration time, <b>t</b> (days)</label>
+                <input type="number" step="any" id="pumptime" name="in_t" value="365.25" placeholder="Enter Pumping Duration" required>
+            </div>
+            <div>
+              <label for="n">Number of time increments, <b>n</b> (:)</label>
+              <input type="number" step="any" id="timeincrements" name="in_n" value="3" placeholder="Enter Number of Time Increments" required>
           </div>
-          <div>
-            <label for="t">Pumping duration time, <b>t</b> (days)</label>
-            <input type="number" step="any" id="pumptime" name="in_t" value="365.25" placeholder="Enter Pumping Duration" required>
-        </div>
-        <div>
-          <label for="n">Number of time increments, <b>n</b> (:)</label>
-          <input type="number" step="any" id="timeincrements" name="in_n" value="3" placeholder="Enter Number of Time Increments" required>
-      </div>
 
-            <div id="btn_wrapper">
-                <button type="submit"><b>Submit</b></button>
-                <button type="reset"><b>Reset</b></button>
+                <div id="btn_wrapper">
+                    <button type="submit"><b>Submit</b></button>
+                    <button type="reset"><b>Reset</b></button>
+                </div>
+            </form>
+
+            <!-- Image Section -->
+            <div class="image-container">
+                <img src="img/dfps.png" alt="Water Table Recharge flow domain">
             </div>
-
-        </form>
+        </div>
 
         <p style="text-align: center" id="negative_value_message"></p>
         <p style="text-align: center" id="error_message1"></p>
@@ -216,5 +249,5 @@
     </div>
   </div>
 </footer>
-    </body>
+</body>
 </html>
