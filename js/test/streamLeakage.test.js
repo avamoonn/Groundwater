@@ -1,6 +1,5 @@
 // streamLeakage.test.js
-const { calculateStreamLeakage } = require('./streamLeakage');
-
+const { calculateStreamLeakage } = require('../streamLeakage.js');
 describe('calculateStreamLeakage', () => {
 
     // Test case 1: Basic case
