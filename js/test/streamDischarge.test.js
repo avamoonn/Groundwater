@@ -1,5 +1,5 @@
 // streamDischarge.test.js
-const { calculateStreamDischarge } = require('./streamDischarge');
+const { calculateStreamDischarge } = require('../streamDischarge.js');
 
 describe('calculateStreamDischarge', () => {
 
