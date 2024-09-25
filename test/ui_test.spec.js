@@ -1,6 +1,5 @@
 const { Builder, By, until } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
-const path = require('path');
 
 /**
  * Tests menu navigation.
@@ -11,7 +10,7 @@ async function testMenuNavigation() {
   const options = new chrome.Options().addArguments('--headless');
 
   // No need to manually set the ChromeDriver service
-  let driver = await new Builder()
+  const driver = await new Builder()
     .forBrowser('chrome')
     .setChromeOptions(options)
     .build();
@@ -71,7 +70,7 @@ async function testMenuNavigation() {
     console.log('Theory button navigation successful.');
 
     // Test "dfps" button
-    const dfpsButton = await driver.findElement(By.xpath("//button[contains(text(), 'Run DFPS')]"));
+    const dfpsButton = await driver.findElement(By.xpath('//button[contains(text(), \'Run DFPS\')]'));
     await dfpsButton.click();
     
     await driver.get('http://192.168.56.1:5500/dfps.html');
@@ -83,7 +82,6 @@ async function testMenuNavigation() {
     
     await driver.get('https://gw-project.org/');
     console.log('Groundwater button navigation successful.');
-
 
   } catch (error) {
     // Output the error message to the console

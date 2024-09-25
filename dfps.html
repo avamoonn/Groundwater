@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Water Table Recharge</title>
+    <title>Depletion Fully Penetrating Stream</title>
     <link rel="icon" type="image/x-icon" href="img/wtr.jpg">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/w3.css">
@@ -28,7 +28,7 @@
 }
 
 /* Specific label width adjustments for groups */
-        /* Flexbox for grouping elements side by side */
+/* Flexbox for grouping elements side by side */
 
 .input-group {
     display: flex;
@@ -83,7 +83,20 @@
             background: transparent;
             color: #333;
         }
-    </style>
+        #data {
+   padding: 50px 20px;
+   }
+   .w3-container {
+       padding: 0;
+   }
+   .js-plotly-plot .plotly .modebar--hover > :not(.watermark) {
+       opacity: 1!important;
+   }
+
+        </style>
+        <script defer src="js/dfps.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="js/script.js"></script>
 </head>
 <body style="padding-top:100px;">
 
@@ -108,12 +121,11 @@
 <main id="data">
     <div id="data_div">
         <h2>Water Table Recharge</h2>
-
         <div class="w3-container w3-center">
             <img src="img/WTR-Conceptual_mini3.jpg" alt="WaterTableRecharge flow domain" class="w3-image">
         </div>
         <h3>Enter Data: example values are provided as defaults</h3>
-        <form id="data_form" method="POST">
+        <form id="data_form" method="POST" action="">
             <div>
                 <label for="d">Distance to stream, <b>d</b> (m)</label>
                 <input type="number" step="any" id="disttoS" name="in_d" value="50" placeholder="Enter Distance to Stream" required>
@@ -181,7 +193,7 @@
 
         </form>
 
-        <p style="text-align: center" id="error_message"></p>
+        <p style="text-align: center" id="negative_value_message"></p>
         <p style="text-align: center" id="error_message1"></p>
         <p style="text-align: center" id="error_message2"></p>
     </div>

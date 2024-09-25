@@ -1,49 +1,51 @@
-// prepare to pas messages to html
 const data_form = document.querySelector('#data_form');
-const error_message = document.querySelector('#error_message');
+const negative_value_message = document.querySelector('#negative_value_message');
 const error_message1 = document.querySelector('#error_message1');
 const error_message2 = document.querySelector('#error_message2');
 const results_message = document.querySelector('#result_message');
 
-//listen to input data
+// Listen to form submission
 data_form.addEventListener('submit', function(e) {
-  e.preventDefault();
-  //initiate values
+  e.preventDefault(); // Prevent default form submission
+    
+  // Initiate values
   const data = new FormData(this);
-  let count = 0;
-  let error = false;
-  let error1 = false;
-  let error2 = false;
-  let message = ' ';
-  let message1 = ' ';
-  let message2 = ' ';
-  let results = ' ';
-  //set message color
-  error_message.style.color = 'black';
-  error_message1.style.color = 'black';
-  error_message2.style.color = 'black';
-  result_message.style.color = 'black';
-  //get data from form inputs  
-  let distL = data.get('in_distL');
-  let zGS = data.get('in_zGS');
-  let hLt = data.get('in_hLt');
-  let hRt = data.get('in_hRt');
-  let kH = data.get('in_kH');
-  let pYR = data.get('in_pYR');
-  let sigFig = data.get('in_sigFig');
-  let notation = data.get('in_notation');
-  //change text to numbers
-  distL = Number(distL);
-  zGS = Number(zGS);
-  hLt = Number(hLt);
-  hRt = Number(hRt);
-  kH = Number(kH);
-  pYR = Number(pYR);
-  sigFig = Number(sigFig);
-  notation = Number(notation);
-  //prepare to stop if needed
-  let stop = false;
+  const d = Number(data.get('in_d'));  // Example for grabbing inputs
+  const F = Number(data.get('in_F'));
+  const Ka = Number(data.get('in_Ka'));
+  const b = Number(data.get('in_b'));
+  const Sy = Number(data.get('in_Sy'));
+  const Qs = Number(data.get('in_Qs'));
+  const Qw = Number(data.get('in_Qw'));
+    
+  // Clear any existing messages
+  negative_value_message.innerHTML = '';
+  error_message1.innerHTML = '';
+  error_message2.innerHTML = '';
+  results_message.innerHTML = '';
+  // Check for negative values in inputs (except Ox1, Ox2, Oy1, Oy2)
+  if (d < 0 || F < 0 || Ka < 0 || b < 0 || Sy < 0 || Qs < 0 || Qw < 0) {
+    // Display an error message and stop further processing
+    negative_value_message.innerHTML = 'Error: Inputs for Distance, Factor, Hydraulic Conductivity, Thickness, Specific Yield, Streamflow Rate, or Pumping Rate cannot be negative.';
+    negative_value_message.style.color = 'red';
+    return; // Exit the function if any invalid input is found
+  }
+  // Example: display the data in result_message for testing
+  results_message.innerHTML = `Distance: ${d}, Factor: ${F}, Ka: ${Ka}, Thickness: ${b}, Sy: ${Sy}, Qs: ${Qs}, Qw: ${Qw}`;
+    
+  // You can now perform further processing or validation
+});
 
+// Listen to form reset button
+data_form.addEventListener('reset', function() {
+  // Clear any messages when the form is reset
+  negative_value_message.innerHTML = '';
+  error_message1.innerHTML = '';
+  error_message2.innerHTML = '';
+  results_message.innerHTML = '';
+});
+
+/*
   //check for input errors address them as needed with messages or defaults
   message = ' ';
   message1 = ' ';
@@ -393,7 +395,7 @@ data_form.addEventListener('submit', function(e) {
   const xQvalues = [];
   const yQvalues = [];
   // chcek for water levels of NaN and adjust corresponding Flow rates
-  let n = -1;
+  //let n = -1;
   for (let x = 0; x <= distL; x += 0.01) {
     n++;
     xQvalues.push(x);
@@ -432,4 +434,4 @@ data_form.addEventListener('submit', function(e) {
       
   Plotly.newPlot('myPlot', mydata, layout);
      
-});
+});*/
