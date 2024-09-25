@@ -18,11 +18,22 @@
         .w3-bar, h1, button {font-family: "Montserrat", sans-serif}
 
         /* Flexbox for layout */
-        .form-image-container {
-            display: flex;
-            align-items: stretch; /* Ensure items stretch to equal height */
-            gap: 20px;
-        }
+    .form-image-container {
+        display: flex;
+        align-items: stretch; /* Ensure items stretch to equal height */
+        gap: 20px;
+    }
+        /* Styling for result message to reduce whitespace */
+    #result_message {
+        margin-top: 10px; /* Adjust as needed */
+        padding: 0;
+    }
+
+    /* For all <p> tags, ensure no extra margin is added */
+    p {
+        margin: 5px 0; /* You can tweak this to be lower to reduce space */
+        padding: 0;
+    }
 
         /* Set 60% width for form and 40% for image */
         form {
@@ -47,32 +58,20 @@
         }
 
         /* Flexbox for grouping elements side by side */
-        .input-group {
-            display: flex;
-            gap: 10px; /* Adjust the space between the two inputs */
-        }
+
 
         .input-group label {
             white-space: nowrap;
             width: 200px;
         }
 
-        .input-group div {
-            flex: 1; /* Ensures both inputs take equal width */
-        }
 
         /* Set specific width for input fields */
         .input-group input {
             width: 200px;
         }
 
-        #notation {
-            width: 150px;
-        }
-
-        #otherInput {
-            width: 250px;
-        }
+  
 
         /* Image styling */
         .image-container img {
@@ -93,20 +92,55 @@
             background: transparent;
             color: #333;
         }
+        /* Set specific width for all input fields */
+  input {
+      width: 200px; /* Set a uniform width for all inputs */
+      box-sizing: border-box; /* Ensure padding and borders are included in the element's width and height */
+  }
 
-        @media only screen and (max-width: 768px) {
-            .form-image-container {
+  /* Flexbox for grouping elements side by side */
+  .input-group {
+      display: flex;
+      gap: 10px; /* Space between two inputs */
+      flex-wrap: nowrap; /* Prevent wrapping */
+  }
+
+  .input-group div {
+      flex: 0 0 auto; /* Ensure inputs do not grow */
+  }
+
+  /* Label styling to ensure equal width */
+  label {
+      white-space: nowrap;
+      display: inline-block;
+      width: 200px; /* Keep label width consistent */
+  }
+
+  /* Flex container width */
+  form div {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+  }
+
+/* Ensuring responsiveness */
+@media only screen and (max-width: 768px) {
+    .input-group {
+        flex-direction: column; /* Stack the input fields vertically on smaller screens */
+    }
+    input {
+        width: 100%; /* Full width on small screens */
+    }
+    .form-image-container {
                 flex-direction: column; /* Stack form and image vertically on small screens */
-            }
-
-            .input-group {
-                flex-direction: column;
-            }
-
-            .image-container img {
+    }
+    .image-container img {
                 width: 100%;
             }
-        }
+}
+
+
+        
 
         #data {
             padding: 50px 20px;
@@ -125,7 +159,7 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="js/script.js"></script>
 </head>
-<body style="padding-top:100px;">
+<body style="padding-top:0px;">
 
 <!-- Navbar on big screens-->
 <div class="w3-top">
@@ -229,8 +263,8 @@
         <p style="text-align: center" id="negative_value_message"></p>
         <p style="text-align: center" id="error_message1"></p>
         <p style="text-align: center" id="error_message2"></p>
+        <p style="text-align: center" id="result_message"></p>
     </div>
-    <p style="text-align: center" id="result_message"></p>
     <div>
         <p style="text-align: center" id="myPlot" style="width:100%;max-width:600px"></p>
     </div>

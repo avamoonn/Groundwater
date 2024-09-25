@@ -16,24 +16,36 @@ data_form.addEventListener('submit', function(e) {
   const b = Number(data.get('in_b'));
   const Sy = Number(data.get('in_Sy'));
   const Qs = Number(data.get('in_Qs'));
-  const Qw = Number(data.get('in_Qw'));
-    
+  const Qw = Number(data.get('in_Qw')); // You missed getting Qw initially
+  const ox1 = Number(data.get('in_ox1'));
+  const oy1 = Number(data.get('in_oy1'));
+  const ox2 = Number(data.get('in_ox2'));
+  const oy2 = Number(data.get('in_oy2'));
+  const t = Number(data.get('in_t'));
+  const n = Number(data.get('in_n'));  
+  
   // Clear any existing messages
   negative_value_message.innerHTML = '';
   error_message1.innerHTML = '';
   error_message2.innerHTML = '';
-  results_message.innerHTML = '';
+  results_message.innerHTML = ''; // Ensure this is cleared properly
+
   // Check for negative values in inputs (except Ox1, Ox2, Oy1, Oy2)
-  if (d < 0 || F < 0 || Ka < 0 || b < 0 || Sy < 0 || Qs < 0 || Qw < 0) {
+  if (d < 0 || F < 0 || Ka < 0 || b < 0 || Sy < 0 || Qs < 0 || Qw < 0 || n < 0 || t < 0) {
     // Display an error message and stop further processing
-    negative_value_message.innerHTML = 'Error: Inputs for Distance, Factor, Hydraulic Conductivity, Thickness, Specific Yield, Streamflow Rate, or Pumping Rate cannot be negative.';
+    negative_value_message.innerHTML = 'Error: Inputs for Distance, Factor, Hydraulic Conductivity, Thickness, Specific Yield, Streamflow Rate, Pumping Rate, Duration, and Time Increments cannot be negative.';
     negative_value_message.style.color = 'red';
     return; // Exit the function if any invalid input is found
   }
-  // Example: display the data in result_message for testing
-  results_message.innerHTML = `Distance: ${d}, Factor: ${F}, Ka: ${Ka}, Thickness: ${b}, Sy: ${Sy}, Qs: ${Qs}, Qw: ${Qw}`;
-    
-  // You can now perform further processing or validation
+
+  // Make sure to display the results after validation
+  results_message.innerHTML = `
+    <b>Results:</b><br>
+    Distance: ${d}, Factor: ${F}, Ka: ${Ka}, Thickness: ${b}, Sy: ${Sy}, Qs: ${Qs}, Qw: ${Qw}, 
+    Ox1: ${ox1}, Oy1: ${oy1}, Ox2: ${ox2}, Oy2: ${oy2}, Duration (t): ${t}, Time increments (n): ${n}
+  `; // Example: display the data in result_message for testing
+
+  // You can now perform further processing or calculations after this
 });
 
 // Listen to form reset button
@@ -46,94 +58,7 @@ data_form.addEventListener('reset', function() {
 });
 
 /*
-  //check for input errors address them as needed with messages or defaults
-  message = ' ';
-  message1 = ' ';
-  message2 = '<b>Warning: </b>';
-  if (distL <= 0){
-    error = true;
-    count ++;
-    message = message + ' <b>L</b> ';
-  }
-  if (zGS <= 0){
-    error = true;
-    count ++;
-    message = message + '  <b>z</b> ';
-  }
-  if (hLt <= 0){
-    error = true;
-    count ++;
-    message = message + ' <b>Hleft</b> ';
-  }
-  if (hLt > zGS){
-    error2 = true;
-    message2 = message2 + ' <b> Hleft </b> ';
-  }
-  if (hRt <= 0){
-    error = true;
-    count ++;
-    message = message + '  <b>Hright</b> ';
-  }
-  if (hRt > zGS){
-    error2 = true;
-    message2 = message2 + ' <b> Hright </b> ';
-  }
-  if (kH <= 0){
-    error = true;
-    count ++;
-    message = message + '  <b>Kh</b> ';
-  }
-  if (error === true){
-    stop = true;
-    if (count >1) {
-      message = message + ' must be <b>>0</b>. ';
-    } else {
-      message = message + ' must be <b>>0</b>. '; 
-    }
-  }
-  if (sigFig <= 0){
-    error1 = true;
-    sigFig = 3;
-    message1 = message1 + '  <b>SigFigs</b> must be <b>>0, will assume 3</b>. ';
-  }
-  if (sigFig > 20){
-    error1 = true;
-    sigFig = 20;
-    message1 = message1 + '  <b>SigFigs</b> must be <b><=20, will assume 20</b>. ';
-  }
-  if (notation !== 1 && notation !== 2){
-    error1 = true;
-    notation = 1;
-    message1 = message1 + '  <b>Notation</b> must be <b>1 or 2, will assume 1</b>. ';
-  }
-
-  if (error === true) {
-    error_message.style.color = 'red';
-    error_message.innerHTML = message;
-  } 
-  if (error === false) {
-    error_message.style.color = 'black';
-    error_message.innerHTML = ' ';
-  }
-  if (error1 === true) {
-    message1 = message1 + '</b> ';
-    error_message1.style.color = 'red';
-    error_message1.innerHTML = message1;
-  } 
-  if (error1 === false) {
-    error_message1.style.color = 'black';
-    error_message1.innerHTML = ' ';
-  }
-  if (error2 === true) {
-    message2 = message2 + '<b> - higher than groundsurface.</b> ';
-    error_message2.style.color = 'red';
-    error_message2.innerHTML = message2;
-  } 
-  if (error2 === false) {
-    error_message2.style.color = 'black';
-    error_message2.innerHTML = ' ';
-  }
-
+  
   // model calculations
   // recharge is p - et
   const rYR = (pYR);
