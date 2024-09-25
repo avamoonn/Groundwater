@@ -1,164 +1,202 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Water Table Recharge</title>
-        <link rel="icon" type="image/x-icon" href="img/wtr.jpg">
-        <link rel="icon" type="image/x-icon" href="img/wtr.jpg">
-        <link rel="stylesheet" href="css/style.css">
-        <link rel="stylesheet" href="css/w3.css">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <style>
-        body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
-        .w3-bar,h1,button {font-family: "Montserrat", sans-serif}
-        @media only screen and (max-width: 768px) 
-{
-   #data_div div {
-  flex: 1;
-  flex-direction: column;
-   }
-   #data_form {
-     width: 100%;
-   }
-   #data_form div {
-       margin-bottom: 12px;
-   }
-   #data_div label {
-       display: block;
-       width: 100%;
-   }
-   input, select, textarea, optgroup {
-       padding: 4px 15px;
-   }
-   button, [type="button"], [type="reset"], [type="submit"] {
-       background: #009DBA;
-       border: 1px solid #009DBA;
-       color: white;
-       padding: 6px 20px;
-   }
-   [type="reset"] {
-       background: transparent;
-       color: #333;
-   }
-   text.gtitle {
-       font-size: 14px!important;
-   }
-   #data {
-   padding: 50px 20px;
-   }
-   .w3-container {
-       padding: 0;
-   }
-   .js-plotly-plot .plotly .modebar--hover > :not(.watermark) {
-       opacity: 1!important;
-   }
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Water Table Recharge</title>
+    <link rel="icon" type="image/x-icon" href="img/wtr.jpg">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/w3.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <style>
+        body, h1, h2, h3, h4, h5, h6 {font-family: "Lato", sans-serif}
+        .w3-bar, h1, button {font-family: "Montserrat", sans-serif}
+
+        /* General styling for form layout */
+        form div {
+            margin-bottom: 15px;
+        }
+        label {
+  white-space: nowrap; /* Prevents label text from wrapping */
+  display: inline-block; /* Ensures label takes its width */
+  width: 200px; /* Adjust the width to ensure enough space for the label text */
 }
-        </style>
-        <script defer src="js/wtr.js"></script>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<script src="js/script.js"></script>
+
+/* Specific label width adjustments for groups */
+        /* Flexbox for grouping elements side by side */
+
+.input-group {
+    display: flex;
+    gap: 10px; /* Adjust the space between the two inputs */
+}
+
+.input-group label {
+    white-space: nowrap; /* Prevents label text from wrapping */
+    width: 200px; /* Adjust label width as needed */
+}
+
+.input-group div {
+    flex: 1; /* Ensures both inputs take equal width */
+}
+
+/* Set specific width for input fields */
+.input-group input {
+    width: 200px; /* Set a default width for all input fields */
+}
+
+/* You can also target specific inputs if needed */
+#notation {
+    width: 150px; /* Specific width for the "notation" input */
+}
+
+#otherInput {
+    width: 250px; /* Specific width for the "otherInput" input */
+}
+
+        /* Ensuring responsiveness */
+        @media only screen and (max-width: 768px) {
+            .input-group {
+                flex-direction: column; /* Stacks the input fields vertically on smaller screens */
+            }
+        }
+
+        /* Override potential conflicts from w3.css or other CSS files */
+        .input-group label, .input-group input {
+            display: inline-block;
+            width: 100%;
+        }
+
+        /* Buttons styling */
+        button, [type="button"], [type="reset"], [type="submit"] {
+            background: #009DBA;
+            border: 1px solid #009DBA;
+            color: white;
+            padding: 6px 20px;
+        }
+
+        [type="reset"] {
+            background: transparent;
+            color: #333;
+        }
+    </style>
 </head>
-<body>
-padding-top:100px;
+<body style="padding-top:100px;">
 
 <!-- Navbar on big screens-->
 <div class="w3-top">
-  <div class="w3-bar custom-black w3-card w3-left-align w3-large">
-<a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-indigo w3-large custom-black" href="javascript:void(0);" onclick="menuToggle()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
-    <a href="index.html" class="w3-bar-item w3-button w3-padding-large">DFPS-Home</a>
-    <a href="about.html" target="DFPSabout" class="w3-bar-item w3-button w3-hide-small w3-padding-large">About</a>
-    <a href="theory-dfps.html" target="DFPStheory" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Theory</a>
-    <a href="example-dfps.html" target="DFPSexample" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Example Application</a>
-    <a href="how-to-use-dfps.html" target="DFPShowto" class="w3-bar-item w3-button w3-hide-small w3-padding-large">How to Use</a>
-    <a href="exercise-dfps.html" target="DFPSexercise" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Exercise</a>
-    <a href="further-exploration-dfps.html" target="DFPSfurther" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Further Exploration</a>
-    <a href="https://gw-project.org/" target="DFPSgwporg" class="w3-bar-item w3-button w3-hide-small w3-padding-large">The Groundwater Project</a>
-  </div>
-
-  <!-- Navbar on small screens -->
-  <div id="navSmall" class="w3-bar-block custom-black w3-hide w3-hide-large w3-hide-medium w3-large">
-    <a href="about.html" target="DFPSabout" class="w3-bar-item w3-button w3-padding-large">About</a>
-    <a href="theory-dfps.html" target="DFPStheory" class="w3-bar-item w3-button w3-padding-large">Theory</a>
-    <a href="example-dfps.html" target="DFPSexample" class="w3-bar-item w3-button w3-padding-large">Example Application</a>
-    <a href="how-to-use-dfps.html" target="DFPShowto" class="w3-bar-item w3-button w3-padding-large">How to Use</a>
-    <a href="exercise-dfps.html" target="DFPSexercise" class="w3-bar-item w3-button w3-padding-large">Exercise</a>
-    <a href="further-exploration-dfps.html" target="DFPSfurther" class="w3-bar-item w3-button w3-padding-large">Further Exploration</a>
-    <a href="https://gw-project.org/" target="DFPSgwporg" class="w3-bar-item w3-button w3-padding-large">The Groundwater Project</a>
-  </div>
+    <div class="w3-bar custom-black w3-card w3-left-align w3-large">
+        <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-indigo w3-large custom-black" href="javascript:void(0);" onclick="menuToggle()" title="Toggle Navigation Menu">
+            <i class="fa fa-bars"></i></a>
+        <a href="index.html" class="w3-bar-item w3-button w3-padding-large">DFPS-Home</a>
+        <a href="about.html" target="DFPSabout" class="w3-bar-item w3-button w3-hide-small w3-padding-large">About</a>
+        <a href="theory-dfps.html" target="DFPStheory" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Theory</a>
+        <a href="example-dfps.html" target="DFPSexample" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Example Application</a>
+        <a href="how-to-use-dfps.html" target="DFPShowto" class="w3-bar-item w3-button w3-hide-small w3-padding-large">How to Use</a>
+        <a href="exercise-dfps.html" target="DFPSexercise" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Exercise</a>
+        <a href="further-exploration-dfps.html" target="DFPSfurther" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Further Exploration</a>
+        <a href="https://gw-project.org/" target="DFPSgwporg" class="w3-bar-item w3-button w3-hide-small w3-padding-large">The Groundwater Project</a>
+    </div>
 </div>
 
 <br><br>
 
-        <main id="data">
-            <div id="data_div">
-              <h2>Water Table Recharge</h2>
+<main id="data">
+    <div id="data_div">
+        <h2>Water Table Recharge</h2>
 
-              <div class="w3-container w3-center">
-                <img src="img/WTR-Conceptual_mini3.jpg" alt="WaterTableRecharge flow domain" class="w3-image">
-              </div>
-              <h3>Enter Data: example values are provided as defaults</h3>
-                <form id="data_form" method="POST">
-                    <div>
-                        <label for="distL">Distance <b>L</b> (m)</label>
-                        <input type="number"  step = "any" id="distL" name="in_distL" value="100" placeholder="Enter System Length" required>
-                      </div>
-                      <div>   
-                        <label for="zGS"Ground surface <b>z</b> (m)</label>
-                        <input type="number"  step = "any" id="zGS" name="in_zGS" value="10" placeholder="Elevation" required>
-                      </div>
-                      <div>
-                        <label for="hLt">Hleft (m)</label>
-                        <input type="number"  step = "any" id="hLt" name="in_hLt" value="8" placeholder="Head left" required>
-                      </div>
-                      <div>   
-                        <label for="hRt">Hright (m)</label>
-                        <input type="number"  step = "any" id="hRt" name="in_hRt" value="6" placeholder="Head right" required>
-                      </div>
-                      <div>   
-                        <label for="kH">K (m/DAY)</label>
-                        <input type="number"  step = "any" id="kH" name="in_kH" value="3" placeholder="HydraulicConductivity" required>
-                      </div>
-                      <div>   
-                        <label for="pYR">Net Recharge (Precip-Runoff-ET) (mm/YEAR)</label>
-                        <input type="number"  step = "any" id="pYR" name="in_pYR" value="200" placeholder="Precip-Runoff-ET" required>
-                      </div>
-                      <div>   
-                        <label for="sigFig">Significant Figures for Results (0 to 20)</label>
-                        <input type="number"  id="sigFig" name="in_sigFig" value="4" placeholder="# Significant Figures" required>
-                      </div>
-                      <div> 
-                        <label for=""> Result Notation Decimal=1 Scientific=2</label>
-                        <input type="number"  id="notation" name="in_notation" value="1" placeholder=" 1 or 2 " required>
-                      </div>                      
-                    </div>       
-
-                    <div id="btn_wrapper">
-                        <button type="submit"><b>Submit</b></button>
-                        <button type="reset"><b>Reset</b></button>
-                    </div>
-
-                </form>
-                
-                <p style="text-align: center" id="error_message" " "></p>
-                <p style="text-align: center" id="error_message1" " "></p>
-                <p style="text-align: center" id="error_message2" " "></p>
-            </div>
-            <p style="text-align: center" id="result_message" " "></p>
+        <div class="w3-container w3-center">
+            <img src="img/WTR-Conceptual_mini3.jpg" alt="WaterTableRecharge flow domain" class="w3-image">
+        </div>
+        <h3>Enter Data: example values are provided as defaults</h3>
+        <form id="data_form" method="POST">
             <div>
-              <p style="text-align: center" id="myPlot" style="width:100%;max-width:600px"></p>
+                <label for="d">Distance to stream, <b>d</b> (m)</label>
+                <input type="number" step="any" id="disttoS" name="in_d" value="50" placeholder="Enter Distance to Stream" required>
             </div>
-        </main>
+            <div>
+                <label for="F"> Factor for map size, <b>F</b> (:)</label>
+                <input type="number" step="any" id="factor" name="in_F" value="4" placeholder="Factor" required>
+            </div>
+            <div>
+                <label for="Ka">Aquifer hydraulic conductivity, <b>K<sub>a</sub></b>, (cm/s)</label>
+                <input type="number" step="any" id="conductivity" name="in_Ka" value=".001" placeholder="Hydraulic Conductivity" required>
+            </div>
+            <div>
+                <label for="b">Aquifer thickness, <b>b</b> (m)</label>
+                <input type="number" step="any" id="thickness" name="in_b" value="10" placeholder="Aquifer Thickness" required>
+            </div>
+            <div>
+                <label for="Sy">Specific yield, <b>S<sub>y</sub></b> (:)</label>
+                <input type="number" step="any" id="Sy" name="in_Sy" value="0.15" placeholder="Specific Yield" required>
+            </div>
+            <div>
+                <label for="Qs">Streamflow rate, <b>Q<sub>s</sub></b> (m&sup3;/s)</label>
+                <input type="number" step="any" id="streamrate" name="in_Qs" value="3" placeholder="Streamflow Rate" required>
+            </div>
+            <div>
+                <label for="Qw">Pumping rate, <b>Q<sub>w</sub></b> (liters/min)</label>
+                <input type="number" id="pumprate" name="in_Qw" value="2000" placeholder="Pumping Rate" required>
+            </div>
+
+            <!-- Flexbox inputs -->
+            <div class="input-group">
+                <div>
+                    <label for="Ox1">Observation 1 (m) <b>O<sub>x</sub>1</b></label>
+                    <input type="number" id="ox1" name="in_ox1" value="-100" placeholder="Ox1" required>
+                </div>
+                <div>
+                  <label for="Oy1"><b>O<sub>y</sub>1</b></label>
+                  <input type="number" id="oy1" name="in_oy1" value="45" placeholder="Oy1" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+              <div>
+                  <label for="Ox2">Observation 2 (m) <b>O<sub>x</sub>2</b></label>
+                  <input type="number" id="ox2" name="in_ox2" value="30" placeholder="Ox2" required>
+              </div>
+              <div>
+                <label for="Oy2"><b>O<sub>y</sub>2</b></label>
+                <input type="number" id="oy2" name="in_oy2" value="-50" placeholder="Oy2" required>
+              </div>
+          </div>
+          <div>
+            <label for="t">Pumping duration time, <b>t</b> (days)</label>
+            <input type="number" step="any" id="pumptime" name="in_t" value="365.25" placeholder="Enter Pumping Duration" required>
+        </div>
+        <div>
+          <label for="n">Number of time increments, <b>n</b> (:)</label>
+          <input type="number" step="any" id="timeincrements" name="in_n" value="3" placeholder="Enter Number of Time Increments" required>
+      </div>
+
+            <div id="btn_wrapper">
+                <button type="submit"><b>Submit</b></button>
+                <button type="reset"><b>Reset</b></button>
+            </div>
+
+        </form>
+
+        <p style="text-align: center" id="error_message"></p>
+        <p style="text-align: center" id="error_message1"></p>
+        <p style="text-align: center" id="error_message2"></p>
+    </div>
+    <p style="text-align: center" id="result_message"></p>
+    <div>
+        <p style="text-align: center" id="myPlot" style="width:100%;max-width:600px"></p>
+    </div>
+</main>
+
 <!-- Footer -->
-<footer class="w3-container custom-dark-grey w3-padding-32">  
-  <div class="w3-row-padding w3-margin-bottom w3-container">
-    <div class="w3-content">
-      <div class="w3-whole">
-      <p class="w3-text-light-grey"><a href="https://gw-project.org/privacy-policy/" > The Groundwater Project Privacy Policy</a> 
+<footer class="w3-container custom-dark-grey w3-padding-32">
+    <div class="w3-row-padding w3-margin-bottom w3-container">
+        <div class="w3-content">
+            <div class="w3-whole">
+                <p class="w3-text-light-grey"><a href="https://gw-project.org/privacy-policy/">The Groundwater Project Privacy Policy</a> 
         &nbsp&nbsp&nbsp&nbsp This interactive educational tool does not collect any data.</p>
       <p class="w3-text-light-grey"><a href="https://gw-project.org/terms-of-use/" > The Groundwater Project Terms of Use</a>
           &nbsp&nbsp&nbsp&nbsp The user of WTR assumes all responsibility for how the program is used.</p>
