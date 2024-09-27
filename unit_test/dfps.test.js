@@ -10,6 +10,8 @@ const {
   W,
   calculateQFraction,
   calculateDrawdown,
+  createVelocityGrid,
+  displayVelocityGrid,
   calculateDistance,
 } = require("../js/calculations");
 
