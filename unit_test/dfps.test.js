@@ -314,9 +314,8 @@ describe('DFPS Calculation Tests', () => {
       }).toThrow("Time 't' must be greater than 0.");
     });
   });
-  
-});
 
+  
 describe('createVelocityGrid', () => {
   test('should return a grid with correct dimensions', () => {
     const gridSize = 21;
@@ -428,8 +427,6 @@ describe('displayVelocityGrid', () => {
     expect(firstRender).toBe(secondRender); // The grid should be replaced, not appended
   });
 });
-=======
-  });
 
   // Tests for erfc function
   describe('erfc Function', () => {
@@ -675,6 +672,4 @@ describe('displayVelocityGrid', () => {
         calculateDrawdown(100, 0, -5, 10, 500, 0.2, 100, 0, 0);
       }).toThrow("Time 't' must be greater than 0.");
     });
-  });
-
 });
