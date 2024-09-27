@@ -8,9 +8,9 @@ const {
   W,
   calculateQFraction,
   calculateDrawdown,
-  calculateDistance,
   createVelocityGrid,
-  displayVelocityGrid
+  displayVelocityGrid,
+  calculateDistance
 } = require('../js/calculations');
 
 describe('DFPS Calculation Tests', () => {
@@ -313,7 +313,7 @@ describe('DFPS Calculation Tests', () => {
       }).toThrow("Time 't' must be greater than 0.");
     });
   });
-
+  
 });
 
 describe('createVelocityGrid', () => {
