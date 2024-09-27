@@ -1,137 +1,65 @@
-// prepare to pas messages to html
 const data_form = document.querySelector('#data_form');
-const error_message = document.querySelector('#error_message');
+const negative_value_message = document.querySelector('#negative_value_message');
 const error_message1 = document.querySelector('#error_message1');
 const error_message2 = document.querySelector('#error_message2');
 const results_message = document.querySelector('#result_message');
 
-//listen to input data
+// Listen to form submission
 data_form.addEventListener('submit', function(e) {
-  e.preventDefault();
-  //initiate values
+  e.preventDefault(); // Prevent default form submission
+    
+  // Initiate values
   const data = new FormData(this);
-  let count = 0;
-  let error = false;
-  let error1 = false;
-  let error2 = false;
-  let message = ' ';
-  let message1 = ' ';
-  let message2 = ' ';
-  let results = ' ';
-  //set message color
-  error_message.style.color = 'black';
-  error_message1.style.color = 'black';
-  error_message2.style.color = 'black';
-  result_message.style.color = 'black';
-  //get data from form inputs  
-  let distL = data.get('in_distL');
-  let zGS = data.get('in_zGS');
-  let hLt = data.get('in_hLt');
-  let hRt = data.get('in_hRt');
-  let kH = data.get('in_kH');
-  let pYR = data.get('in_pYR');
-  let sigFig = data.get('in_sigFig');
-  let notation = data.get('in_notation');
-  //change text to numbers
-  distL = Number(distL);
-  zGS = Number(zGS);
-  hLt = Number(hLt);
-  hRt = Number(hRt);
-  kH = Number(kH);
-  pYR = Number(pYR);
-  sigFig = Number(sigFig);
-  notation = Number(notation);
-  //prepare to stop if needed
-  let stop = false;
+  const d = Number(data.get('in_d'));  // Example for grabbing inputs
+  const F = Number(data.get('in_F'));
+  const Ka = Number(data.get('in_Ka'));
+  const b = Number(data.get('in_b'));
+  const Sy = Number(data.get('in_Sy'));
+  const Qs = Number(data.get('in_Qs'));
+  const Qw = Number(data.get('in_Qw')); // You missed getting Qw initially
+  const ox1 = Number(data.get('in_ox1'));
+  const oy1 = Number(data.get('in_oy1'));
+  const ox2 = Number(data.get('in_ox2'));
+  const oy2 = Number(data.get('in_oy2'));
+  const t = Number(data.get('in_t'));
+  const n = Number(data.get('in_n'));  
+  
+  // Clear any existing messages
+  negative_value_message.innerHTML = '';
+  error_message1.innerHTML = '';
+  error_message2.innerHTML = '';
+  results_message.innerHTML = ''; // Ensure this is cleared properly
 
-  //check for input errors address them as needed with messages or defaults
-  message = ' ';
-  message1 = ' ';
-  message2 = '<b>Warning: </b>';
-  if (distL <= 0){
-    error = true;
-    count ++;
-    message = message + ' <b>L</b> ';
-  }
-  if (zGS <= 0){
-    error = true;
-    count ++;
-    message = message + '  <b>z</b> ';
-  }
-  if (hLt <= 0){
-    error = true;
-    count ++;
-    message = message + ' <b>Hleft</b> ';
-  }
-  if (hLt > zGS){
-    error2 = true;
-    message2 = message2 + ' <b> Hleft </b> ';
-  }
-  if (hRt <= 0){
-    error = true;
-    count ++;
-    message = message + '  <b>Hright</b> ';
-  }
-  if (hRt > zGS){
-    error2 = true;
-    message2 = message2 + ' <b> Hright </b> ';
-  }
-  if (kH <= 0){
-    error = true;
-    count ++;
-    message = message + '  <b>Kh</b> ';
-  }
-  if (error === true){
-    stop = true;
-    if (count >1) {
-      message = message + ' must be <b>>0</b>. ';
-    } else {
-      message = message + ' must be <b>>0</b>. '; 
-    }
-  }
-  if (sigFig <= 0){
-    error1 = true;
-    sigFig = 3;
-    message1 = message1 + '  <b>SigFigs</b> must be <b>>0, will assume 3</b>. ';
-  }
-  if (sigFig > 20){
-    error1 = true;
-    sigFig = 20;
-    message1 = message1 + '  <b>SigFigs</b> must be <b><=20, will assume 20</b>. ';
-  }
-  if (notation !== 1 && notation !== 2){
-    error1 = true;
-    notation = 1;
-    message1 = message1 + '  <b>Notation</b> must be <b>1 or 2, will assume 1</b>. ';
+  // Check for negative values in inputs (except Ox1, Ox2, Oy1, Oy2)
+  if (d < 0 || F < 0 || Ka < 0 || b < 0 || Sy < 0 || Qs < 0 || Qw < 0 || n < 0 || t < 0) {
+    // Display an error message and stop further processing
+    negative_value_message.innerHTML = 'Error: Inputs for Distance, Factor, Hydraulic Conductivity, Thickness, Specific Yield, Streamflow Rate, Pumping Rate, Duration, and Time Increments cannot be negative.';
+    negative_value_message.style.color = 'red';
+    return; // Exit the function if any invalid input is found
   }
 
-  if (error === true) {
-    error_message.style.color = 'red';
-    error_message.innerHTML = message;
-  } 
-  if (error === false) {
-    error_message.style.color = 'black';
-    error_message.innerHTML = ' ';
-  }
-  if (error1 === true) {
-    message1 = message1 + '</b> ';
-    error_message1.style.color = 'red';
-    error_message1.innerHTML = message1;
-  } 
-  if (error1 === false) {
-    error_message1.style.color = 'black';
-    error_message1.innerHTML = ' ';
-  }
-  if (error2 === true) {
-    message2 = message2 + '<b> - higher than groundsurface.</b> ';
-    error_message2.style.color = 'red';
-    error_message2.innerHTML = message2;
-  } 
-  if (error2 === false) {
-    error_message2.style.color = 'black';
-    error_message2.innerHTML = ' ';
-  }
+  // Make sure to display the results after validation
+  results_message.innerHTML = `
+    <b>Results:</b><br>
+    Distance: ${d}, Factor: ${F}, Ka: ${Ka}, Thickness: ${b}, Sy: ${Sy}, Qs: ${Qs}, Qw: ${Qw}, 
+    Ox1: ${ox1}, Oy1: ${oy1}, Ox2: ${ox2}, Oy2: ${oy2}, Duration (t): ${t}, Time increments (n): ${n}
+  `; // Example: display the data in result_message for testing
 
+  // You can now perform further processing or calculations after this
+});
+
+// Listen to form reset button
+data_form.addEventListener('reset', function() {
+  // Clear any messages when the form is reset
+  negative_value_message.innerHTML = '';
+  error_message1.innerHTML = '';
+  error_message2.innerHTML = '';
+  results_message.innerHTML = '';
+});
+
+time_increments = calc_increments(t,n); //logarithmic
+/*
+  
   // model calculations
   // recharge is p - et
   const rYR = (pYR);
@@ -393,7 +321,7 @@ data_form.addEventListener('submit', function(e) {
   const xQvalues = [];
   const yQvalues = [];
   // chcek for water levels of NaN and adjust corresponding Flow rates
-  let n = -1;
+  //let n = -1;
   for (let x = 0; x <= distL; x += 0.01) {
     n++;
     xQvalues.push(x);
@@ -432,4 +360,4 @@ data_form.addEventListener('submit', function(e) {
       
   Plotly.newPlot('myPlot', mydata, layout);
      
-});
+});*/
