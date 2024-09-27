@@ -57,6 +57,7 @@ data_form.addEventListener('reset', function() {
   results_message.innerHTML = '';
 });
 
+// eslint-disable-next-line no-undef
 time_increments = calc_increments(t,n); //logarithmic
 /*
   

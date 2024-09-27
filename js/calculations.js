@@ -57,7 +57,7 @@ function W(u) {
       sum += Math.pow(-1, n + 1) * Math.pow(u, n) / n;
       n++;
     }
-
+    
     return sum;
   } else {
     // Asymptotic expansion for u >= 1
@@ -283,13 +283,14 @@ function displayVelocityGrid() {
   resultDiv.innerHTML += table;
 }
 
-module.exports = { 
+export default { 
   calculateLogarithmicTimeSteps,
   erfc,
   W,
   calculateQFraction,
   calculateDrawdown,
-  calculateDistance,
   createVelocityGrid,
-  displayVelocityGrid
+  displayVelocityGrid,
+  calculateDistance
+
 };

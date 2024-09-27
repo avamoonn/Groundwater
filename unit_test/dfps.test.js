@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
 /**
  * Unit tests of all calculations for DFPS tool
  * @jest-environment jsdom
@@ -8,13 +10,12 @@ const {
   W,
   calculateQFraction,
   calculateDrawdown,
-  calculateDistance,
   createVelocityGrid,
-  displayVelocityGrid
+  displayVelocityGrid,
+  calculateDistance
 } = require('../js/calculations');
 
 describe('DFPS Calculation Tests', () => {
-  const epsilon = 0.01;
   
   /**
    * Helper function to compare two arrays within a small epsilon.
@@ -134,7 +135,6 @@ describe('DFPS Calculation Tests', () => {
       const t = 10;
 
       const argument = (d * d * Sy) / (4 * T * t); // (100000000 * 0.2) / 20000 = 1000
-      const expected = erfc(argument); // should be very close to 0
 
       const result = calculateQFraction(d, Sy, T, t);
       expect(result).toBeCloseTo(0, 6);
@@ -263,7 +263,6 @@ describe('DFPS Calculation Tests', () => {
       const xwell = 0; // meters
       const ywell = 0; // meters
 
-      const r = 0;
       const u = 0;
       const uPrime = (200 * 200 * 0.2) / (4 * 500 * 10); // ((200)^2 *0.2)/20000 = 8000 / 20000 = 0.4
 
@@ -295,7 +294,6 @@ describe('DFPS Calculation Tests', () => {
       const W_u = W(u); // W(100) ≈ 0
       const W_uPrime = W(uPrime); // W(100) ≈ 0
 
-      const expected = (Qw / (4 * Math.PI * T)) * (W_u - W_uPrime); // ≈0
 
       const result = calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell);
       expect(numbersAreClose(result, 0, 1e-6)).toBe(true);
@@ -313,7 +311,7 @@ describe('DFPS Calculation Tests', () => {
       }).toThrow("Time 't' must be greater than 0.");
     });
   });
-
+  
 });
 
 describe('createVelocityGrid', () => {
