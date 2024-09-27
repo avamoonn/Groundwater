@@ -6,17 +6,17 @@ const results_message = document.querySelector('#result_message');
 
 // Listen to form submission
 data_form.addEventListener('submit', function(e) {
-  e.preventDefault(); // Prevent default form submission
+  e.preventDefault();
     
   // Initiate values
   const data = new FormData(this);
-  const d = Number(data.get('in_d'));  // Example for grabbing inputs
+  const d = Number(data.get('in_d'));
   const F = Number(data.get('in_F'));
   const Ka = Number(data.get('in_Ka'));
   const b = Number(data.get('in_b'));
   const Sy = Number(data.get('in_Sy'));
   const Qs = Number(data.get('in_Qs'));
-  const Qw = Number(data.get('in_Qw')); // You missed getting Qw initially
+  const Qw = Number(data.get('in_Qw'));
   const ox1 = Number(data.get('in_ox1'));
   const oy1 = Number(data.get('in_oy1'));
   const ox2 = Number(data.get('in_ox2'));
@@ -57,6 +57,7 @@ data_form.addEventListener('reset', function() {
   results_message.innerHTML = '';
 });
 
+// eslint-disable-next-line no-undef
 time_increments = calc_increments(t,n); //logarithmic
 /*
   
