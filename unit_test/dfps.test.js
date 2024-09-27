@@ -10,12 +10,12 @@ const {
   W,
   calculateQFraction,
   calculateDrawdown,
-  createVelocityGrid,
-  displayVelocityGrid,
   calculateDistance,
 } = require("../js/calculations");
 
 describe("DFPS Calculation Tests", () => {
+  const epsilon = 0.01; // Small margin for floating point comparison
+
   /**
    * Helper function to compare two arrays within a small epsilon.
    * Returns true if all corresponding elements are within epsilon.
