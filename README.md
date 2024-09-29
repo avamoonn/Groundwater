@@ -3,7 +3,7 @@ Groundwater Project
 
 Ava Moon, Iris Nemechek, Colton Morris, David Karibian
 
-# Running the Project
+# Installing Dependencies
 
 First, update your machine:
 ```sudo apt-get update```
@@ -26,3 +26,21 @@ Install selenium webdriver:
 
 Install chrome driver:
 ```npm install chromedriver```
+
+Install jsdom:
+```npm install --save-dev jest-environment-jsdom```
+
+
+# Seeing website
+
+Click ```Go Live``` button at bottom right of VSCode
+
+# Running tests
+
+For UI tests:
+
+```npm run test:e2e```
+
+For unit tests (ensure they are only in unit_test folder):
+
+```npm run test:unit```

@@ -1,0 +1,315 @@
+/**
+ * Unit tests of all calculations for DFPS tool
+ * @jest-environment jsdom
+ */
+ const { 
+  calculateLogarithmicTimeSteps,
+  erfc,
+  W,
+  calculateQFraction,
+  calculateDrawdown,
+  calculateDistance
+} = require('../js/calculations');
+
+describe('DFPS Calculation Tests', () => {
+  const epsilon = 0.01; // Small margin for floating point comparison
+  
+  /**
+   * Helper function to compare two arrays within a small epsilon.
+   * Returns true if all corresponding elements are within epsilon.
+   */
+  function arraysAreClose(arr1, arr2, epsilon = 0.01) {
+    if (arr1.length !== arr2.length) return false;
+    for (let i = 0; i < arr1.length; i++) {
+      if (Math.abs(arr1[i] - arr2[i]) > epsilon) {
+        console.log(`Value mismatch at index ${i}: Expected ${arr2[i]}, but got ${arr1[i]}`);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Helper function to compare two numbers within a small epsilon.
+   * Returns true if the difference is within epsilon.
+   */
+  function numbersAreClose(num1, num2, epsilon = 0.01) {
+    return Math.abs(num1 - num2) <= epsilon;
+  }
+  
+  // Tests for calculateLogarithmicTimeSteps
+  describe('calculateLogarithmicTimeSteps', () => {
+    test('Test case 1: total time 100, increments 5', () => {
+      const t = 100, n = 5;
+      const expected = [1.55, 5.43, 15.13, 39.38, 100];
+      const result = calculateLogarithmicTimeSteps(t, n);
+      console.log('Logarithmic Time Steps Result:', result); // Log the result for debugging
+      expect(arraysAreClose(result, expected, 0.1)).toBe(true); // Increased epsilon for approximation
+    });
+    
+    test('Test case 2: total time 50, increments 4', () => {
+      const t = 50, n = 4;
+      const expected = [1.97, 6.90, 19.21, 50]; // Adjusted expected values based on the new formula
+      
+      const result = calculateLogarithmicTimeSteps(t, n);
+      console.log('Logarithmic Time Steps Result:', result); // Log the result for debugging
+      expect(arraysAreClose(result, expected, 0.1)).toBe(true);
+    });
+      
+    test('Test case 3: total time 200, increments 6', () => {
+      const t = 200, n = 6;
+      const expected = [1.23, 4.32, 12.03, 31.31, 79.51, 200]; // Adjusted expected values
+      
+      const result = calculateLogarithmicTimeSteps(t, n);
+      console.log('Logarithmic Time Steps Result:', result); // Log the result for debugging
+      expect(arraysAreClose(result, expected, 0.1)).toBe(true);
+    }); 
+  });
+
+  // Tests for erfc function
+  describe('erfc Function', () => {
+    test('erfc(0) should return approximately 1', () => {
+      const input = 0;
+      const expected = 1;
+      const result = erfc(input);
+      expect(numbersAreClose(result, expected, 1e-6)).toBe(true);
+    });
+
+    test('erfc(1) should be approximately 0.1572992', () => {
+      const input = 1;
+      const expected = 0.1572992;
+      const result = erfc(input);
+      expect(numbersAreClose(result, expected, 1e-6)).toBe(true);
+    });
+
+    test('erfc(-1) should be approximately 1.8427008', () => {
+      const input = -1;
+      const expected = 1.8427008;
+      const result = erfc(input);
+      expect(numbersAreClose(result, expected, 1e-6)).toBe(true);
+    });
+
+    test('erfc(2) should be approximately 0.00467773', () => {
+      const input = 2;
+      const expected = 0.00467773;
+      const result = erfc(input);
+      expect(numbersAreClose(result, expected, 1e-6)).toBe(true);
+    });
+  });
+
+  // Tests for calculateQFraction
+  describe('calculateQFraction', () => {
+    test('Valid inputs should return correct Qfraction', () => {
+      // Example values
+      const d = 100; // meters
+      const Sy = 0.2; // dimensionless
+      const T = 500; // m²/day
+      const t = 10; // days
+
+      const argument = (d * d * Sy) / (4 * T * t); // (10000 * 0.2) / (2000) = 1
+      const expected = erfc(argument); // erfc(1) ≈ 0.1572992
+
+      const result = calculateQFraction(d, Sy, T, t);
+      expect(numbersAreClose(result, expected, 1e-6)).toBe(true);
+    });
+
+    test('Qfraction with d=0 should return erfc(0) = 1', () => {
+      const d = 0;
+      const Sy = 0.2;
+      const T = 500;
+      const t = 10;
+
+      const expected = erfc(0); // 1
+
+      const result = calculateQFraction(d, Sy, T, t);
+      expect(numbersAreClose(result, expected, 1e-6)).toBe(true);
+    });
+
+    test('Qfraction with large d should approach 0', () => {
+      const d = 10000; // very large distance
+      const Sy = 0.2;
+      const T = 500;
+      const t = 10;
+
+      const argument = (d * d * Sy) / (4 * T * t); // (100000000 * 0.2) / 20000 = 1000
+      const expected = erfc(argument); // should be very close to 0
+
+      const result = calculateQFraction(d, Sy, T, t);
+      expect(result).toBeCloseTo(0, 6);
+    });
+
+    test('Zero time should throw an error', () => {
+      expect(() => {
+        calculateQFraction(100, 0.2, 500, 0);
+      }).toThrow("Time 't' must be greater than 0.");
+    });
+
+    test('Negative time should throw an error', () => {
+      expect(() => {
+        calculateQFraction(100, 0.2, 500, -5);
+      }).toThrow("Time 't' must be greater than 0.");
+    });
+  });
+
+  // Tests for calculateDistance
+  describe('calculateDistance', () => {
+    test('Distance between (0,0) and (3,4) should be 5', () => {
+      const xgrid = 3;
+      const ygrid = 4;
+      const xwell = 0;
+      const ywell = 0;
+      const expected = 5;
+
+      const result = calculateDistance(xgrid, ygrid, xwell, ywell);
+      expect(numbersAreClose(result, expected, 1e-6)).toBe(true);
+    });
+
+    test('Distance between (1,1) and (4,5) should be 5', () => {
+      const xgrid = 4;
+      const ygrid = 5;
+      const xwell = 1;
+      const ywell = 1;
+      const expected = 5;
+
+      const result = calculateDistance(xgrid, ygrid, xwell, ywell);
+      expect(numbersAreClose(result, expected, 1e-6)).toBe(true);
+    });
+
+    test('Distance between (-2,-3) and (4,1) should be 7.21110255', () => {
+      const xgrid = 4;
+      const ygrid = 1;
+      const xwell = -2;
+      const ywell = -3;
+      const expected = Math.sqrt((4 - (-2))**2 + (1 - (-3))**2); // sqrt(36 + 16) = sqrt(52) ≈ 7.21110255
+
+      const result = calculateDistance(xgrid, ygrid, xwell, ywell);
+      expect(numbersAreClose(result, expected, 1e-6)).toBe(true);
+    });
+
+    test('Distance when grid and well are the same point should be 0', () => {
+      const xgrid = 5;
+      const ygrid = 5;
+      const xwell = 5;
+      const ywell = 5;
+      const expected = 0;
+
+      const result = calculateDistance(xgrid, ygrid, xwell, ywell);
+      expect(numbersAreClose(result, expected, 1e-6)).toBe(true);
+    });
+  });
+
+  // Tests for calculateDrawdown
+  describe('calculateDrawdown', () => {
+    test('Drawdown with W(u) - W(u\') = 0 should return 0', () => {
+      // When u = u', W(u) - W(u') = 0
+      // This happens when r = d
+      const x = 100; // meters
+      const y = 0; // meters
+      const t = 10; // days
+      const Qw = 10; // m³/s
+      const T = 500; // m²/day
+      const Sy = 0.2; // dimensionless
+      const d = 100; // meters
+      const xwell = 0; // meters
+      const ywell = 0; // meters
+
+      // At x = d, y = 0, r = d
+      // u = (d^2 * Sy) / (4 * T * t) = (10000 * 0.2) / 2000 = 1
+      // u' = ((2d - r)^2 * Sy) / (4 * T * t) = (100^2 * 0.2) / 2000 = 1
+      // W(u) - W(u') = 0
+      const expected = 0;
+
+      const result = calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell);
+      expect(numbersAreClose(result, expected, 1e-6)).toBe(true);
+    });
+
+    test('Drawdown with different u and u\' should return correct value', () => {
+      // Choose r ≠ d, so u ≠ u'
+      const x = 50; // meters
+      const y = 0; // meters
+      const t = 10; // days
+      const Qw = 10; // m³/s
+      const T = 500; // m²/day
+      const Sy = 0.2; // dimensionless
+      const d = 100; // meters
+      const xwell = 0; // meters
+      const ywell = 0; // meters
+
+      // Calculate r, u, u'
+      const r = calculateDistance(x, y, xwell, ywell); // 50
+      const u = (r * r * Sy) / (4 * T * t); // (2500 * 0.2) / 2000 = 0.25
+      const uPrime = ((2 * d - r) * (2 * d - r) * Sy) / (4 * T * t); // ((200 -50)^2 *0.2)/2000 = (150^2*0.2)/2000= (22500*0.2)/2000= 4500/2000=2.25
+
+      const W_u = W(u); // W(0.25)
+      const W_uPrime = W(uPrime); // W(2.25) ≈ 0
+
+      const expected = (Qw / (4 * Math.PI * T)) * (W_u - W_uPrime);
+
+      const result = calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell);
+      expect(numbersAreClose(result, expected, 1e-6)).toBe(true);
+    });
+
+    test('Drawdown with r = 0', () => {
+      // At the well location, r = 0
+      const x = 0; // meters
+      const y = 0; // meters
+      const t = 10; // days
+      const Qw = 10; // m³/s
+      const T = 500; // m²/day
+      const Sy = 0.2; // dimensionless
+      const d = 100; // meters
+      const xwell = 0; // meters
+      const ywell = 0; // meters
+
+      const r = 0;
+      const u = 0;
+      const uPrime = (200 * 200 * 0.2) / (4 * 500 * 10); // ((200)^2 *0.2)/20000 = 8000 / 20000 = 0.4
+
+      const W_u = W(u); // W(0) = 0
+      const W_uPrime = W(uPrime); // W(0.4)
+
+      const expected = (Qw / (4 * Math.PI * T)) * (W_u - W_uPrime);
+
+      const result = calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell);
+      expect(numbersAreClose(result, expected, 1e-6)).toBe(true);
+    });
+
+    test('Drawdown with large u and u\' should approach 0', () => {
+      // Use large r and d to make u and u' large
+      const x = 1000; // meters
+      const y = 0; // meters
+      const t = 1; // days
+      const Qw = 10; // m³/s
+      const T = 500; // m²/day
+      const Sy = 0.2; // dimensionless
+      const d = 1000; // meters
+      const xwell = 0; // meters
+      const ywell = 0; // meters
+
+      const r = calculateDistance(x, y, xwell, ywell); // 1000
+      const u = (r * r * Sy) / (4 * T * t); // (1000000 * 0.2)/2000 = 100
+      const uPrime = ((2000 - 1000) * (2000 - 1000) * 0.2) / (4 * 500 * 1); // (1000^2 *0.2)/2000= (1000000*0.2)/2000=200000/2000=100
+
+      const W_u = W(u); // W(100) ≈ 0
+      const W_uPrime = W(uPrime); // W(100) ≈ 0
+
+      const expected = (Qw / (4 * Math.PI * T)) * (W_u - W_uPrime); // ≈0
+
+      const result = calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell);
+      expect(numbersAreClose(result, 0, 1e-6)).toBe(true);
+    });
+
+    test('Drawdown with zero time should throw an error', () => {
+      expect(() => {
+        calculateDrawdown(100, 0, 0, 10, 500, 0.2, 100, 0, 0);
+      }).toThrow("Time 't' must be greater than 0.");
+    });
+
+    test('Drawdown with negative time should throw an error', () => {
+      expect(() => {
+        calculateDrawdown(100, 0, -5, 10, 500, 0.2, 100, 0, 0);
+      }).toThrow("Time 't' must be greater than 0.");
+    });
+  });
+
+});

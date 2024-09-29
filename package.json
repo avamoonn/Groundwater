@@ -5,21 +5,22 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "test:unit": "jest test/math.test.js",
-    "test:e2e": "node test/ui_test.spec.js", 
-    "test:e2e:headless": "node test/ui_test.spec.js --headless" 
+    "test:unit": "jest unit_test/*.js",
+    "test:e2e": "node ui_test/ui.spec.js",
+    "test:e2e:headless": "node ui_test/ui.spec.js --headless"
   },
   "dependencies": {
     "chromedriver": "^128.0.0",
     "mocha": "10.7.3"
   },
   "devDependencies": {
-    "jest": "^29.0.0",
-    "selenium-webdriver": "^4.24.0",
-    "selenium-standalone": "^7.0.0"
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "selenium-standalone": "^7.0.0",
+    "selenium-webdriver": "^4.24.0"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "jest-environment-jsdom"
   },
   "keywords": [],
   "authors": "Ava Moon, David Karibian, Iris Nemechek, Colton Morris"
