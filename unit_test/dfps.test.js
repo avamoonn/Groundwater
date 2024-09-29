@@ -8,7 +8,8 @@
   W,
   calculateQFraction,
   calculateDrawdown,
-  calculateDistance
+  calculateDistance,
+  calculateStreamDischarge
 } = require('../js/calculations');
 
 describe('DFPS Calculation Tests', () => {
@@ -197,7 +198,7 @@ describe('DFPS Calculation Tests', () => {
       expect(numbersAreClose(result, expected, 1e-6)).toBe(true);
     });
   });
-
+  
   // Tests for calculateDrawdown
   describe('calculateDrawdown', () => {
     test('Drawdown with W(u) - W(u\') = 0 should return 0', () => {
@@ -312,4 +313,21 @@ describe('DFPS Calculation Tests', () => {
     });
   });
 
+  // Tests for calculateStreamDischarge
+  describe('calculateStreamDischarge', () => {
+    // Test case 1: General test with typical values
+    test('should calculate the stream discharge correctly', () => {
+        const Qs = 10; 
+        const QstreamLeakage = 1; 
+        const result = calculateStreamDischarge(Qs, QstreamLeakage);
+        expect(result).toBe(9);
+    });
+    // Test case 2: Test with zero leakage
+    test('should return the same discharge if there is no leakage', () => {
+        const Qs = 10; 
+        const QstreamLeakage = 0; 
+        const result = calculateStreamDischarge(Qs, QstreamLeakage);
+        expect(result).toBe(10);
+    });
+  });
 });
