@@ -204,6 +204,23 @@ function calculateLogarithmicTimeSteps(t, n) {
 }
 
 /**
+ * Calculate Stream Leakage Rate
+ * 
+ * This function calculates the rate of stream leakage based on the
+ * pumping rate and the fraction of that rate derived from the stream.
+ * 
+ * @param {number} Qw - Pumping rate (m³/s).
+ * @param {number} Qfraction - Fraction of pumping rate coming from the stream (dimensionless).
+ * @returns {number} - Stream leakage rate (m³/s).
+ */
+function calculateStreamLeakage(Qw, Qfraction) {
+  // Calculate stream leakage rate
+  const QstreamLeakage = Qfraction * Qw;
+
+  return QstreamLeakage;
+}
+
+/**
  * Calculate Stream Discharge at Time t
  * 
  * @param {number} Qs - Initial volumetric discharge of the stream (m³/s).
@@ -221,5 +238,6 @@ module.exports = {
   calculateQFraction,
   calculateDrawdown,
   calculateDistance,
-  calculateStreamDischarge
+  calculateStreamDischarge,
+  calculateStreamLeakage
 };
