@@ -220,6 +220,17 @@ function calculateStreamLeakage(Qw, Qfraction) {
   return QstreamLeakage;
 }
 
+/**
+ * Calculate Stream Discharge at Time t
+ * 
+ * @param {number} Qs - Initial volumetric discharge of the stream (m³/s).
+ * @param {number} QstreamLeakage - Stream leakage rate at time t (m³/s).
+ * @returns {number} - Stream discharge at time t (m³/s).
+ */
+function calculateStreamDischarge(Qs, QstreamLeakage) {
+  return Qs - QstreamLeakage;
+}
+
 module.exports = { 
   calculateLogarithmicTimeSteps,
   erfc,
@@ -227,5 +238,6 @@ module.exports = {
   calculateQFraction,
   calculateDrawdown,
   calculateDistance,
+  calculateStreamDischarge,
   calculateStreamLeakage
 };
