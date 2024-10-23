@@ -10,7 +10,7 @@
  * @param {number} x - The input value.
  * @returns {number} - The complementary error function value.
  */
- function erfc(x) {
+function erfc(x) {
   // Save the sign of x
   const sign = x >= 0 ? 1 : -1;
   x = Math.abs(x);
@@ -48,7 +48,7 @@ function W(u) {
     // Series expansion for u < 1
     const eulerMascheroni = 0.5772156649;
     let sum = eulerMascheroni - Math.log(u);
-    let term = u;
+    const term = u;
     let n = 1;
     const maxIterations = 100;
     const tolerance = 1e-10;
@@ -86,11 +86,11 @@ function W(u) {
  */
 function factorial(n) {
   if (n < 0) {
-    throw new Error("Factorial is not defined for negative numbers.");
+    throw new Error('Factorial is not defined for negative numbers.');
   }
   if (n === 0 || n === 1) return 1;
   let result = 1;
-  for(let i = 2; i <= n; i++) {
+  for (let i = 2; i <= n; i++) {
     result *= i;
   }
   return result;
@@ -110,7 +110,7 @@ function factorial(n) {
  */
 function calculateQFraction(d, Sy, T, t) {
   if (t <= 0) {
-    throw new Error("Time 't' must be greater than 0.");
+    throw new Error('Time \'t\' must be greater than 0.');
   }
   const argument = (d * d * Sy) / (4 * T * t);
   return erfc(argument);
@@ -139,7 +139,7 @@ function calculateQFraction(d, Sy, T, t) {
  */
 function calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell) {
   if (t <= 0) {
-    throw new Error("Time 't' must be greater than 0.");
+    throw new Error('Time \'t\' must be greater than 0.');
   }
 
   const r = calculateDistance(x, y, xwell, ywell);
@@ -221,21 +221,21 @@ function calculateVelocity(hmax, hmin, Ka, L) {
  * @returns {Array<Array<{x: number, y: number, velocity: number}>>} A 2D array representing the velocity grid.
  */
 function createVelocityGrid(gridSize, Ka) {
-  let grid = [];
-  let L = 100 / (gridSize - 1);
+  const grid = [];
+  const L = 100 / (gridSize - 1);
 
   for (let i = 0; i < gridSize; i++) {
-    let row = [];
+    const row = [];
     for (let j = 0; j < gridSize; j++) {
-      let xgrid = i * L;
-      let ygrid = j * L;
-      let r = Math.sqrt((xgrid - 50) ** 2 + (ygrid - 50) ** 2);
+      const xgrid = i * L;
+      const ygrid = j * L;
+      const r = Math.sqrt((xgrid - 50) ** 2 + (ygrid - 50) ** 2);
 
-      let hmax = 10 - 0.01 * r;
-      let hmin = 5 - 0.005 * r;
+      const hmax = 10 - 0.01 * r;
+      const hmin = 5 - 0.005 * r;
 
       // Calculate velocity using Darcy's Law
-      let v = calculateVelocity(hmax, hmin, Ka, L);
+      const v = calculateVelocity(hmax, hmin, Ka, L);
 
       row.push({
         x: xgrid,
@@ -262,18 +262,18 @@ function createVelocityGrid(gridSize, Ka) {
  * @returns {void}
  */
 function displayVelocityGrid() {
-  let gridSize = 21;
-  let Ka = parseFloat(document.getElementById('conductivity').value);
-  let grid = createVelocityGrid(gridSize, Ka);
+  const gridSize = 21;
+  const Ka = parseFloat(document.getElementById('conductivity').value);
+  const grid = createVelocityGrid(gridSize, Ka);
 
-  let resultDiv = document.getElementById('result_message');
+  const resultDiv = document.getElementById('result_message');
   resultDiv.innerHTML = '<h4>Velocity Grid:</h4>';
   
   let table = '<table border="1">';
   for (let i = 0; i < grid.length; i++) {
     table += '<tr>';
     for (let j = 0; j < grid[i].length; j++) {
-      let point = grid[i][j];
+      const point = grid[i][j];
       table += `<td>(${point.x.toFixed(2)}, ${point.y.toFixed(2)}) <br> V: ${point.velocity.toFixed(4)} m/s</td>`;
     }
     table += '</tr>';

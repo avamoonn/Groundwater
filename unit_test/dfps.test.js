@@ -143,13 +143,13 @@ describe('DFPS Calculation Tests', () => {
     test('Zero time should throw an error', () => {
       expect(() => {
         calculateQFraction(100, 0.2, 500, 0);
-      }).toThrow("Time 't' must be greater than 0.");
+      }).toThrow('Time \'t\' must be greater than 0.');
     });
 
     test('Negative time should throw an error', () => {
       expect(() => {
         calculateQFraction(100, 0.2, 500, -5);
-      }).toThrow("Time 't' must be greater than 0.");
+      }).toThrow('Time \'t\' must be greater than 0.');
     });
   });
 
@@ -304,13 +304,13 @@ describe('DFPS Calculation Tests', () => {
     test('Drawdown with zero time should throw an error', () => {
       expect(() => {
         calculateDrawdown(100, 0, 0, 10, 500, 0.2, 100, 0, 0);
-      }).toThrow("Time 't' must be greater than 0.");
+      }).toThrow('Time \'t\' must be greater than 0.');
     });
 
     test('Drawdown with negative time should throw an error', () => {
       expect(() => {
         calculateDrawdown(100, 0, -5, 10, 500, 0.2, 100, 0, 0);
-      }).toThrow("Time 't' must be greater than 0.");
+      }).toThrow('Time \'t\' must be greater than 0.');
     });
   });
   
