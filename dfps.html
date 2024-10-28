@@ -153,9 +153,15 @@
         .js-plotly-plot .plotly .modebar--hover > :not(.watermark) {
             opacity: 1!important;
         }
+
+        #graphContainer {
+            width: 50%; /* Adjust width as needed */
+            margin: auto;
+            padding-top: 20px;
+        }
     </style>
 
-    <script defer src="js/dfps.js"></script>
+    <script type="module" src="js/dfps.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="js/script.js"></script>
 </head>
@@ -259,11 +265,17 @@
                 <img src="img/dfps.png" alt="Water Table Recharge flow domain">
             </div>
         </div>
+        
 
         <p style="text-align: center" id="negative_value_message"></p>
         <p style="text-align: center" id="error_message1"></p>
         <p style="text-align: center" id="error_message2"></p>
         <p style="text-align: center" id="result_message"></p>
+
+    <!-- Graph container for Plotly -->
+    <div id="graphContainer">
+        <div id="qFractionPlot" style="width: 100%; height: 400px;"></div>
+    </div>
     </div>
     <div>
         <p style="text-align: center" id="myPlot" style="width:100%;max-width:600px"></p>

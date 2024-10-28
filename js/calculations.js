@@ -108,7 +108,7 @@ function factorial(n) {
  * @param {number} t - Time since pumping began (days).
  * @returns {number} - Fraction of pumping rate coming from the stream.
  */
-function calculateQFraction(d, Sy, T, t) {
+export function calculateQFraction(d, Sy, T, t) {
   if (t <= 0) {
     throw new Error('Time \'t\' must be greater than 0.');
   }
@@ -179,7 +179,7 @@ function calculateDistance(xgrid, ygrid, xwell, ywell) {
  * @param {number} n - Number of increments.
  * @returns {number[]} - Array of cumulative time steps.
  */
-function calculateLogarithmicTimeSteps(t, n) {
+export function calculateLogarithmicTimeSteps(t, n) {
   const timeSteps = [];
   const base = 2.5;
 
@@ -283,6 +283,7 @@ function displayVelocityGrid() {
   resultDiv.innerHTML += table;
 }
 
+/*
 module.exports = { 
   calculateLogarithmicTimeSteps,
   erfc,
@@ -293,4 +294,4 @@ module.exports = {
   displayVelocityGrid,
   calculateDistance
 
-};
+};*/

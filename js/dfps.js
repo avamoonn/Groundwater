@@ -1,9 +1,11 @@
+import { calculateQFraction, calculateLogarithmicTimeSteps } from "./calculations.js";
+
 const data_form = document.querySelector('#data_form');
 const negative_value_message = document.querySelector('#negative_value_message');
 const error_message1 = document.querySelector('#error_message1');
 const error_message2 = document.querySelector('#error_message2');
 const results_message = document.querySelector('#result_message');
-
+const graphDiv = document.getElementById('qFractionPlot');
 // Listen to form submission
 data_form.addEventListener('submit', function(e) {
   e.preventDefault();
@@ -23,7 +25,9 @@ data_form.addEventListener('submit', function(e) {
   const oy2 = Number(data.get('in_oy2'));
   const t = Number(data.get('in_t'));
   const n = Number(data.get('in_n'));  
-  
+  const T = Ka * b // Calc Transmissivity
+
+  console.log("Input values:", { d, Sy, Ka, b, t, n, T });
   // Clear any existing messages
   negative_value_message.innerHTML = '';
   error_message1.innerHTML = '';
@@ -31,23 +35,42 @@ data_form.addEventListener('submit', function(e) {
   results_message.innerHTML = ''; // Ensure this is cleared properly
 
   // Check for negative values in inputs (except Ox1, Ox2, Oy1, Oy2)
-  if (d < 0 || F < 0 || Ka < 0 || b < 0 || Sy < 0 || Qs < 0 || Qw < 0 || n < 0 || t < 0) {
+  if (d < 0 || F < 0 || Ka < 0 || b < 0 || Sy < 0 || n < 0 || t < 0) {
     // Display an error message and stop further processing
-    negative_value_message.innerHTML = 'Error: Inputs for Distance, Factor, Hydraulic Conductivity, Thickness, Specific Yield, Streamflow Rate, Pumping Rate, Duration, and Time Increments cannot be negative.';
+    negative_value_message.innerHTML = 'Error: Inputs for Distance, Factor, Hydraulic Conductivity, Thickness, Specific Yield, Duration, and Time Increments cannot be negative.';
     negative_value_message.style.color = 'red';
     return; // Exit the function if any invalid input is found
   }
 
-  // Make sure to display the results after validation
-  results_message.innerHTML = `
-    <b>Results:</b><br>
-    Distance: ${d}, Factor: ${F}, Ka: ${Ka}, Thickness: ${b}, Sy: ${Sy}, Qs: ${Qs}, Qw: ${Qw}, 
-    Ox1: ${ox1}, Oy1: ${oy1}, Ox2: ${ox2}, Oy2: ${oy2}, Duration (t): ${t}, Time increments (n): ${n}
-  `; // Example: display the data in result_message for testing
+// Example: display the data in result_message for testing
 
-  // You can now perform further processing or calculations after this
+   // Try calculations, and catch any errors that might cause the 405 error
+   try {
+    const timeIncrements = calculateLogarithmicTimeSteps(t, n);
+    const fractionPumpingValues = timeIncrements.map(time => calculateQFraction(d, Sy, T, time));
+    
+    // Log calculated values to confirm
+    console.log("Calculated time increments:", timeIncrements);
+    console.log("Calculated fraction pumping values:", fractionPumpingValues);
+
+    // Plotting the graph
+    Plotly.newPlot(graphDiv, [{
+        x: timeIncrements,
+        y: fractionPumpingValues,
+        mode: 'lines+markers',
+        marker: { color: 'blue', size: 6 }
+    }], {
+        title: 'Fraction of Pumping Over Time',
+        xaxis: { title: 'Time (days)', type: 'log' },
+        yaxis: { title: 'Fraction Pumping', range: [0, 1] }
+    });
+} catch (error) {
+    console.error("Error during calculations or plotting:", error);
+}
+
 });
 
+// Listen to form reset button
 // Listen to form reset button
 data_form.addEventListener('reset', function() {
   // Clear any messages when the form is reset
@@ -55,9 +78,51 @@ data_form.addEventListener('reset', function() {
   error_message1.innerHTML = '';
   error_message2.innerHTML = '';
   results_message.innerHTML = '';
+
+  // Retrieve default values directly from the inputs
+  const d = Number(document.getElementById('disttoS').value);
+  const F = Number(document.getElementById('factor').value);
+  const Ka = Number(document.getElementById('conductivity').value);
+  const b = Number(document.getElementById('thickness').value);
+  const Sy = Number(document.getElementById('Sy').value);
+  const Qs = Number(document.getElementById('streamrate').value);
+  const Qw = Number(document.getElementById('pumprate').value);
+  const ox1 = Number(document.getElementById('ox1').value);
+  const oy1 = Number(document.getElementById('oy1').value);
+  const ox2 = Number(document.getElementById('ox2').value);
+  const oy2 = Number(document.getElementById('oy2').value);
+  const t = Number(document.getElementById('pumptime').value);
+  const n = Number(document.getElementById('timeincrements').value);
+  const T = Ka * b; // Calculate Transmissivity
+
+  console.log("Input values:", { d, F, Ka, b, Sy, Qs, Qw, ox1, oy1, ox2, oy2, t, n, T });
+
+  // Try calculations and catch any errors that might cause issues
+  try {
+    const timeIncrements = calculateLogarithmicTimeSteps(t, n);
+    const fractionPumpingValues = timeIncrements.map(time => calculateQFraction(d, Sy, T, time));
+    
+    // Log calculated values to confirm
+    console.log("Calculated time increments:", timeIncrements);
+    console.log("Calculated fraction pumping values:", fractionPumpingValues);
+
+    // Plotting the graph
+    Plotly.newPlot('qFractionPlot', [{
+        x: timeIncrements,
+        y: fractionPumpingValues,
+        mode: 'lines+markers',
+        marker: { color: 'blue', size: 6 }
+    }], {
+        title: 'Fraction of Pumping Over Time',
+        xaxis: { title: 'Time (days)', type: 'log' },
+        yaxis: { title: 'Fraction Pumping', range: [0, 1] }
+    });
+  } catch (error) {
+    console.error("Error during calculations or plotting:", error);
+  }
 });
 
-time_increments = calc_increments(t,n); //logarithmic
+
 /*
   
   // model calculations
