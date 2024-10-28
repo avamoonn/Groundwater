@@ -61,7 +61,7 @@ data_form.addEventListener('submit', function(e) {
         marker: { color: 'blue', size: 6 }
     }], {
         title: 'Fraction of Pumping Over Time',
-        xaxis: { title: 'Time (days)', type: 'log' },
+        xaxis: { title: 'Time (days)'},
         yaxis: { title: 'Fraction Pumping', range: [0, 1] }
     });
 } catch (error) {
