@@ -15,8 +15,6 @@ const {
   calculateDistance,
   calculateStreamLeakage,
   calculateStreamDischarge,
-  createVelocityGrid,
-  displayVelocityGrid,
 } = require("../js/calculations");
 
 describe("DFPS Calculation Tests", () => {
