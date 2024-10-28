@@ -6,11 +6,11 @@
 
 /**
  * Complementary Error Function (erfc)
- * 
+ *
  * @param {number} x - The input value.
  * @returns {number} - The complementary error function value.
  */
- function erfc(x) {
+function erfc(x) {
   // Save the sign of x
   const sign = x >= 0 ? 1 : -1;
   x = Math.abs(x);
@@ -21,11 +21,16 @@
   const a3 = 1.421413741;
   const a4 = -1.453152027;
   const a5 = 1.061405429;
-  const p  = 0.3275911;
+  const p = 0.3275911;
 
   // Abramowitz and Stegun formula 7.1.26
   const t = 1.0 / (1.0 + p * x);
-  const poly = a1 + a2 * t + a3 * Math.pow(t, 2) + a4 * Math.pow(t, 3) + a5 * Math.pow(t, 4);
+  const poly =
+    a1 +
+    a2 * t +
+    a3 * Math.pow(t, 2) +
+    a4 * Math.pow(t, 3) +
+    a5 * Math.pow(t, 4);
   const y = poly * t * Math.exp(-x * x);
 
   return sign === 1 ? y : 2 - y;
@@ -33,11 +38,11 @@
 
 /**
  * Well Function W(u)
- * 
+ *
  * Approximates the well function using a series expansion for u < 1
  * and an asymptotic expansion for u >= 1.
  * Reference: Hydrogeology textbooks and numerical methods.
- * 
+ *
  * @param {number} u - The input value.
  * @returns {number} - The well function value.
  */
@@ -54,7 +59,7 @@ function W(u) {
     const tolerance = 1e-10;
 
     while (Math.abs(term / n) > tolerance && n < maxIterations) {
-      sum += Math.pow(-1, n + 1) * Math.pow(u, n) / n;
+      sum += (Math.pow(-1, n + 1) * Math.pow(u, n)) / n;
       n++;
     }
 
@@ -78,9 +83,9 @@ function W(u) {
 
 /**
  * Factorial Function
- * 
+ *
  * Computes the factorial of a non-negative integer n.
- * 
+ *
  * @param {number} n - The input integer.
  * @returns {number} - The factorial of n.
  */
@@ -90,7 +95,7 @@ function factorial(n) {
   }
   if (n === 0 || n === 1) return 1;
   let result = 1;
-  for(let i = 2; i <= n; i++) {
+  for (let i = 2; i <= n; i++) {
     result *= i;
   }
   return result;
@@ -98,10 +103,10 @@ function factorial(n) {
 
 /**
  * Calculate Stream Depletion Fraction (Qfraction) Over Time
- * 
+ *
  * Equation 2.1:
  * Qfraction = erfc( (d² * Sy) / (4 * T * t) )
- * 
+ *
  * @param {number} d - Distance from well to stream (meters).
  * @param {number} Sy - Specific yield (dimensionless).
  * @param {number} T - Transmissivity (m²/day).
@@ -118,14 +123,14 @@ function calculateQFraction(d, Sy, T, t) {
 
 /**
  * Calculate Drawdown at Location (x, y) and Time t
- * 
+ *
  * Equation 2.4:
  * s(x, y, t) = (Qw / (4πT)) * (W(u) - W(u'))
  * where:
  *   u = (r² * Sy) / (4 * T * t)
  *   u' = ((2d - r)² * Sy) / (4 * T * t)
  *   r = sqrt((x - xwell)² + (y - ywell)²)
- * 
+ *
  * @param {number} x - X-coordinate of the grid point (meters).
  * @param {number} y - Y-coordinate of the grid point (meters).
  * @param {number} t - Time since pumping began (days).
@@ -156,10 +161,10 @@ function calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell) {
 
 /**
  * Calculate Straight-Line Distance r to the Well
- * 
+ *
  * Equation 2.4 (part of grid calculations):
  * r = sqrt((xgrid - xwell)² + (ygrid - ywell)²)
- * 
+ *
  * @param {number} xgrid - X-coordinate of the grid point (meters).
  * @param {number} ygrid - Y-coordinate of the grid point (meters).
  * @param {number} xwell - X-coordinate of the well (meters).
@@ -172,29 +177,26 @@ function calculateDistance(xgrid, ygrid, xwell, ywell) {
 
 /**
  * Calculate Logarithmic Time Steps
- * 
+ *
  * This function calculates logarithmically spaced time steps.
- * 
+ *
  * @param {number} t - Total time (days).
  * @param {number} n - Number of increments.
  * @returns {number[]} - Array of cumulative time steps.
  */
 function calculateLogarithmicTimeSteps(t, n) {
-  const timeSteps = []; // Initialize an array to store time steps
-  const base = 2.5; // Constant for each subsequent step to be 2.5 times longer
+  const timeSteps = [];
+  const base = 2.5;
 
-  // Calculate the first time step
   const firstStep = t * (1.5 / (Math.pow(base, n) - 1));
 
-  // Add the first time step to the array
   let cumulativeTime = firstStep;
   timeSteps.push(cumulativeTime);
 
-  // Calculate each subsequent time step
   for (let i = 1; i < n; i++) {
-    const nextStep = firstStep * Math.pow(base, i); // Each step is 2.5 times the previous
-    cumulativeTime += nextStep; // Add it to the cumulative total
-    timeSteps.push(cumulativeTime); // Store the cumulative time
+    const nextStep = firstStep * Math.pow(base, i);
+    cumulativeTime += nextStep;
+    timeSteps.push(cumulativeTime);
   }
 
   // Adjust the final step to exactly match the total time 't'
@@ -205,10 +207,10 @@ function calculateLogarithmicTimeSteps(t, n) {
 
 /**
  * Calculate Stream Leakage Rate
- * 
+ *
  * This function calculates the rate of stream leakage based on the
  * pumping rate and the fraction of that rate derived from the stream.
- * 
+ *
  * @param {number} Qw - Pumping rate (m³/s).
  * @param {number} Qfraction - Fraction of pumping rate coming from the stream (dimensionless).
  * @returns {number} - Stream leakage rate (m³/s).
@@ -222,7 +224,7 @@ function calculateStreamLeakage(Qw, Qfraction) {
 
 /**
  * Calculate Stream Discharge at Time t
- * 
+ *
  * @param {number} Qs - Initial volumetric discharge of the stream (m³/s).
  * @param {number} QstreamLeakage - Stream leakage rate at time t (m³/s).
  * @returns {number} - Stream discharge at time t (m³/s).
@@ -231,13 +233,103 @@ function calculateStreamDischarge(Qs, QstreamLeakage) {
   return Qs - QstreamLeakage;
 }
 
-module.exports = { 
-  calculateLogarithmicTimeSteps,
+/**
+ * Calculate velocity using Darcy's Law
+ *
+ * @param {number} hmax - The maximum hydraulic head.
+ * @param {number} hmin - The minimum hydraulic head.
+ * @param {number} Ka - Hydraulic conductivity.
+ * @param {number} L - The grid cell side length.
+ * @returns {number} - Velocity (m/s).
+ */
+function calculateVelocity(hmax, hmin, Ka, L) {
+  return ((hmax - hmin) * Ka) / (0.02 * L);
+}
+
+/**
+ * Creates a velocity grid for groundwater flow simulation.
+ *
+ * @param {number} gridSize - The number of grid points along one dimension (gridSize x gridSize grid).
+ * @param {number} Ka - The hydraulic conductivity of the aquifer.
+ * @returns {Array<Array<{x: number, y: number, velocity: number}>>} A 2D array representing the velocity grid.
+ */
+function createVelocityGrid(gridSize, Ka) {
+  let grid = [];
+  let L = 100 / (gridSize - 1);
+
+  for (let i = 0; i < gridSize; i++) {
+    let row = [];
+    for (let j = 0; j < gridSize; j++) {
+      let xgrid = i * L;
+      let ygrid = j * L;
+      let r = Math.sqrt((xgrid - 50) ** 2 + (ygrid - 50) ** 2);
+
+      let hmax = 10 - 0.01 * r;
+      let hmin = 5 - 0.005 * r;
+
+      // Calculate velocity using Darcy's Law
+      let v = calculateVelocity(hmax, hmin, Ka, L);
+
+      row.push({
+        x: xgrid,
+        y: ygrid,
+        velocity: v,
+      });
+    }
+    grid.push(row);
+  }
+  return grid;
+}
+
+/**
+ * Displays a velocity grid in an HTML table format.
+ *
+ * This function retrieves the hydraulic conductivity value from an input element,
+ * creates a velocity grid using the specified grid size and hydraulic conductivity,
+ * and then displays the grid in a table format within a specified result div.
+ *
+ * The table cells contain the coordinates and velocity at each grid point.
+ *
+ * @function
+ * @name displayVelocityGrid
+ * @returns {void}
+ */
+function displayVelocityGrid() {
+  let gridSize = 21;
+  let Ka = parseFloat(document.getElementById("conductivity").value);
+  let grid = createVelocityGrid(gridSize, Ka);
+
+  let resultDiv = document.getElementById("result_message");
+  resultDiv.innerHTML = "<h4>Velocity Grid:</h4>";
+
+  let table = '<table border="1">';
+  for (let i = 0; i < grid.length; i++) {
+    table += "<tr>";
+    for (let j = 0; j < grid[i].length; j++) {
+      let point = grid[i][j];
+      table += `<td>(${point.x.toFixed(2)}, ${point.y.toFixed(
+        2
+      )}) <br> V: ${point.velocity.toFixed(4)} m/s</td>`;
+    }
+    table += "</tr>";
+  }
+  table += "</table>";
+
+  resultDiv.innerHTML += table;
+}
+
+// eslint-disable-next-line no-undef
+module.exports = {
   erfc,
   W,
+  factorial,
   calculateQFraction,
   calculateDrawdown,
   calculateDistance,
+  calculateLogarithmicTimeSteps,
+  calculateStreamLeakage,
   calculateStreamDischarge,
-  calculateStreamLeakage
+  calculateVelocity,
+  createVelocityGrid,
+  displayVelocityGrid,
 };
