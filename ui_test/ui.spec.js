@@ -1,24 +1,14 @@
 /**
- * Tests for all new GUI functionality using selenium
- * 
+ * Tests for all new GUI functionality using Selenium
  */
-const { Builder, By, until } = require('selenium-webdriver');
+const { Builder, By, until } = require('selenium-webdriver'); // Added By and until
 const chrome = require('selenium-webdriver/chrome');
+const chromedriver = require('chromedriver');
 
 /**
  * Tests menu navigation.
  */
-async function testMenuNavigation() {
-
-  // Set Chrome options for headless mode
-  const options = new chrome.Options().addArguments('--headless');
-
-  // No need to manually set the ChromeDriver service
-  const driver = await new Builder()
-    .forBrowser('chrome')
-    .setChromeOptions(options)
-    .build();
-
+async function testMenuNavigation(driver) {
   try {
     // Navigate to the base URL
     await driver.get('http://192.168.56.1:5500');
@@ -87,13 +77,56 @@ async function testMenuNavigation() {
     await driver.get('https://gw-project.org/');
     console.log('Groundwater button navigation successful.');
 
+
+
   } catch (error) {
-    // Output the error message to the console
-    console.error('Error occured with menu navigation:', error);
+    console.error('Error occurred with menu navigation:', error);
+  }
+}
+
+/**
+ * Tests if the graphs are displayed on the dfps page.
+ */
+async function testGraphsDisplay(driver) {
+  try {
+    // Navigate to the DFPS page with graphs
+    await driver.get('http://192.168.56.1:5500/dfps.html');
+
+    // Check if the qFractionPlot graph is displayed
+    const qFractionPlot = await driver.findElement(By.id('qFractionPlot'));
+    const isQFractionPlotDisplayed = await qFractionPlot.isDisplayed();
+    console.log('qFractionPlot is displayed:', isQFractionPlotDisplayed);
+
+    // Optional: check if the second graph placeholder is displayed (if implemented)
+    const secondGraphPlaceholder = await driver.findElement(By.id('secondGraphPlaceholder'));
+    const isSecondGraphDisplayed = await secondGraphPlaceholder.isDisplayed();
+    console.log('secondGraphPlaceholder is displayed:', isSecondGraphDisplayed);
+
+  } catch (error) {
+    console.error('Error occurred during graph display check:', error);
+  }
+}
+
+/**
+ * Runs the navigation and graph display tests.
+ */
+async function runTests() {
+  // Set Chrome options for headless mode
+  const driver = new Builder()
+    .forBrowser('chrome')
+    .setChromeOptions(new chrome.Options().addArguments('--headless'))
+    .build();
+
+  try {
+    // Run menu navigation tests
+    await testMenuNavigation(driver);
+
+    // Run graph display tests
+    await testGraphsDisplay(driver);
   } finally {
     await driver.quit();
   }
 }
 
-testMenuNavigation();
-
+// Execute the tests
+runTests();
