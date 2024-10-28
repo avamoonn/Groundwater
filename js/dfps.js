@@ -9,6 +9,7 @@ const graphDiv = document.getElementById('qFractionPlot');
 // Listen to form submission
 data_form.addEventListener('submit', function(e) {
   e.preventDefault();
+  e.preventDefault();
     
   // Initiate values
   const data = new FormData(this);

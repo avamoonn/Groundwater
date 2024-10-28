@@ -6,7 +6,7 @@
 
 /**
  * Complementary Error Function (erfc)
- * 
+ *
  * @param {number} x - The input value.
  * @returns {number} - The complementary error function value.
  */
@@ -21,11 +21,16 @@ function erfc(x) {
   const a3 = 1.421413741;
   const a4 = -1.453152027;
   const a5 = 1.061405429;
-  const p  = 0.3275911;
+  const p = 0.3275911;
 
   // Abramowitz and Stegun formula 7.1.26
   const t = 1.0 / (1.0 + p * x);
-  const poly = a1 + a2 * t + a3 * Math.pow(t, 2) + a4 * Math.pow(t, 3) + a5 * Math.pow(t, 4);
+  const poly =
+    a1 +
+    a2 * t +
+    a3 * Math.pow(t, 2) +
+    a4 * Math.pow(t, 3) +
+    a5 * Math.pow(t, 4);
   const y = poly * t * Math.exp(-x * x);
 
   return sign === 1 ? y : 2 - y;
@@ -33,11 +38,11 @@ function erfc(x) {
 
 /**
  * Well Function W(u)
- * 
+ *
  * Approximates the well function using a series expansion for u < 1
  * and an asymptotic expansion for u >= 1.
  * Reference: Hydrogeology textbooks and numerical methods.
- * 
+ *
  * @param {number} u - The input value.
  * @returns {number} - The well function value.
  */
@@ -54,7 +59,7 @@ function W(u) {
     const tolerance = 1e-10;
 
     while (Math.abs(term / n) > tolerance && n < maxIterations) {
-      sum += Math.pow(-1, n + 1) * Math.pow(u, n) / n;
+      sum += (Math.pow(-1, n + 1) * Math.pow(u, n)) / n;
       n++;
     }
     
@@ -78,9 +83,9 @@ function W(u) {
 
 /**
  * Factorial Function
- * 
+ *
  * Computes the factorial of a non-negative integer n.
- * 
+ *
  * @param {number} n - The input integer.
  * @returns {number} - The factorial of n.
  */
@@ -98,10 +103,10 @@ function factorial(n) {
 
 /**
  * Calculate Stream Depletion Fraction (Qfraction) Over Time
- * 
+ *
  * Equation 2.1:
  * Qfraction = erfc( (d² * Sy) / (4 * T * t) )
- * 
+ *
  * @param {number} d - Distance from well to stream (meters).
  * @param {number} Sy - Specific yield (dimensionless).
  * @param {number} T - Transmissivity (m²/day).
@@ -118,14 +123,14 @@ export function calculateQFraction(d, Sy, T, t) {
 
 /**
  * Calculate Drawdown at Location (x, y) and Time t
- * 
+ *
  * Equation 2.4:
  * s(x, y, t) = (Qw / (4πT)) * (W(u) - W(u'))
  * where:
  *   u = (r² * Sy) / (4 * T * t)
  *   u' = ((2d - r)² * Sy) / (4 * T * t)
  *   r = sqrt((x - xwell)² + (y - ywell)²)
- * 
+ *
  * @param {number} x - X-coordinate of the grid point (meters).
  * @param {number} y - Y-coordinate of the grid point (meters).
  * @param {number} t - Time since pumping began (days).
@@ -156,10 +161,10 @@ function calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell) {
 
 /**
  * Calculate Straight-Line Distance r to the Well
- * 
+ *
  * Equation 2.4 (part of grid calculations):
  * r = sqrt((xgrid - xwell)² + (ygrid - ywell)²)
- * 
+ *
  * @param {number} xgrid - X-coordinate of the grid point (meters).
  * @param {number} ygrid - Y-coordinate of the grid point (meters).
  * @param {number} xwell - X-coordinate of the well (meters).
@@ -172,9 +177,9 @@ function calculateDistance(xgrid, ygrid, xwell, ywell) {
 
 /**
  * Calculate Logarithmic Time Steps
- * 
+ *
  * This function calculates logarithmically spaced time steps.
- * 
+ *
  * @param {number} t - Total time (days).
  * @param {number} n - Number of increments.
  * @returns {number[]} - Array of cumulative time steps.
@@ -288,6 +293,7 @@ module.exports = {
   calculateLogarithmicTimeSteps,
   erfc,
   W,
+  factorial,
   calculateQFraction,
   calculateDrawdown,
   createVelocityGrid,
