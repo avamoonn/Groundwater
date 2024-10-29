@@ -62,7 +62,7 @@ function W(u) {
       sum += (Math.pow(-1, n + 1) * Math.pow(u, n)) / n;
       n++;
     }
-    
+
     return sum;
   } else {
     // Asymptotic expansion for u >= 1
@@ -91,7 +91,7 @@ function W(u) {
  */
 function factorial(n) {
   if (n < 0) {
-    throw new Error('Factorial is not defined for negative numbers.');
+    throw new Error("Factorial is not defined for negative numbers.");
   }
   if (n === 0 || n === 1) return 1;
   let result = 1;
@@ -113,9 +113,9 @@ function factorial(n) {
  * @param {number} t - Time since pumping began (days).
  * @returns {number} - Fraction of pumping rate coming from the stream.
  */
-export function calculateQFraction(d, Sy, T, t) {
+function calculateQFraction(d, Sy, T, t) {
   if (t <= 0) {
-    throw new Error('Time \'t\' must be greater than 0.');
+    throw new Error("Time 't' must be greater than 0.");
   }
   const argument = (d * d * Sy) / (4 * T * t);
   return erfc(argument);
@@ -144,7 +144,7 @@ export function calculateQFraction(d, Sy, T, t) {
  */
 function calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell) {
   if (t <= 0) {
-    throw new Error('Time \'t\' must be greater than 0.');
+    throw new Error("Time 't' must be greater than 0.");
   }
 
   const r = calculateDistance(x, y, xwell, ywell);
@@ -184,7 +184,7 @@ function calculateDistance(xgrid, ygrid, xwell, ywell) {
  * @param {number} n - Number of increments.
  * @returns {number[]} - Array of cumulative time steps.
  */
-export function calculateLogarithmicTimeSteps(t, n) {
+function calculateLogarithmicTimeSteps(t, n) {
   const timeSteps = [];
   const base = 2.5;
 
@@ -207,7 +207,7 @@ export function calculateLogarithmicTimeSteps(t, n) {
 
 /**
  * Calculate velocity using Darcy's Law
- * 
+ *
  * @param {number} hmax - The maximum hydraulic head.
  * @param {number} hmin - The minimum hydraulic head.
  * @param {number} Ka - Hydraulic conductivity.
@@ -245,7 +245,7 @@ function createVelocityGrid(gridSize, Ka) {
       row.push({
         x: xgrid,
         y: ygrid,
-        velocity: v
+        velocity: v,
       });
     }
     grid.push(row);
@@ -255,41 +255,64 @@ function createVelocityGrid(gridSize, Ka) {
 
 /**
  * Displays a velocity grid in an HTML table format.
- * 
+ *
  * This function retrieves the hydraulic conductivity value from an input element,
  * creates a velocity grid using the specified grid size and hydraulic conductivity,
  * and then displays the grid in a table format within a specified result div.
- * 
+ *
  * The table cells contain the coordinates and velocity at each grid point.
- * 
+ *
  * @function
  * @name displayVelocityGrid
  * @returns {void}
  */
 function displayVelocityGrid() {
   const gridSize = 21;
-  const Ka = parseFloat(document.getElementById('conductivity').value);
+  const Ka = parseFloat(document.getElementById("conductivity").value);
   const grid = createVelocityGrid(gridSize, Ka);
 
-  const resultDiv = document.getElementById('result_message');
-  resultDiv.innerHTML = '<h4>Velocity Grid:</h4>';
-  
+  const resultDiv = document.getElementById("result_message");
+  resultDiv.innerHTML = "<h4>Velocity Grid:</h4>";
+
   let table = '<table border="1">';
   for (let i = 0; i < grid.length; i++) {
-    table += '<tr>';
+    table += "<tr>";
     for (let j = 0; j < grid[i].length; j++) {
       const point = grid[i][j];
-      table += `<td>(${point.x.toFixed(2)}, ${point.y.toFixed(2)}) <br> V: ${point.velocity.toFixed(4)} m/s</td>`;
+      table += `<td>(${point.x.toFixed(2)}, ${point.y.toFixed(
+        2
+      )}) <br> V: ${point.velocity.toFixed(4)} m/s</td>`;
     }
-    table += '</tr>';
+    table += "</tr>";
   }
-  table += '</table>';
-  
+  table += "</table>";
+
   resultDiv.innerHTML += table;
 }
 
-/*
-module.exports = { 
+/**
+ * Calculate Stream Leakage
+ *
+ * @param {number} Qw - Pumping rate
+ * @param {number} Qfraction - Stream depletion fraction
+ * @returns {number} - Stream leakage rate
+ */
+function calculateStreamLeakage(Qw, Qfraction) {
+  return Qw * Qfraction;
+}
+
+/**
+ * Calculate Stream Discharge
+ *
+ * @param {number} Qs - Initial stream discharge
+ * @param {number} QstreamLeakage - Stream leakage rate
+ * @returns {number} - Remaining stream discharge
+ */
+function calculateStreamDischarge(Qs, QstreamLeakage) {
+  return Qs - QstreamLeakage;
+}
+
+export {
   calculateLogarithmicTimeSteps,
   erfc,
   W,
@@ -298,6 +321,7 @@ module.exports = {
   calculateDrawdown,
   createVelocityGrid,
   displayVelocityGrid,
-  calculateDistance
-
-};*/
+  calculateDistance,
+  calculateStreamLeakage,
+  calculateStreamDischarge,
+};

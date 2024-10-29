@@ -65,15 +65,15 @@
         }
 
         /* Fixed widths for each graph to prevent dynamic resizing */
-        #qFractionPlot, #secondGraphPlaceholder {
-        flex: 1;
-        max-width: 48%; /* Keep each graph container within 48% of the row's width */
-        height: 400px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 10px;
-        background-color: #f9f9f9;
-    }
+        #qFractionPlot, #streamflowPlot {
+            flex: 1;
+            max-width: 48%; /* Keep each graph container within 48% of the row's width */
+            height: 400px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
 
         /* Responsive adjustments */
         @media only screen and (max-width: 768px) {
@@ -145,7 +145,7 @@
         <!-- Graph Row: Two placeholder graph sections for future expansion -->
         <div class="graph-row">
             <div id="qFractionPlot"></div>
-            <div id="secondGraphPlaceholder"></div>
+            <div id="streamflowPlot" style="flex: 1; max-width: 48%; height: 400px; border: 1px solid #ccc; border-radius: 5px; padding: 10px; background-color: #f9f9f9;"></div>
         </div>
 
         <p id="negative_value_message" style="text-align: center"></p>

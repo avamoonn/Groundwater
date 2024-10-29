@@ -4,7 +4,6 @@
  * Unit tests of all calculations for DFPS tool
  * @jest-environment jsdom
  */
-const { 
 const {
   calculateLogarithmicTimeSteps,
   erfc,
