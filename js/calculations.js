@@ -53,7 +53,7 @@ function W(u) {
     // Series expansion for u < 1
     const eulerMascheroni = 0.5772156649;
     let sum = eulerMascheroni - Math.log(u);
-    let term = u;
+    const term = u;
     let n = 1;
     const maxIterations = 100;
     const tolerance = 1e-10;
@@ -62,7 +62,7 @@ function W(u) {
       sum += (Math.pow(-1, n + 1) * Math.pow(u, n)) / n;
       n++;
     }
-
+    
     return sum;
   } else {
     // Asymptotic expansion for u >= 1
@@ -91,7 +91,7 @@ function W(u) {
  */
 function factorial(n) {
   if (n < 0) {
-    throw new Error("Factorial is not defined for negative numbers.");
+    throw new Error('Factorial is not defined for negative numbers.');
   }
   if (n === 0 || n === 1) return 1;
   let result = 1;
@@ -113,9 +113,9 @@ function factorial(n) {
  * @param {number} t - Time since pumping began (days).
  * @returns {number} - Fraction of pumping rate coming from the stream.
  */
-function calculateQFraction(d, Sy, T, t) {
+export function calculateQFraction(d, Sy, T, t) {
   if (t <= 0) {
-    throw new Error("Time 't' must be greater than 0.");
+    throw new Error('Time \'t\' must be greater than 0.');
   }
   const argument = (d * d * Sy) / (4 * T * t);
   return erfc(argument);
@@ -144,7 +144,7 @@ function calculateQFraction(d, Sy, T, t) {
  */
 function calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell) {
   if (t <= 0) {
-    throw new Error("Time 't' must be greater than 0.");
+    throw new Error('Time \'t\' must be greater than 0.');
   }
 
   const r = calculateDistance(x, y, xwell, ywell);
@@ -184,7 +184,7 @@ function calculateDistance(xgrid, ygrid, xwell, ywell) {
  * @param {number} n - Number of increments.
  * @returns {number[]} - Array of cumulative time steps.
  */
-function calculateLogarithmicTimeSteps(t, n) {
+export function calculateLogarithmicTimeSteps(t, n) {
   const timeSteps = [];
   const base = 2.5;
 
@@ -206,36 +206,8 @@ function calculateLogarithmicTimeSteps(t, n) {
 }
 
 /**
- * Calculate Stream Leakage Rate
- *
- * This function calculates the rate of stream leakage based on the
- * pumping rate and the fraction of that rate derived from the stream.
- *
- * @param {number} Qw - Pumping rate (m³/s).
- * @param {number} Qfraction - Fraction of pumping rate coming from the stream (dimensionless).
- * @returns {number} - Stream leakage rate (m³/s).
- */
-function calculateStreamLeakage(Qw, Qfraction) {
-  // Calculate stream leakage rate
-  const QstreamLeakage = Qfraction * Qw;
-
-  return QstreamLeakage;
-}
-
-/**
- * Calculate Stream Discharge at Time t
- *
- * @param {number} Qs - Initial volumetric discharge of the stream (m³/s).
- * @param {number} QstreamLeakage - Stream leakage rate at time t (m³/s).
- * @returns {number} - Stream discharge at time t (m³/s).
- */
-function calculateStreamDischarge(Qs, QstreamLeakage) {
-  return Qs - QstreamLeakage;
-}
-
-/**
  * Calculate velocity using Darcy's Law
- *
+ * 
  * @param {number} hmax - The maximum hydraulic head.
  * @param {number} hmin - The minimum hydraulic head.
  * @param {number} Ka - Hydraulic conductivity.
@@ -254,26 +226,26 @@ function calculateVelocity(hmax, hmin, Ka, L) {
  * @returns {Array<Array<{x: number, y: number, velocity: number}>>} A 2D array representing the velocity grid.
  */
 function createVelocityGrid(gridSize, Ka) {
-  let grid = [];
-  let L = 100 / (gridSize - 1);
+  const grid = [];
+  const L = 100 / (gridSize - 1);
 
   for (let i = 0; i < gridSize; i++) {
-    let row = [];
+    const row = [];
     for (let j = 0; j < gridSize; j++) {
-      let xgrid = i * L;
-      let ygrid = j * L;
-      let r = Math.sqrt((xgrid - 50) ** 2 + (ygrid - 50) ** 2);
+      const xgrid = i * L;
+      const ygrid = j * L;
+      const r = Math.sqrt((xgrid - 50) ** 2 + (ygrid - 50) ** 2);
 
-      let hmax = 10 - 0.01 * r;
-      let hmin = 5 - 0.005 * r;
+      const hmax = 10 - 0.01 * r;
+      const hmin = 5 - 0.005 * r;
 
       // Calculate velocity using Darcy's Law
-      let v = calculateVelocity(hmax, hmin, Ka, L);
+      const v = calculateVelocity(hmax, hmin, Ka, L);
 
       row.push({
         x: xgrid,
         y: ygrid,
-        velocity: v,
+        velocity: v
       });
     }
     grid.push(row);
@@ -283,53 +255,49 @@ function createVelocityGrid(gridSize, Ka) {
 
 /**
  * Displays a velocity grid in an HTML table format.
- *
+ * 
  * This function retrieves the hydraulic conductivity value from an input element,
  * creates a velocity grid using the specified grid size and hydraulic conductivity,
  * and then displays the grid in a table format within a specified result div.
- *
+ * 
  * The table cells contain the coordinates and velocity at each grid point.
- *
+ * 
  * @function
  * @name displayVelocityGrid
  * @returns {void}
  */
 function displayVelocityGrid() {
-  let gridSize = 21;
-  let Ka = parseFloat(document.getElementById("conductivity").value);
-  let grid = createVelocityGrid(gridSize, Ka);
+  const gridSize = 21;
+  const Ka = parseFloat(document.getElementById('conductivity').value);
+  const grid = createVelocityGrid(gridSize, Ka);
 
-  let resultDiv = document.getElementById("result_message");
-  resultDiv.innerHTML = "<h4>Velocity Grid:</h4>";
-
+  const resultDiv = document.getElementById('result_message');
+  resultDiv.innerHTML = '<h4>Velocity Grid:</h4>';
+  
   let table = '<table border="1">';
   for (let i = 0; i < grid.length; i++) {
-    table += "<tr>";
+    table += '<tr>';
     for (let j = 0; j < grid[i].length; j++) {
-      let point = grid[i][j];
-      table += `<td>(${point.x.toFixed(2)}, ${point.y.toFixed(
-        2
-      )}) <br> V: ${point.velocity.toFixed(4)} m/s</td>`;
+      const point = grid[i][j];
+      table += `<td>(${point.x.toFixed(2)}, ${point.y.toFixed(2)}) <br> V: ${point.velocity.toFixed(4)} m/s</td>`;
     }
-    table += "</tr>";
+    table += '</tr>';
   }
-  table += "</table>";
-
+  table += '</table>';
+  
   resultDiv.innerHTML += table;
 }
 
-// eslint-disable-next-line no-undef
-module.exports = {
+/*
+module.exports = { 
+  calculateLogarithmicTimeSteps,
   erfc,
   W,
   factorial,
   calculateQFraction,
   calculateDrawdown,
-  calculateDistance,
-  calculateLogarithmicTimeSteps,
-  calculateStreamLeakage,
-  calculateStreamDischarge,
-  calculateVelocity,
   createVelocityGrid,
   displayVelocityGrid,
-};
+  calculateDistance
+
+};*/
