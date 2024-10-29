@@ -1,8 +1,13 @@
+import { calculateLogarithmicTimeSteps, calculateDrawdown } from './calculations.js';
 const data_form = document.querySelector('#data_form');
 const negative_value_message = document.querySelector('#negative_value_message');
 const error_message1 = document.querySelector('#error_message1');
 const error_message2 = document.querySelector('#error_message2');
 const results_message = document.querySelector('#result_message');
+const backButton = document.getElementById('backButton');
+const forwardButton = document.getElementById('forwardButton');
+
+let currentIndex = -1;
 
 // Listen to form submission
 data_form.addEventListener('submit', function(e) {
@@ -43,21 +48,86 @@ data_form.addEventListener('submit', function(e) {
     <b>Results:</b><br>
     Distance: ${d}, Factor: ${F}, Ka: ${Ka}, Thickness: ${b}, Sy: ${Sy}, Qs: ${Qs}, Qw: ${Qw}, 
     Ox1: ${ox1}, Oy1: ${oy1}, Ox2: ${ox2}, Oy2: ${oy2}, Duration (t): ${t}, Time increments (n): ${n}
-  `; // Example: display the data in result_message for testing
+  `;
+    console.log(`ox1: ${ox1}, oy1: ${oy1}, t: ${t}, n: ${n}, Qw: ${Qw}, Ka: ${Ka}, Sy: ${Sy}, d: ${d}`);
+    const xValues = calculateLogarithmicTimeSteps(t,n);
+    console.log(xValues);
 
-  // You can now perform further processing or calculations after this
-});
+    const yValues = xValues.map(time => 
+      calculateDrawdown(0, 0, time, Qw, Ka, Sy, d, ox1, oy1)
+    );
+    console.log(yValues);
 
-// Listen to form reset button
-data_form.addEventListener('reset', function() {
-  // Clear any messages when the form is reset
-  negative_value_message.innerHTML = '';
-  error_message1.innerHTML = '';
-  error_message2.innerHTML = '';
-  results_message.innerHTML = '';
-});
+    const yValues2 = xValues.map(time => 
+      calculateDrawdown(0, 0, time, Qw, Ka, Sy, d, ox2, oy2)
+    );
 
-time_increments = calc_increments(t,n); //logarithmic
+    // Reset current index
+    currentIndex = 0;
+    updatePlot(); // Initial plot with first point
+
+    function updatePlot() {
+      const xToPlot = xValues.slice(0, currentIndex + 1);
+      const yToPlot = yValues.slice(0, currentIndex + 1);
+      const yToPlot2 = yValues2.slice(0, currentIndex + 1);
+      
+      Plotly.newPlot('myPlot', [{
+        x: xToPlot,
+        y: yToPlot,
+        mode: 'lines+markers',
+        type: 'scatter',
+        name: 'Drawdown at Well 1'
+    }], {
+        title: 'Drawdown vs Time (Well 1)',
+        xaxis: { title: 'Time (days)' },
+        yaxis: { title: 'Drawdown (meters)' },
+        displayModeBar: false, // Hide the mode bar
+        showlegend: false,      // Hide the legend
+    });
+
+    // Plot for the second observation well
+      Plotly.newPlot('myPlot2', [{
+        x: xToPlot,
+        y: yToPlot2,
+        mode: 'lines+markers',
+        type: 'scatter',
+        name: 'Drawdown at Well 2'
+    }], {
+        title: 'Drawdown vs Time (Well 2)',
+        xaxis: { title: 'Time (days)' },
+        yaxis: { title: 'Drawdown (meters)' },
+        displayModeBar: false, // Hide the mode bar
+        showlegend: false   
+    });
+
+    // Enable/disable buttons based on current index
+    backButton.disabled = currentIndex === 0;
+    forwardButton.disabled = currentIndex === xValues.length - 1;
+}
+        // Listen to forward button clicks
+    forwardButton.addEventListener('click', function() {
+      if (currentIndex < xValues.length - 1) {
+          currentIndex++;
+          updatePlot();
+      }
+    });
+
+    // Listen to back button clicks
+    backButton.addEventListener('click', function() {
+      if (currentIndex > 0) {
+          currentIndex--;
+          updatePlot();
+      }
+    }); 
+  });
+  // Reset event listener
+
+  // Add reset implementation here 
+
+  
+
+  
+ 
 /*
   
   // model calculations

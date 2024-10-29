@@ -122,7 +122,7 @@
       align-items: center;
       margin-bottom: 15px;
   }
-
+  
 /* Ensuring responsiveness */
 @media only screen and (max-width: 768px) {
     .input-group {
@@ -155,7 +155,7 @@
         }
     </style>
 
-    <script defer src="js/dfps.js"></script>
+    <script type="module" src="js/dfps.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="js/script.js"></script>
 </head>
@@ -265,8 +265,15 @@
         <p style="text-align: center" id="error_message2"></p>
         <p style="text-align: center" id="result_message"></p>
     </div>
+
+    <div style="display: flex; justify-content: center;">
+        <div id="myPlot"></div>
+        <div id="myPlot2"></div>
+    </div>
+
     <div>
-        <p style="text-align: center" id="myPlot" style="width:100%;max-width:600px"></p>
+        <button id="backButton" disabled>Back</button>
+        <button id="forwardButton" disabled>Forward</button>
     </div>
 </main>
 
