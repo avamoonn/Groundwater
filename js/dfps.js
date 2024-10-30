@@ -44,7 +44,8 @@ data_form.addEventListener('submit', function(e) {
     Distance: ${d}, Factor: ${F}, Ka: ${Ka}, Thickness: ${b}, Sy: ${Sy}, Qs: ${Qs}, Qw: ${Qw}, 
     Ox1: ${ox1}, Oy1: ${oy1}, Ox2: ${ox2}, Oy2: ${oy2}, Duration (t): ${t}, Time increments (n): ${n}
   `; // Example: display the data in result_message for testing
-
+  // Plot the West-East Cross Section
+  plotCrossSection(d, Sy, t, Qw, xwell, ywell, t, distL);
   // You can now perform further processing or calculations after this
 });
 
@@ -58,8 +59,37 @@ data_form.addEventListener('reset', function() {
 });
 
 time_increments = calc_increments(t,n); //logarithmic
-/*
-  
+
+
+function plotCrossSection(d, Sy, T, Qw, xwell, ywell, t, distL) {
+    // Calculate values for cross-section line (West-East at mid-y point)
+    const xValues = [];
+    const yValues = [];
+
+    for (let x = 0; x <= distL; x += distL / 20) {
+        const y = 0; // Mid-line y-axis (y = 0 for cross-section)
+        const drawdown = calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell);
+        xValues.push(x);
+        yValues.push(drawdown);
+    }
+
+    const crossSectionTrace = {
+        x: xValues,
+        y: yValues,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'Drawdown (West-East Cross Section)'
+    };
+
+    const layout = {
+        title: `West-East Cross Section of Drawdown at Time t=${t} days`,
+        xaxis: { title: 'Distance (m)', range: [0, distL] },
+        yaxis: { title: 'Drawdown (m)' }
+    };
+
+    Plotly.newPlot('crossSectionPlot', [crossSectionTrace], layout);
+}
+/* 
   // model calculations
   // recharge is p - et
   const rYR = (pYR);
