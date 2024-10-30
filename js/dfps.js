@@ -4,10 +4,6 @@ const negative_value_message = document.querySelector('#negative_value_message')
 const error_message1 = document.querySelector('#error_message1');
 const error_message2 = document.querySelector('#error_message2');
 const results_message = document.querySelector('#result_message');
-const backButton = document.getElementById('backButton');
-const forwardButton = document.getElementById('forwardButton');
-
-let currentIndex = -1;
 
 // Listen to form submission
 data_form.addEventListener('submit', function(e) {
@@ -44,36 +40,22 @@ data_form.addEventListener('submit', function(e) {
   }
 
   // Make sure to display the results after validation
-  results_message.innerHTML = `
-    <b>Results:</b><br>
-    Distance: ${d}, Factor: ${F}, Ka: ${Ka}, Thickness: ${b}, Sy: ${Sy}, Qs: ${Qs}, Qw: ${Qw}, 
-    Ox1: ${ox1}, Oy1: ${oy1}, Ox2: ${ox2}, Oy2: ${oy2}, Duration (t): ${t}, Time increments (n): ${n}
-  `;
-    console.log(`ox1: ${ox1}, oy1: ${oy1}, t: ${t}, n: ${n}, Qw: ${Qw}, Ka: ${Ka}, Sy: ${Sy}, d: ${d}`);
-    const xValues = calculateLogarithmicTimeSteps(t,n);
-    console.log(xValues);
+  try {
+    const timeSteps = calculateLogarithmicTimeSteps(t,50);
+    console.log(timeSteps);
 
-    const yValues = xValues.map(time => 
+    const drawdownOne = timeSteps.map(time => 
       calculateDrawdown(0, 0, time, Qw, Ka, Sy, d, ox1, oy1)
     );
-    console.log(yValues);
+    console.log(drawdownOne);
 
-    const yValues2 = xValues.map(time => 
+    const drawdownTwo = timeSteps.map(time => 
       calculateDrawdown(0, 0, time, Qw, Ka, Sy, d, ox2, oy2)
     );
 
-    // Reset current index
-    currentIndex = 0;
-    updatePlot(); // Initial plot with first point
-
-    function updatePlot() {
-      const xToPlot = xValues.slice(0, currentIndex + 1);
-      const yToPlot = yValues.slice(0, currentIndex + 1);
-      const yToPlot2 = yValues2.slice(0, currentIndex + 1);
-      
-      Plotly.newPlot('myPlot', [{
-        x: xToPlot,
-        y: yToPlot,
+      Plotly.newPlot('obsWellOne', [{
+        x: timeSteps,
+        y: drawdownOne,
         mode: 'lines+markers',
         type: 'scatter',
         name: 'Drawdown at Well 1'
@@ -86,9 +68,9 @@ data_form.addEventListener('submit', function(e) {
     });
 
     // Plot for the second observation well
-      Plotly.newPlot('myPlot2', [{
-        x: xToPlot,
-        y: yToPlot2,
+      Plotly.newPlot('obsWellTwo', [{
+        x: timeSteps,
+        y: drawdownTwo,
         mode: 'lines+markers',
         type: 'scatter',
         name: 'Drawdown at Well 2'
@@ -99,32 +81,82 @@ data_form.addEventListener('submit', function(e) {
         displayModeBar: false, // Hide the mode bar
         showlegend: false   
     });
-
-    // Enable/disable buttons based on current index
-    backButton.disabled = currentIndex === 0;
-    forwardButton.disabled = currentIndex === xValues.length - 1;
-}
-        // Listen to forward button clicks
-    forwardButton.addEventListener('click', function() {
-      if (currentIndex < xValues.length - 1) {
-          currentIndex++;
-          updatePlot();
-      }
-    });
-
-    // Listen to back button clicks
-    backButton.addEventListener('click', function() {
-      if (currentIndex > 0) {
-          currentIndex--;
-          updatePlot();
-      }
-    }); 
+    } catch (error) {
+      console.error("Error during calculations or plotting:", error);
+    }
   });
+
   // Reset event listener
 
-  // Add reset implementation here 
-
+  data_form.addEventListener('reset', function() {
+    // Clear any messages when the form is reset
+    negative_value_message.innerHTML = '';
+    error_message1.innerHTML = '';
+    error_message2.innerHTML = '';
+    results_message.innerHTML = '';
   
+    // Retrieve default values directly from the inputs
+    const d = Number(document.getElementById('disttoS').value);
+    const F = Number(document.getElementById('factor').value);
+    const Ka = Number(document.getElementById('conductivity').value);
+    const b = Number(document.getElementById('thickness').value);
+    const Sy = Number(document.getElementById('Sy').value);
+    const Qs = Number(document.getElementById('streamrate').value);
+    const Qw = Number(document.getElementById('pumprate').value);
+    const ox1 = Number(document.getElementById('ox1').value);
+    const oy1 = Number(document.getElementById('oy1').value);
+    const ox2 = Number(document.getElementById('ox2').value);
+    const oy2 = Number(document.getElementById('oy2').value);
+    const t = Number(document.getElementById('pumptime').value);
+    const n = Number(document.getElementById('timeincrements').value);
+    const T = Ka * b; // Calculate Transmissivity
+  
+    // Try calculations and catch any errors that might cause issues
+    try {
+      const timeSteps = calculateLogarithmicTimeSteps(t,50);
+      console.log(timeSteps);
+  
+      const drawdownOne = timeSteps.map(time => 
+        calculateDrawdown(0, 0, time, Qw, Ka, Sy, d, ox1, oy1)
+      );
+      console.log(drawdownOne);
+  
+      const drawdownTwo = timeSteps.map(time => 
+        calculateDrawdown(0, 0, time, Qw, Ka, Sy, d, ox2, oy2)
+      );
+  
+        Plotly.newPlot('obsWellOne', [{
+          x: timeSteps,
+          y: drawdownOne,
+          mode: 'lines+markers',
+          type: 'scatter',
+          name: 'Drawdown at Well 1'
+      }], {
+          title: 'Drawdown vs Time (Well 1)',
+          xaxis: { title: 'Time (days)' },
+          yaxis: { title: 'Drawdown (meters)' },
+          displayModeBar: false, // Hide the mode bar
+          showlegend: false,      // Hide the legend
+      });
+  
+      // Plot for the second observation well
+        Plotly.newPlot('obsWellTwo', [{
+          x: timeSteps,
+          y: drawdownTwo,
+          mode: 'lines+markers',
+          type: 'scatter',
+          name: 'Drawdown at Well 2'
+      }], {
+          title: 'Drawdown vs Time (Well 2)',
+          xaxis: { title: 'Time (days)' },
+          yaxis: { title: 'Drawdown (meters)' },
+          displayModeBar: false, // Hide the mode bar
+          showlegend: false   
+      });
+      } catch (error) {
+        console.error("Error during calculations or plotting:", error);
+      }
+    });
 
   
  
