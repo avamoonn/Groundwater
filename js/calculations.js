@@ -10,7 +10,7 @@
  * @param {number} x - The input value.
  * @returns {number} - The complementary error function value.
  */
-function erfc(x) {
+export function erfc(x) {
   // Save the sign of x
   const sign = x >= 0 ? 1 : -1;
   x = Math.abs(x);
@@ -46,7 +46,7 @@ function erfc(x) {
  * @param {number} u - The input value.
  * @returns {number} - The well function value.
  */
-function W(u) {
+export function W(u) {
   if (u === 0) {
     return 0;
   } else if (u < 1) {
@@ -62,7 +62,7 @@ function W(u) {
       sum += (Math.pow(-1, n + 1) * Math.pow(u, n)) / n;
       n++;
     }
-    
+
     return sum;
   } else {
     // Asymptotic expansion for u >= 1
@@ -89,9 +89,9 @@ function W(u) {
  * @param {number} n - The input integer.
  * @returns {number} - The factorial of n.
  */
-function factorial(n) {
+export function factorial(n) {
   if (n < 0) {
-    throw new Error('Factorial is not defined for negative numbers.');
+    throw new Error("Factorial is not defined for negative numbers.");
   }
   if (n === 0 || n === 1) return 1;
   let result = 1;
@@ -115,7 +115,7 @@ function factorial(n) {
  */
 export function calculateQFraction(d, Sy, T, t) {
   if (t <= 0) {
-    throw new Error('Time \'t\' must be greater than 0.');
+    throw new Error("Time 't' must be greater than 0.");
   }
   const argument = (d * d * Sy) / (4 * T * t);
   return erfc(argument);
@@ -142,9 +142,9 @@ export function calculateQFraction(d, Sy, T, t) {
  * @param {number} ywell - Y-coordinate of the well (meters).
  * @returns {number} - Drawdown at the specified location and time (meters).
  */
-function calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell) {
+export function calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell) {
   if (t <= 0) {
-    throw new Error('Time \'t\' must be greater than 0.');
+    throw new Error("Time 't' must be greater than 0.");
   }
 
   const r = calculateDistance(x, y, xwell, ywell);
@@ -171,7 +171,7 @@ function calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell) {
  * @param {number} ywell - Y-coordinate of the well (meters).
  * @returns {number} - Distance r (meters).
  */
-function calculateDistance(xgrid, ygrid, xwell, ywell) {
+export function calculateDistance(xgrid, ygrid, xwell, ywell) {
   return Math.sqrt(Math.pow(xgrid - xwell, 2) + Math.pow(ygrid - ywell, 2));
 }
 
@@ -207,14 +207,14 @@ export function calculateLogarithmicTimeSteps(t, n) {
 
 /**
  * Calculate velocity using Darcy's Law
- * 
+ *
  * @param {number} hmax - The maximum hydraulic head.
  * @param {number} hmin - The minimum hydraulic head.
  * @param {number} Ka - Hydraulic conductivity.
  * @param {number} L - The grid cell side length.
  * @returns {number} - Velocity (m/s).
  */
-function calculateVelocity(hmax, hmin, Ka, L) {
+export function calculateVelocity(hmax, hmin, Ka, L) {
   return ((hmax - hmin) * Ka) / (0.02 * L);
 }
 
@@ -225,7 +225,7 @@ function calculateVelocity(hmax, hmin, Ka, L) {
  * @param {number} Ka - The hydraulic conductivity of the aquifer.
  * @returns {Array<Array<{x: number, y: number, velocity: number}>>} A 2D array representing the velocity grid.
  */
-function createVelocityGrid(gridSize, Ka) {
+export function createVelocityGrid(gridSize, Ka) {
   const grid = [];
   const L = 100 / (gridSize - 1);
 
@@ -245,7 +245,7 @@ function createVelocityGrid(gridSize, Ka) {
       row.push({
         x: xgrid,
         y: ygrid,
-        velocity: v
+        velocity: v,
       });
     }
     grid.push(row);
@@ -255,49 +255,80 @@ function createVelocityGrid(gridSize, Ka) {
 
 /**
  * Displays a velocity grid in an HTML table format.
- * 
+ *
  * This function retrieves the hydraulic conductivity value from an input element,
  * creates a velocity grid using the specified grid size and hydraulic conductivity,
  * and then displays the grid in a table format within a specified result div.
- * 
+ *
  * The table cells contain the coordinates and velocity at each grid point.
- * 
+ *
  * @function
  * @name displayVelocityGrid
  * @returns {void}
  */
-function displayVelocityGrid() {
+export function displayVelocityGrid() {
   const gridSize = 21;
-  const Ka = parseFloat(document.getElementById('conductivity').value);
+  const Ka = parseFloat(document.getElementById("conductivity").value);
   const grid = createVelocityGrid(gridSize, Ka);
 
-  const resultDiv = document.getElementById('result_message');
-  resultDiv.innerHTML = '<h4>Velocity Grid:</h4>';
-  
+  const resultDiv = document.getElementById("result_message");
+  resultDiv.innerHTML = "<h4>Velocity Grid:</h4>";
+
   let table = '<table border="1">';
   for (let i = 0; i < grid.length; i++) {
-    table += '<tr>';
+    table += "<tr>";
     for (let j = 0; j < grid[i].length; j++) {
       const point = grid[i][j];
-      table += `<td>(${point.x.toFixed(2)}, ${point.y.toFixed(2)}) <br> V: ${point.velocity.toFixed(4)} m/s</td>`;
+      table += `<td>(${point.x.toFixed(2)}, ${point.y.toFixed(
+        2
+      )}) <br> V: ${point.velocity.toFixed(4)} m/s</td>`;
     }
-    table += '</tr>';
+    table += "</tr>";
   }
-  table += '</table>';
-  
+  table += "</table>";
+
   resultDiv.innerHTML += table;
 }
 
-/*
-module.exports = { 
-  calculateLogarithmicTimeSteps,
-  erfc,
-  W,
-  factorial,
-  calculateQFraction,
-  calculateDrawdown,
-  createVelocityGrid,
-  displayVelocityGrid,
-  calculateDistance
+/**
+ * Calculate Stream Flow Rate (Q)
+ *
+ * Calculates the flow rate across a cross-sectional area of the stream,
+ * using hydraulic conductivity, hydraulic gradient, and cross-sectional area.
+ *
+ * @param {number} Ka - Hydraulic conductivity of the stream bed (m/day).
+ * @param {number} gradient - Hydraulic gradient (dimensionless).
+ * @param {number} area - Cross-sectional area of the stream (m²).
+ * @returns {number} - Stream flow rate (Q) in cubic meters per day (m³/day).
+ */
+export function calculateStreamFlowRate(Ka, gradient, area) {
+  if (Ka <= 0 || gradient <= 0 || area <= 0) {
+    throw new Error("All parameters must be positive and non-zero.");
+  }
 
-};*/
+  // Darcy's Law: Q = Ka * gradient * area
+  const Q = Ka * gradient * area;
+  return Q; // Stream flow rate in m³/day
+}
+
+/**
+ * Calculate Stream Leakage
+ *
+ * @param {number} Qw - Pumping rate
+ * @param {number} Qfraction - Stream depletion fraction
+ * @returns {number} - Stream leakage rate
+ */
+export function calculateStreamLeakage(Qw, Qfraction) {
+  return Qw * Qfraction;
+}
+
+/**
+ * Calculate Stream Discharge
+ *
+ * @param {number} Qs - Initial stream discharge
+ * @param {number} QstreamLeakage - Stream leakage rate
+ * @returns {number} - Remaining stream discharge
+ */
+export function calculateStreamDischarge(Qs, QstreamLeakage) {
+  return Qs - QstreamLeakage;
+}

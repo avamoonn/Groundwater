@@ -1,128 +1,246 @@
-import { calculateQFraction, calculateLogarithmicTimeSteps } from "./calculations.js";
+import {
+  calculateQFraction,
+  calculateLogarithmicTimeSteps,
+  calculateStreamLeakage,
+  calculateStreamDischarge,
+} from "./calculations.js";
 
-const data_form = document.querySelector('#data_form');
-const negative_value_message = document.querySelector('#negative_value_message');
-const error_message1 = document.querySelector('#error_message1');
-const error_message2 = document.querySelector('#error_message2');
-const results_message = document.querySelector('#result_message');
-const graphDiv = document.getElementById('qFractionPlot');
+const data_form = document.querySelector("#data_form");
+const negative_value_message = document.querySelector(
+  "#negative_value_message"
+);
+const error_message1 = document.querySelector("#error_message1");
+const error_message2 = document.querySelector("#error_message2");
+const results_message = document.querySelector("#result_message");
+
 // Listen to form submission
-data_form.addEventListener('submit', function(e) {
+data_form.addEventListener("submit", function (e) {
   e.preventDefault();
-  e.preventDefault();
-    
-  // Initiate values
+
+  // Get input values with proper unit conversions
   const data = new FormData(this);
-  const d = Number(data.get('in_d'));
-  const F = Number(data.get('in_F'));
-  const Ka = Number(data.get('in_Ka'));
-  const b = Number(data.get('in_b'));
-  const Sy = Number(data.get('in_Sy'));
-  const Qs = Number(data.get('in_Qs'));
-  const Qw = Number(data.get('in_Qw'));
-  const ox1 = Number(data.get('in_ox1'));
-  const oy1 = Number(data.get('in_oy1'));
-  const ox2 = Number(data.get('in_ox2'));
-  const oy2 = Number(data.get('in_oy2'));
-  const t = Number(data.get('in_t'));
-  const n = Number(data.get('in_n'));  
-  const T = Ka * b // Calc Transmissivity
+  const d = Number(data.get("in_d")); // meters
+  const F = Number(data.get("in_F"));
+  const Ka = Number(data.get("in_Ka")); // cm/s
+  const b = Number(data.get("in_b")); // meters
+  const Sy = Number(data.get("in_Sy")); // dimensionless
+  const Qs = Number(data.get("in_Qs")); // m³/s
+  const Qw = Number(data.get("in_Qw")) / (60 * 1000); // L/min to m³/s
+  const t = Number(data.get("in_t")); // days
+  const n = Number(data.get("in_n"));
+
+  // Convert hydraulic conductivity from cm/s to m/day
+  const KaInMeterPerDay = Ka * 0.01 * 86400; // cm/s to m/day
+  const T = KaInMeterPerDay * b; // m²/day
 
   console.log("Input values:", { d, Sy, Ka, b, t, n, T });
   // Clear any existing messages
-  negative_value_message.innerHTML = '';
-  error_message1.innerHTML = '';
-  error_message2.innerHTML = '';
-  results_message.innerHTML = ''; // Ensure this is cleared properly
+  negative_value_message.innerHTML = "";
+  error_message1.innerHTML = "";
+  error_message2.innerHTML = "";
+  results_message.innerHTML = ""; // Ensure this is cleared properly
 
   // Check for negative values in inputs (except Ox1, Ox2, Oy1, Oy2)
   if (d < 0 || F < 0 || Ka < 0 || b < 0 || Sy < 0 || n < 0 || t < 0) {
     // Display an error message and stop further processing
-    negative_value_message.innerHTML = 'Error: Inputs for Distance, Factor, Hydraulic Conductivity, Thickness, Specific Yield, Duration, and Time Increments cannot be negative.';
-    negative_value_message.style.color = 'red';
+    negative_value_message.innerHTML =
+      "Error: Inputs for Distance, Factor, Hydraulic Conductivity, Thickness, Specific Yield, Duration, and Time Increments cannot be negative.";
+    negative_value_message.style.color = "red";
     return; // Exit the function if any invalid input is found
   }
 
-// Example: display the data in result_message for testing
+  // Example: display the data in result_message for testing
 
-   // Try calculations, and catch any errors that might cause the 405 error
-   try {
-    const timeIncrements = calculateLogarithmicTimeSteps(t, 50);
-    const fractionPumpingValues = timeIncrements.map(time => calculateQFraction(d, Sy, T, time));
-    
-    // Log calculated values to confirm
-    console.log("Calculated time increments:", timeIncrements);
-    console.log("Calculated fraction pumping values:", fractionPumpingValues);
+  // Try calculations, and catch any errors that might cause the 405 error
+  try {
+    // Calculate 50 logarithmic time steps for better early-time resolution
+    const timeIncrements = calculateLogarithmicTimeSteps(t, 50); // Changed to 50 points
+    console.log("Time increments:", timeIncrements);
 
-    // Plotting the graph
-    Plotly.newPlot(graphDiv, [{
-        x: timeIncrements,
-        y: fractionPumpingValues,
-        mode: 'lines+markers',
-        marker: { color: 'blue', size: 6 }
-    }], {
-        title: 'Fraction of Pumping Over Time',
-        xaxis: { title: 'Time (days)'},
-        yaxis: { title: 'Fraction Pumping', range: [0, 1] }
+    const fractionPumpingValues = timeIncrements.map((time) => {
+      const fraction = calculateQFraction(d, Sy, T, time);
+      console.log(`Time: ${time}, Fraction: ${fraction}`);
+      return fraction;
     });
-} catch (error) {
-    console.error("Error during calculations or plotting:", error);
-}
 
+    const streamflowValues = timeIncrements.map((time, index) => {
+      const Qfraction = fractionPumpingValues[index];
+      const QstreamLeakage = calculateStreamLeakage(Qw, Qfraction);
+      const discharge = calculateStreamDischarge(Qs, QstreamLeakage);
+      console.log(`Time: ${time}, Discharge: ${discharge}`);
+      return discharge;
+    });
+
+    // Plot Qfraction graph
+    Plotly.newPlot(
+      "qFractionPlot",
+      [
+        {
+          x: timeIncrements,
+          y: fractionPumpingValues,
+          mode: "lines+markers",
+          name: "Stream Depletion Fraction",
+          marker: { color: "blue", size: 6 },
+          line: { shape: "spline" }, // Smooth line between points
+        },
+      ],
+      {
+        title: "Fraction of Pumping Over Time",
+        xaxis: {
+          title: "Time (days)",
+          type: "linear", // Linear scale for display
+          range: [0, t], // Full time range
+          dtick: t / 10, // Show 10 tick marks
+        },
+        yaxis: {
+          title: "Fraction Pumping",
+          range: [0, 1],
+        },
+      }
+    );
+
+    // Plot streamflow graph
+    Plotly.newPlot(
+      "streamflowPlot",
+      [
+        {
+          x: timeIncrements,
+          y: streamflowValues,
+          mode: "lines+markers",
+          name: "Stream Discharge",
+          marker: { color: "blue", size: 6 },
+          line: { shape: "spline" }, // Smooth line between points
+        },
+      ],
+      {
+        title: "Stream Flow Rate Over Time",
+        xaxis: {
+          title: "Time (days)",
+          type: "linear", // Linear scale for display
+          range: [0, t], // Full time range
+          dtick: t / 10, // Show 10 tick marks
+        },
+        yaxis: {
+          title: "Stream Discharge (m³/s)",
+          range: [Math.min(...streamflowValues) * 0.95, Qs * 1.05],
+        },
+      }
+    );
+  } catch (error) {
+    console.error("Error during calculations or plotting:", error);
+    error_message1.innerHTML = "Error calculating results: " + error.message;
+    error_message1.style.color = "red";
+  }
 });
 
 // Listen to form reset button
 // Listen to form reset button
-data_form.addEventListener('reset', function() {
+data_form.addEventListener("reset", function () {
   // Clear any messages when the form is reset
-  negative_value_message.innerHTML = '';
-  error_message1.innerHTML = '';
-  error_message2.innerHTML = '';
-  results_message.innerHTML = '';
+  negative_value_message.innerHTML = "";
+  error_message1.innerHTML = "";
+  error_message2.innerHTML = "";
+  results_message.innerHTML = "";
 
   // Retrieve default values directly from the inputs
-  const d = Number(document.getElementById('disttoS').value);
-  const F = Number(document.getElementById('factor').value);
-  const Ka = Number(document.getElementById('conductivity').value);
-  const b = Number(document.getElementById('thickness').value);
-  const Sy = Number(document.getElementById('Sy').value);
-  const Qs = Number(document.getElementById('streamrate').value);
-  const Qw = Number(document.getElementById('pumprate').value);
-  const ox1 = Number(document.getElementById('ox1').value);
-  const oy1 = Number(document.getElementById('oy1').value);
-  const ox2 = Number(document.getElementById('ox2').value);
-  const oy2 = Number(document.getElementById('oy2').value);
-  const t = Number(document.getElementById('pumptime').value);
-  const n = Number(document.getElementById('timeincrements').value);
-  const T = Ka * b; // Calculate Transmissivity
+  const d = Number(document.getElementById("disttoS").value);
+  const F = Number(document.getElementById("factor").value);
+  const Ka = Number(document.getElementById("conductivity").value);
+  const b = Number(document.getElementById("thickness").value);
+  const Sy = Number(document.getElementById("Sy").value);
+  const Qs = Number(document.getElementById("streamrate").value);
+  const Qw = Number(document.getElementById("pumprate").value) / (60 * 1000); // L/min to m³/s
+  const t = Number(document.getElementById("pumptime").value);
+  const n = Number(document.getElementById("timeincrements").value);
 
-  console.log("Input values:", { d, F, Ka, b, Sy, Qs, Qw, ox1, oy1, ox2, oy2, t, n, T });
+  // Convert hydraulic conductivity from cm/s to m/day
+  const KaInMeterPerDay = Ka * 0.01 * 86400; // cm/s to m/day
+  const T = KaInMeterPerDay * b; // m²/day
+
+  console.log("Input values:", {
+    d,
+    F,
+    Ka,
+    b,
+    Sy,
+    Qs,
+    Qw,
+    ox1,
+    oy1,
+    ox2,
+    oy2,
+    t,
+    n,
+    T,
+  });
 
   // Try calculations and catch any errors that might cause issues
   try {
-    const timeIncrements = calculateLogarithmicTimeSteps(t, 50);
-    const fractionPumpingValues = timeIncrements.map(time => calculateQFraction(d, Sy, T, time));
-    
-    // Log calculated values to confirm
-    console.log("Calculated time increments:", timeIncrements);
-    console.log("Calculated fraction pumping values:", fractionPumpingValues);
+    const timeIncrements = calculateLogarithmicTimeSteps(t, 50); // Changed to 50 points
+    const fractionPumpingValues = timeIncrements.map((time) =>
+      calculateQFraction(d, Sy, T, time)
+    );
 
-    // Plotting the graph
-    Plotly.newPlot('qFractionPlot', [{
-        x: timeIncrements,
-        y: fractionPumpingValues,
-        mode: 'lines+markers',
-        marker: { color: 'blue', size: 6 }
-    }], {
-        title: 'Fraction of Pumping Over Time',
-        xaxis: { title: 'Time (days)' },
-        yaxis: { title: 'Fraction Pumping', range: [0, 1] }
+    const streamflowValues = timeIncrements.map((time, index) => {
+      const Qfraction = fractionPumpingValues[index];
+      const QstreamLeakage = calculateStreamLeakage(Qw, Qfraction);
+      return calculateStreamDischarge(Qs, QstreamLeakage);
     });
+
+    // Plot both graphs with linear time scale
+    Plotly.newPlot(
+      "qFractionPlot",
+      [
+        {
+          x: timeIncrements,
+          y: fractionPumpingValues,
+          mode: "lines+markers",
+          name: "Stream Depletion Fraction",
+          marker: { color: "blue", size: 6 },
+        },
+      ],
+      {
+        title: "Fraction of Pumping Over Time",
+        xaxis: {
+          title: "Time (days)",
+          type: "linear",
+          range: [0, t],
+        },
+        yaxis: {
+          title: "Fraction Pumping",
+          range: [0, 1],
+        },
+      }
+    );
+
+    Plotly.newPlot(
+      "streamflowPlot",
+      [
+        {
+          x: timeIncrements,
+          y: streamflowValues,
+          mode: "lines+markers",
+          name: "Stream Discharge",
+          marker: { color: "blue", size: 6 },
+        },
+      ],
+      {
+        title: "Stream Discharge Over Time",
+        xaxis: {
+          title: "Time (days)",
+          type: "linear",
+          range: [0, t],
+        },
+        yaxis: {
+          title: "Stream Discharge (m³/s)",
+          range: [Math.min(...streamflowValues) * 0.95, Qs * 1.05],
+        },
+      }
+    );
   } catch (error) {
     console.error("Error during calculations or plotting:", error);
   }
 });
-
 
 /*
   
