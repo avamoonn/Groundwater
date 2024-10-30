@@ -47,7 +47,7 @@ data_form.addEventListener('submit', function(e) {
 
    // Try calculations, and catch any errors that might cause the 405 error
    try {
-    const timeIncrements = calculateLogarithmicTimeSteps(t, n);
+    const timeIncrements = calculateLogarithmicTimeSteps(t, 50);
     const fractionPumpingValues = timeIncrements.map(time => calculateQFraction(d, Sy, T, time));
     
     // Log calculated values to confirm
@@ -100,7 +100,7 @@ data_form.addEventListener('reset', function() {
 
   // Try calculations and catch any errors that might cause issues
   try {
-    const timeIncrements = calculateLogarithmicTimeSteps(t, n);
+    const timeIncrements = calculateLogarithmicTimeSteps(t, 50);
     const fractionPumpingValues = timeIncrements.map(time => calculateQFraction(d, Sy, T, time));
     
     // Log calculated values to confirm
