@@ -102,6 +102,16 @@ async function testGraphsDisplay(driver) {
     const isSecondGraphDisplayed = await secondGraphPlaceholder.isDisplayed();
     console.log('secondGraphPlaceholder is displayed:', isSecondGraphDisplayed);
 
+     // Check if the obsWellOne graph is displayed
+    const obsWellOne = await driver.findElement(By.id('obsWellOne'));
+    const isObsWellOneDisplayed = await obsWellOne.isDisplayed();
+    console.log('obsWellOne is displayed:', isObsWellOneDisplayed);
+
+    // Check if the obsWellTwo graph is displayed
+    const obsWellTwo = await driver.findElement(By.id('obsWellTwo'));
+    const isObsWellTwoDisplayed = await obsWellTwo.isDisplayed();
+    console.log('obsWellTwo is displayed:', isObsWellTwoDisplayed);
+
   } catch (error) {
     console.error('Error occurred during graph display check:', error);
   }

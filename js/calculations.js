@@ -10,7 +10,7 @@
  * @param {number} x - The input value.
  * @returns {number} - The complementary error function value.
  */
-function erfc(x) {
+export function erfc(x) {
   // Save the sign of x
   const sign = x >= 0 ? 1 : -1;
   x = Math.abs(x);
@@ -46,7 +46,7 @@ function erfc(x) {
  * @param {number} u - The input value.
  * @returns {number} - The well function value.
  */
-function W(u) {
+export function W(u) {
   if (u === 0) {
     return 0;
   } else if (u < 1) {
@@ -89,7 +89,7 @@ function W(u) {
  * @param {number} n - The input integer.
  * @returns {number} - The factorial of n.
  */
-function factorial(n) {
+export function factorial(n) {
   if (n < 0) {
     throw new Error('Factorial is not defined for negative numbers.');
   }
@@ -171,7 +171,7 @@ export function calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell) {
  * @param {number} ywell - Y-coordinate of the well (meters).
  * @returns {number} - Distance r (meters).
  */
-function calculateDistance(xgrid, ygrid, xwell, ywell) {
+export function calculateDistance(xgrid, ygrid, xwell, ywell) {
   return Math.sqrt(Math.pow(xgrid - xwell, 2) + Math.pow(ygrid - ywell, 2));
 }
 
@@ -214,7 +214,7 @@ export function calculateLogarithmicTimeSteps(t, n) {
  * @param {number} L - The grid cell side length.
  * @returns {number} - Velocity (m/s).
  */
-function calculateVelocity(hmax, hmin, Ka, L) {
+export function calculateVelocity(hmax, hmin, Ka, L) {
   return ((hmax - hmin) * Ka) / (0.02 * L);
 }
 
@@ -225,7 +225,7 @@ function calculateVelocity(hmax, hmin, Ka, L) {
  * @param {number} Ka - The hydraulic conductivity of the aquifer.
  * @returns {Array<Array<{x: number, y: number, velocity: number}>>} A 2D array representing the velocity grid.
  */
-function createVelocityGrid(gridSize, Ka) {
+export function createVelocityGrid(gridSize, Ka) {
   const grid = [];
   const L = 100 / (gridSize - 1);
 
@@ -266,7 +266,7 @@ function createVelocityGrid(gridSize, Ka) {
  * @name displayVelocityGrid
  * @returns {void}
  */
-function displayVelocityGrid() {
+export function displayVelocityGrid() {
   const gridSize = 21;
   const Ka = parseFloat(document.getElementById('conductivity').value);
   const grid = createVelocityGrid(gridSize, Ka);
