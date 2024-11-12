@@ -4,7 +4,6 @@
  * Unit tests of all calculations for DFPS tool
  * @jest-environment jsdom
  */
-const { 
 const {
   calculateLogarithmicTimeSteps,
   erfc,
@@ -774,7 +773,7 @@ describe("Stream Flow Calculations", () => {
       const t = 365.25; // days
       const Qw = 2000 / (60 * 1000); // 2000 L/min to m³/s
       const Qs = 3; // m³/s
-      
+
       // Convert hydraulic conductivity and calculate transmissivity
       const KaInMeterPerDay = Ka * 0.01 * 86400; // cm/s to m/day
       const T = KaInMeterPerDay * b; // m²/day
