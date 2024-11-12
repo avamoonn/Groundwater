@@ -1,27 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Meta Tags and Title -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Depletion Fully Penetrating Stream</title>
     <link rel="icon" type="image/x-icon" href="img/wtr.jpg">
+
+    <!-- External CSS and Fonts -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/w3.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    
-    <style>
-        body, h1, h2, h3, h4, h5, h6 {font-family: "Lato", sans-serif}
-        .w3-bar, h1, button {font-family: "Montserrat", sans-serif}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Merriweather&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
 
-        /* Main container styling */
+    <!-- Plotly.js Library -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script type="module" src="js/dfps.js"></script>
+
+    <!-- Custom Styles -->
+    <style>
+        /* General Styles */
+        body, h1, h2, h3, h4, h5, h6 { font-family: "Lato", sans-serif; }
+        .w3-bar, h1, button { font-family: "Montserrat", sans-serif; }
+
+        /* Main Container */
         #data_div {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 30px;
             padding: 30px;
             max-width: 100%;
@@ -29,10 +36,8 @@
             background-color: #f5f7fa;
         }
 
-        /* Form styling */
+        /* Form Styling */
         .form-container {
-            flex: 1;
-            min-width: 300px;
             background: white;
             padding: 25px;
             border-radius: 15px;
@@ -77,7 +82,7 @@
             box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
         }
 
-        /* Button styling */
+        /* Button Styling */
         #btn_wrapper {
             display: flex;
             gap: 15px;
@@ -109,10 +114,8 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* Image container styling */
+        /* Image Container */
         .image-container {
-            flex: 1;
-            min-width: 300px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -128,141 +131,185 @@
             border-radius: 8px;
         }
 
-        /* Updated Graph styling */
-        .graph-row, .contour-row {
+        /* Graph Styling */
+        .graph-row {
             width: 100%;
             display: flex;
+            flex-wrap: wrap;
             gap: 30px;
             margin-top: 30px;
         }
 
-        #qFractionPlot, #streamflowPlot {
+        .graph-row.full-width {
+            flex-wrap: nowrap;
+        }
+
+        #qFractionPlot, #streamflowPlot, #crossSectionWEPlot, #crossSectionSNPlot {
             flex: 1;
-            min-width: 45%;
+            min-width: 300px;
             height: 400px;
             background: white;
             border-radius: 15px;
             padding: 20px;
+            box-sizing: border-box;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         #contourPlot {
-            width: 100%;
+            flex: 1 1 100%;
+            min-width: 300px;
             height: 500px;
             background: white;
             border-radius: 15px;
             padding: 20px;
+            box-sizing: border-box;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        /* Input group styling */
-        .input-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            align-items: center;
-        }
-
-        /* Message styling */
-        #negative_value_message, #error_message1, #error_message2, #result_message {
-            width: 100%;
-            padding: 15px;
+        /* Time Controls Styling */
+        #timeControls {
+            text-align: center;
             margin-top: 20px;
-            border-radius: 8px;
-            background: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        /* Update responsive design for graphs */
+        #timeControls button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #2ecc71;
+            color: white;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #timeControls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #currentTimeDisplay {
+            font-size: 1.2rem;
+            color: #34495e;
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .top-row {
-                flex-direction: column;
-            }
             .graph-row {
                 flex-direction: column;
             }
-            .input-group {
-                grid-template-columns: 1fr;
-            }
-            
-            #qFractionPlot, #streamflowPlot {
+            #qFractionPlot, #streamflowPlot, #crossSectionWEPlot, #crossSectionSNPlot, #contourPlot {
                 width: 100%;
                 min-width: unset;
             }
         }
     </style>
-
-    <script type="module" src="js/dfps.js"></script>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
-<body style="padding-top:0px;">
+<body>
 
-<!-- Navbar on big screens-->
+<!-- Navbar -->
 <div class="w3-top">
     <div class="w3-bar custom-black w3-card w3-left-align w3-large">
         <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-indigo w3-large custom-black" href="javascript:void(0);" onclick="menuToggle()" title="Toggle Navigation Menu">
-            <i class="fa fa-bars"></i></a>
+            <i class="fa fa-bars"></i>
+        </a>
         <a href="index.html" class="w3-bar-item w3-button w3-padding-large">DFPS-Home</a>
-        <a href="about.html" target="DFPSabout" class="w3-bar-item w3-button w3-hide-small w3-padding-large">About</a>
-        <a href="theory-dfps.html" target="DFPStheory" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Theory</a>
-        <a href="example-dfps.html" target="DFPSexample" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Example Application</a>
-        <a href="how-to-use-dfps.html" target="DFPShowto" class="w3-bar-item w3-button w3-hide-small w3-padding-large">How to Use</a>
-        <a href="exercise-dfps.html" target="DFPSexercise" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Exercise</a>
-        <a href="further-exploration-dfps.html" target="DFPSfurther" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Further Exploration</a>
-        <a href="https://gw-project.org/" target="DFPSgwporg" class="w3-bar-item w3-button w3-hide-small w3-padding-large">The Groundwater Project</a>
+        <a href="about.html" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">About</a>
+        <a href="theory-dfps.html" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Theory</a>
+        <a href="example-dfps.html" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Example Application</a>
+        <a href="how-to-use-dfps.html" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">How to Use</a>
+        <a href="exercise-dfps.html" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Exercise</a>
+        <a href="further-exploration-dfps.html" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Further Exploration</a>
+        <a href="https://gw-project.org/" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">The Groundwater Project</a>
     </div>
 </div>
 
-<br><br>
-
+<!-- Main Content -->
 <main id="data">
     <div id="data_div">
         <h2>Depletion Fully Penetrating Stream</h2>
 
-        <!-- Top row: Form and Image side-by-side -->
-        <div class="top-row">
+        <!-- Form and Image -->
+        <div class="top-row" style="display: flex; flex-wrap: wrap; gap: 30px;">
             <!-- Form Section -->
-            <div class="form-container">
+            <div class="form-container" style="flex: 1; min-width: 300px;">
                 <form id="data_form" method="POST" action="">
                     <h4><b>Submit Inputs:</b> example values are provided as defaults</h4>
-                    <div><label for="d">Distance to stream, <b>d</b> (m)</label><input type="number" step="any" id="disttoS" name="in_d" value="50" placeholder="Enter Distance to Stream" required></div>
-                    <div><label for="F">Factor for map size, <b>F</b> (:)</label><input type="number" step="any" id="factor" name="in_F" value="4" placeholder="Factor" required></div>
-                    <div><label for="Ka">Aquifer hydraulic conductivity, <b>K<sub>a</sub></b>, (cm/s)</label><input type="number" step="any" id="conductivity" name="in_Ka" value=".001" placeholder="Hydraulic Conductivity" required></div>
-                    <div><label for="b">Aquifer thickness, <b>b</b> (m)</label><input type="number" step="any" id="thickness" name="in_b" value="10" placeholder="Aquifer Thickness" required></div>
-                    <div><label for="Sy">Specific yield, <b>S<sub>y</sub></b> (:)</label><input type="number" step="any" id="Sy" name="in_Sy" value="0.15" placeholder="Specific Yield" required></div>
-                    <div><label for="Qs">Streamflow rate, <b>Q<sub>s</sub></b> (m&sup3;/s)</label><input type="number" step="any" id="streamrate" name="in_Qs" value="3" placeholder="Streamflow Rate" required></div>
-                    <div><label for="Qw">Pumping rate, <b>Q<sub>w</sub></b> (liters/min)</label><input type="number" id="pumprate" name="in_Qw" value="2000" placeholder="Pumping Rate" required></div>
-                    <div class="input-group"><label for="Ox1">Observation 1 (m) <b>O<sub>x</sub>1</b></label><input type="number" id="ox1" name="in_ox1" value="-100" placeholder="Ox1" required></div>
-                    <div class="input-group"><label for="Oy1"><b>O<sub>y</sub>1</b></label><input type="number" id="oy1" name="in_oy1" value="45" placeholder="Oy1" required></div>
-                    <div class="input-group"><label for="Ox2">Observation 2 (m) <b>O<sub>x</sub>2</b></label><input type="number" id="ox2" name="in_ox2" value="30" placeholder="Ox2" required></div>
-                    <div class="input-group"><label for="Oy2"><b>O<sub>y</sub>2</b></label><input type="number" id="oy2" name="in_oy2" value="-50" placeholder="Oy2" required></div>
-                    <div><label for="t">Pumping duration time, <b>t</b> (days)</label><input type="number" step="any" id="pumptime" name="in_t" value="365.25" placeholder="Enter Pumping Duration" required></div>
-                    <div><label for="n">Number of time increments, <b>n</b> (:)</label><input type="number" step="any" id="timeincrements" name="in_n" value="3" placeholder="Enter Number of Time Increments" required></div>
-                    <div id="btn_wrapper"><button type="submit"><b>Submit</b></button><button type="reset"><b>Reset</b></button></div>
+                    <div>
+                        <label for="d">Distance to stream, <b>d</b> (m)</label>
+                        <input type="number" step="any" id="disttoS" name="in_d" value="50" placeholder="Enter Distance to Stream" required>
+                    </div>
+                    <div>
+                        <label for="F">Factor for map size, <b>F</b> (:)</label>
+                        <input type="number" step="any" id="factor" name="in_F" value="4" placeholder="Factor" required>
+                    </div>
+                    <div>
+                        <label for="Ka">Aquifer hydraulic conductivity, <b>K<sub>a</sub></b>, (cm/s)</label>
+                        <input type="number" step="any" id="conductivity" name="in_Ka" value=".001" placeholder="Hydraulic Conductivity" required>
+                    </div>
+                    <div>
+                        <label for="b">Aquifer thickness, <b>b</b> (m)</label>
+                        <input type="number" step="any" id="thickness" name="in_b" value="10" placeholder="Aquifer Thickness" required>
+                    </div>
+                    <div>
+                        <label for="Sy">Specific yield, <b>S<sub>y</sub></b> (:)</label>
+                        <input type="number" step="any" id="Sy" name="in_Sy" value="0.15" placeholder="Specific Yield" required>
+                    </div>
+                    <div>
+                        <label for="Qs">Streamflow rate, <b>Q<sub>s</sub></b> (m&sup3;/s)</label>
+                        <input type="number" step="any" id="streamrate" name="in_Qs" value="3" placeholder="Streamflow Rate" required>
+                    </div>
+                    <div>
+                        <label for="Qw">Pumping rate, <b>Q<sub>w</sub></b> (liters/min)</label>
+                        <input type="number" id="pumprate" name="in_Qw" value="2000" placeholder="Pumping Rate" required>
+                    </div>
+                    <div>
+                        <label for="t">Pumping duration time, <b>t</b> (days)</label>
+                        <input type="number" step="any" id="pumptime" name="in_t" value="365.25" placeholder="Enter Pumping Duration" required>
+                    </div>
+                    <div id="btn_wrapper">
+                        <button type="submit"><b>Submit</b></button>
+                        <button type="reset"><b>Reset</b></button>
+                    </div>
                 </form>
             </div>
 
             <!-- Image Section -->
-            <div class="image-container">
+            <div class="image-container" style="flex: 1; min-width: 300px;">
                 <img src="img/dfps.png" alt="Water Table Recharge flow domain">
             </div>
         </div>
 
-        <!-- Graph Row: Two placeholder graph sections for future expansion -->
+        <!-- Graphs Row 1: Q Fraction and Streamflow Plots -->
         <div class="graph-row">
-            <div id="qFractionPlot" style="flex: 1;"></div>
-            <div id="streamflowPlot" style="flex: 1;"></div>
+            <div id="qFractionPlot"></div>
+            <div id="streamflowPlot"></div>
         </div>
 
-        <!-- Add this new div for the contour plot -->
-        <div class="contour-row">
+        <!-- Time Controls -->
+        <div id="timeControls">
+            <button id="prevTime">Previous Time</button>
+            <span id="currentTimeDisplay">Time: 0 days</span>
+            <button id="nextTime">Next Time</button>
+        </div>
+
+        <!-- Graphs Row 2: Cross-Section Plots -->
+        <div class="graph-row">
+            <div id="crossSectionWEPlot"></div>
+            <div id="crossSectionSNPlot"></div>
+        </div>
+
+        <!-- Contour Plot -->
+        <div class="graph-row full-width">
             <div id="contourPlot"></div>
         </div>
 
-        <p id="negative_value_message" style="text-align: center"></p>
-        <p id="error_message1" style="text-align: center"></p>
-        <p id="error_message2" style="text-align: center"></p>
-        <p id="result_message" style="text-align: center"></p>
+        <!-- Messages -->
+        <p id="negative_value_message" style="text-align: center;"></p>
+        <p id="error_message1" style="text-align: center;"></p>
+        <p id="error_message2" style="text-align: center;"></p>
+        <p id="result_message" style="text-align: center;"></p>
     </div>
 </main>
 
@@ -271,10 +318,14 @@
     <div class="w3-row-padding w3-margin-bottom w3-container">
         <div class="w3-content">
             <div class="w3-whole">
-                <p class="w3-text-light-grey"><a href="https://gw-project.org/privacy-policy/">The Groundwater Project Privacy Policy</a> 
-        &nbsp&nbsp&nbsp&nbsp This interactive educational tool does not collect any data.</p>
-                <p class="w3-text-light-grey"><a href="https://gw-project.org/terms-of-use/"> The Groundwater Project Terms of Use</a>
-                    &nbsp&nbsp&nbsp&nbsp The user of WTR assumes all responsibility for how the program is used.</p>
+                <p class="w3-text-light-grey">
+                    <a href="https://gw-project.org/privacy-policy/">The Groundwater Project Privacy Policy</a>
+                    &nbsp;&nbsp;&nbsp;&nbsp;This interactive educational tool does not collect any data.
+                </p>
+                <p class="w3-text-light-grey">
+                    <a href="https://gw-project.org/terms-of-use/">The Groundwater Project Terms of Use</a>
+                    &nbsp;&nbsp;&nbsp;&nbsp;The user of this tool assumes all responsibility for how the program is used.
+                </p>
             </div>
         </div>
     </div>

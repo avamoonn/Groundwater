@@ -1,3 +1,5 @@
+// dfps.js
+
 import {
   calculateQFraction,
   calculateLogarithmicTimeSteps,
@@ -13,6 +15,11 @@ const error_message1 = document.querySelector("#error_message1");
 const error_message2 = document.querySelector("#error_message2");
 const results_message = document.querySelector("#result_message");
 
+// Declare variables to store time increments and parameters
+let timeIncrements = [];
+let currentTimeIndex = 0;
+let params = {};
+
 // Listen to form submission
 data_form.addEventListener("submit", function (e) {
   e.preventDefault();
@@ -27,48 +34,56 @@ data_form.addEventListener("submit", function (e) {
   const Qs = Number(data.get("in_Qs")); // m³/s
   const Qw = Number(data.get("in_Qw")) / (60 * 1000); // L/min to m³/s
   const t = Number(data.get("in_t")); // days
-  const n = Number(data.get("in_n"));
 
   // Convert hydraulic conductivity from cm/s to m/day
   const KaInMeterPerDay = Ka * 0.01 * 86400; // cm/s to m/day
   const T = KaInMeterPerDay * b; // m²/day
 
-  console.log("Input values:", { d, Sy, Ka, b, t, n, T });
+  // Define well location
+  const xwell = 0; // Well is at (0,0)
+  const ywell = 0;
+
   // Clear any existing messages
   negative_value_message.innerHTML = "";
   error_message1.innerHTML = "";
   error_message2.innerHTML = "";
-  results_message.innerHTML = ""; // Ensure this is cleared properly
+  results_message.innerHTML = "";
 
-  // Check for negative values in inputs (except Ox1, Ox2, Oy1, Oy2)
-  if (d < 0 || F < 0 || Ka < 0 || b < 0 || Sy < 0 || n < 0 || t < 0) {
-    // Display an error message and stop further processing
+  // Check for negative values in inputs
+  if (d < 0 || F < 0 || Ka < 0 || b < 0 || Sy < 0 || t < 0) {
     negative_value_message.innerHTML =
-      "Error: Inputs for Distance, Factor, Hydraulic Conductivity, Thickness, Specific Yield, Duration, and Time Increments cannot be negative.";
+      "Error: Inputs cannot be negative or invalid.";
     negative_value_message.style.color = "red";
-    return; // Exit the function if any invalid input is found
+    return;
   }
 
-  // Example: display the data in result_message for testing
-
-  // Try calculations, and catch any errors that might cause the 405 error
   try {
-    // Calculate 50 logarithmic time steps for better early-time resolution
-    const timeIncrements = calculateLogarithmicTimeSteps(t, 50); // Changed to 50 points
-    console.log("Time increments:", timeIncrements);
+    // Calculate time increments logarithmically
+    const n = 10; // Number of time increments (adjustable)
+    const multiplier = 2.5;
+    timeIncrements = calculateLogTimeSteps(t, n, multiplier);
 
-    const fractionPumpingValues = timeIncrements.map((time) => {
-      const fraction = calculateQFraction(d, Sy, T, time);
-      console.log(`Time: ${time}, Fraction: ${fraction}`);
-      return fraction;
-    });
+    params = {
+      d,
+      F,
+      Ka: KaInMeterPerDay,
+      b,
+      Sy,
+      Qs,
+      Qw: Qw * 86400, // Convert to m³/day
+      T,
+      xwell,
+      ywell,
+    };
+
+    const fractionPumpingValues = timeIncrements.map((time) =>
+      calculateQFraction(d, Sy, T, time)
+    );
 
     const streamflowValues = timeIncrements.map((time, index) => {
       const Qfraction = fractionPumpingValues[index];
-      const QstreamLeakage = calculateStreamLeakage(Qw, Qfraction);
-      const discharge = calculateStreamDischarge(Qs, QstreamLeakage);
-      console.log(`Time: ${time}, Discharge: ${discharge}`);
-      return discharge;
+      const QstreamLeakage = calculateStreamLeakage(params.Qw, Qfraction);
+      return calculateStreamDischarge(Qs, QstreamLeakage);
     });
 
     // Plot Qfraction graph
@@ -81,16 +96,14 @@ data_form.addEventListener("submit", function (e) {
           mode: "lines+markers",
           name: "Stream Depletion Fraction",
           marker: { color: "blue", size: 6 },
-          line: { shape: "spline" }, // Smooth line between points
+          line: { shape: "spline" },
         },
       ],
       {
         title: "Fraction of Pumping Over Time",
         xaxis: {
           title: "Time (days)",
-          type: "linear", // Linear scale for display
-          range: [0, t], // Full time range
-          dtick: t / 10, // Show 10 tick marks
+          range: [0, t],
         },
         yaxis: {
           title: "Fraction Pumping",
@@ -109,16 +122,14 @@ data_form.addEventListener("submit", function (e) {
           mode: "lines+markers",
           name: "Stream Discharge",
           marker: { color: "blue", size: 6 },
-          line: { shape: "spline" }, // Smooth line between points
+          line: { shape: "spline" },
         },
       ],
       {
         title: "Stream Flow Rate Over Time",
         xaxis: {
           title: "Time (days)",
-          type: "linear", // Linear scale for display
-          range: [0, t], // Full time range
-          dtick: t / 10, // Show 10 tick marks
+          range: [0, t],
         },
         yaxis: {
           title: "Stream Discharge (m³/s)",
@@ -126,6 +137,10 @@ data_form.addEventListener("submit", function (e) {
         },
       }
     );
+
+    // Initialize current time index and update plots
+    currentTimeIndex = 0;
+    updatePlots();
   } catch (error) {
     console.error("Error during calculations or plotting:", error);
     error_message1.innerHTML = "Error calculating results: " + error.message;
@@ -133,7 +148,263 @@ data_form.addEventListener("submit", function (e) {
   }
 });
 
-// Listen to form reset button
+// Event listeners for time navigation buttons
+document.getElementById("prevTime").addEventListener("click", function () {
+  if (currentTimeIndex > 0) {
+    currentTimeIndex--;
+    updatePlots();
+  }
+});
+
+document.getElementById("nextTime").addEventListener("click", function () {
+  if (currentTimeIndex < timeIncrements.length - 1) {
+    currentTimeIndex++;
+    updatePlots();
+  }
+});
+
+function updatePlots() {
+  const currentTime = timeIncrements[currentTimeIndex];
+  const { d, F, Ka, b, Sy, Qw, T, xwell, ywell } = params;
+
+  const L = d * F;
+
+  // Update current time display
+  document.getElementById(
+    "currentTimeDisplay"
+  ).innerText = `Time: ${currentTime.toFixed(2)} days`;
+
+  // Generate data for cross-sections and contour map
+  updateCrossSectionPlots(currentTime);
+  updateContourPlot(currentTime);
+}
+
+function calculateLogTimeSteps(totalTime, n, multiplier) {
+  let times = [];
+  let time = (totalTime * (multiplier - 1)) / (Math.pow(multiplier, n) - 1);
+  let cumulativeTime = time;
+  times.push(cumulativeTime);
+
+  for (let i = 1; i < n; i++) {
+    time *= multiplier;
+    cumulativeTime += time;
+    times.push(cumulativeTime);
+  }
+
+  return times;
+}
+
+// Updated calculateDrawdown function
+function calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell) {
+  // x, y: coordinates where we want to calculate drawdown
+  // t: time (in days)
+  // Qw: pumping rate (m³/day)
+  // T: transmissivity (m²/day)
+  // Sy: Specific yield (dimensionless)
+  // d: distance from well to stream (m)
+  // xwell, ywell: well coordinates
+
+  const S = Sy; // Assuming Sy is storativity
+
+  const rSquared = (x - xwell) ** 2 + (y - ywell) ** 2;
+  const u = (rSquared * S) / (4 * T * t);
+
+  const xImage = xwell + 2 * d; // Image well x-coordinate
+  const rPrimeSquared = (x - xImage) ** 2 + (y - ywell) ** 2;
+  const uPrime = (rPrimeSquared * S) / (4 * T * t);
+
+  const Wu = wellFunction(u);
+  const WuPrime = wellFunction(uPrime);
+
+  const drawdown = (Qw / (4 * Math.PI * T)) * (Wu - WuPrime);
+
+  return drawdown; // Drawdown at point (x,y) at time t
+}
+
+// Well function approximation
+function wellFunction(u) {
+  const a0 = -0.57721566;
+  const a1 = 0.99999193;
+  const a2 = -0.24991055;
+  const a3 = 0.05519968;
+  const a4 = -0.00976004;
+  const a5 = 0.00107857;
+
+  if (u <= 0) {
+    return 0;
+  }
+
+  const lnU = Math.log(u);
+  const W =
+    -lnU + a0 + a1 * u + a2 * u ** 2 + a3 * u ** 3 + a4 * u ** 4 + a5 * u ** 5;
+
+  return W;
+}
+
+// Function to update cross-section plots
+function updateCrossSectionPlots(currentTime) {
+  const { d, F, Qw, T, Sy, xwell, ywell } = params;
+
+  const L = d * F;
+  const numPoints = 100;
+
+  // W-E cross-section at y = 0
+  const x_WE = [];
+  const s_WE = [];
+  const y_WE = 0;
+
+  for (let i = 0; i <= numPoints; i++) {
+    const x = -L / 2 + (L * i) / numPoints;
+    x_WE.push(x);
+    const s = calculateDrawdown(
+      x,
+      y_WE,
+      currentTime,
+      Qw,
+      T,
+      Sy,
+      d,
+      xwell,
+      ywell
+    );
+    s_WE.push(s);
+  }
+
+  // Plot W-E cross-section
+  Plotly.react(
+    "crossSectionWEPlot",
+    [
+      {
+        x: x_WE,
+        y: s_WE,
+        mode: "lines",
+        name: `t=${currentTime.toFixed(2)} days`,
+        line: { color: "green" },
+      },
+    ],
+    {
+      title: `W-E Cross-Section at y=${y_WE.toFixed(2)} m`,
+      xaxis: { title: "x (m)" },
+      yaxis: { title: "Drawdown (m)" },
+    }
+  );
+
+  // S-N cross-section at x = 0
+  const y_SN = [];
+  const s_SN = [];
+  const x_SN = 0;
+
+  for (let i = 0; i <= numPoints; i++) {
+    const y = -L / 2 + (L * i) / numPoints;
+    y_SN.push(y);
+    const s = calculateDrawdown(
+      x_SN,
+      y,
+      currentTime,
+      Qw,
+      T,
+      Sy,
+      d,
+      xwell,
+      ywell
+    );
+    s_SN.push(s);
+  }
+
+  // Plot S-N cross-section
+  Plotly.react(
+    "crossSectionSNPlot",
+    [
+      {
+        x: y_SN,
+        y: s_SN,
+        mode: "lines",
+        name: `t=${currentTime.toFixed(2)} days`,
+        line: { color: "red" },
+      },
+    ],
+    {
+      title: `S-N Cross-Section at x=${x_SN.toFixed(2)} m`,
+      xaxis: { title: "y (m)" },
+      yaxis: { title: "Drawdown (m)" },
+    }
+  );
+}
+
+// Function to update contour plot
+function updateContourPlot(currentTime) {
+  const { d, F, Qw, T, Sy, xwell, ywell } = params;
+
+  const L = d * F;
+  const numPoints = 50;
+
+  const xValues = [];
+  const yValues = [];
+  const zValues = [];
+
+  for (let i = 0; i <= numPoints; i++) {
+    const x = -L / 2 + (L * i) / numPoints;
+    xValues.push(x);
+  }
+
+  for (let j = 0; j <= numPoints; j++) {
+    const y = -L / 2 + (L * j) / numPoints;
+    yValues.push(y);
+  }
+
+  for (let i = 0; i <= numPoints; i++) {
+    const zRow = [];
+    for (let j = 0; j <= numPoints; j++) {
+      const x = xValues[i];
+      const y = yValues[j];
+      const s = calculateDrawdown(
+        x,
+        y,
+        currentTime,
+        Qw,
+        T,
+        Sy,
+        d,
+        xwell,
+        ywell
+      );
+      zRow.push(s);
+    }
+    zValues.push(zRow);
+  }
+
+  // Plot contour map
+  Plotly.react(
+    "contourPlot",
+    [
+      {
+        x: xValues,
+        y: yValues,
+        z: zValues,
+        type: "contour",
+        colorscale: "Viridis",
+        contours: {
+          coloring: "heatmap",
+          showlabels: true,
+          labelfont: {
+            size: 12,
+            color: "white",
+          },
+        },
+        colorbar: {
+          title: "Drawdown (m)",
+          titleside: "right",
+        },
+      },
+    ],
+    {
+      title: `Contour Map of Drawdown at t=${currentTime.toFixed(2)} days`,
+      xaxis: { title: "x (m)" },
+      yaxis: { title: "y (m)" },
+    }
+  );
+}
+
 // Listen to form reset button
 data_form.addEventListener("reset", function () {
   // Clear any messages when the form is reset
@@ -142,514 +413,14 @@ data_form.addEventListener("reset", function () {
   error_message2.innerHTML = "";
   results_message.innerHTML = "";
 
-  // Retrieve default values directly from the inputs
-  const d = Number(document.getElementById("disttoS").value);
-  const F = Number(document.getElementById("factor").value);
-  const Ka = Number(document.getElementById("conductivity").value);
-  const b = Number(document.getElementById("thickness").value);
-  const Sy = Number(document.getElementById("Sy").value);
-  const Qs = Number(document.getElementById("streamrate").value);
-  const Qw = Number(document.getElementById("pumprate").value) / (60 * 1000); // L/min to m³/s
-  const t = Number(document.getElementById("pumptime").value);
-  const n = Number(document.getElementById("timeincrements").value);
+  // Clear plots
+  Plotly.purge("qFractionPlot");
+  Plotly.purge("streamflowPlot");
+  Plotly.purge("crossSectionWEPlot");
+  Plotly.purge("crossSectionSNPlot");
+  Plotly.purge("contourPlot");
 
-  // Convert hydraulic conductivity from cm/s to m/day
-  const KaInMeterPerDay = Ka * 0.01 * 86400; // cm/s to m/day
-  const T = KaInMeterPerDay * b; // m²/day
-
-  console.log("Input values:", {
-    d,
-    F,
-    Ka,
-    b,
-    Sy,
-    Qs,
-    Qw,
-    ox1,
-    oy1,
-    ox2,
-    oy2,
-    t,
-    n,
-    T,
-  });
-
-  // Try calculations and catch any errors that might cause issues
-  try {
-    const timeIncrements = calculateLogarithmicTimeSteps(t, 50); // Changed to 50 points
-    const fractionPumpingValues = timeIncrements.map((time) =>
-      calculateQFraction(d, Sy, T, time)
-    );
-
-    const streamflowValues = timeIncrements.map((time, index) => {
-      const Qfraction = fractionPumpingValues[index];
-      const QstreamLeakage = calculateStreamLeakage(Qw, Qfraction);
-      return calculateStreamDischarge(Qs, QstreamLeakage);
-    });
-
-    // Plot both graphs with linear time scale
-    Plotly.newPlot(
-      "qFractionPlot",
-      [
-        {
-          x: timeIncrements,
-          y: fractionPumpingValues,
-          mode: "lines+markers",
-          name: "Stream Depletion Fraction",
-          marker: { color: "blue", size: 6 },
-        },
-      ],
-      {
-        title: "Fraction of Pumping Over Time",
-        xaxis: {
-          title: "Time (days)",
-          type: "linear",
-          range: [0, t],
-        },
-        yaxis: {
-          title: "Fraction Pumping",
-          range: [0, 1],
-        },
-      }
-    );
-
-    Plotly.newPlot(
-      "streamflowPlot",
-      [
-        {
-          x: timeIncrements,
-          y: streamflowValues,
-          mode: "lines+markers",
-          name: "Stream Discharge",
-          marker: { color: "blue", size: 6 },
-        },
-      ],
-      {
-        title: "Stream Discharge Over Time",
-        xaxis: {
-          title: "Time (days)",
-          type: "linear",
-          range: [0, t],
-        },
-        yaxis: {
-          title: "Stream Discharge (m³/s)",
-          range: [Math.min(...streamflowValues) * 0.95, Qs * 1.05],
-        },
-      }
-    );
-  } catch (error) {
-    console.error("Error during calculations or plotting:", error);
-  }
-});
-
-/*
-  
-  // model calculations
-  // recharge is p - et
-  const rYR = (pYR);
-  //convert mm/yr to m/d
-  const rDay = (pYR) / 365.25/ 1000;
-  //calculate flow at left
-  const qLeft = (kH * (hLt * hLt - hRt * hRt) / 2 / distL) - 
-        (rDay * (distL / 2 - 0));
-  //calculate flow at top
-  const qTop = rDay * distL;
-  //calculate flow at right
-  const qRight = (kH * (hLt * hLt - hRt * hRt) / 2 / distL) - 
-        (rDay * (distL / 2 - distL));
-    //calculate flow divide location
-  let divide = (distL / 2 - (kH / rDay) * (hLt * hLt - hRt * hRt) / 2 / distL);
-
-  //check if divide is outside of system such that there is no diivide in land mass, 
-  // that is flow is all either positive or negative 
-  // set a value of divide outside to the location of the higher of the boundary heads
-  if (divide <= 0) {
-    divideAdjusted = 0; // divide is on the left
-  } else if (divide >= distL) {
-    divideAdjusted = distL; // divide is on the right
-  } else {
-    divideAdjusted = divide; // divide is within land mass so divide and divideAdjusted are the same
-  }
-        
-  // calculate hmax from base equations and then hmax for adjusted divide position
-  const inner_SQRT = (hLt * hLt) - ((hLt * hLt - hRt * hRt) * divide / distL) + 
-    (rDay / kH) * (distL - divide) * divide;
-    // hMax at location adjusted from outside of land mass
-  const inner_SQRToutside = (hLt * hLt) - ((hLt * hLt - hRt * hRt) * divideAdjusted / distL) + 
-                 (rDay / kH) * (distL - divideAdjusted) * divideAdjusted;
-    // can't take square root of negative value so set hMax to 0
-  if (inner_SQRT < 0){
-    hMax = 0;
-  } else {
-    hMax = Math.sqrt(inner_SQRT);
-  }
-  if (inner_SQRToutside < 0){
-    hMaxAdjusted = 0;
-  } else {
-    hMaxAdjusted = Math.sqrt(inner_SQRToutside);
-  }
-    
-  // determine the proper labels given the flow configuration
-  result_Div = ' ';
-  arrows = true;
-
-  // if no recharge (p=et) there is no divide and flow is either through in one direction or stagnant
-  //if p=et then if hLt higher flow is left to right, if hRt high right to left and if = then water is stagnant
-  if (pYR === 0) {
-    if (hLt > hRt){
-      side = 'calculated divide is <font color=black>' + 
-        divide.toPrecision(sigFig).toString() + 
-        '<font color=blue>, the distance needed for accumulated recharge to ' +
-        ' equal flow in from the left.';
-    } if (hLt < hRt){
-      side = 'calculated divide is <font color=black>' + 
-        divide.toPrecision(sigFig).toString() + 
-        '<font color=blue>, the distance needed for accumulated recharge to ' +
-        ' equal flow in from the right.';
-    } if (hLt === hRt){
-      side = ' GROUNDWATER is STAGNANT';
-      arrows = false;
-    }
-    result_Div = '<b><font color=blue><font size=3px>NO DIVIDE&nbsp&nbsp&nbsp&nbsp'  + side;
-  }
-  // get the proper labels for the accumulated recharge when divide is outside the land mass
-  else {
-    if (divide < 0){
-      if (rDay < 0){
-        //special case adjust divide calculation and direction when recharge is negative
-        divide = Math.abs(divide) + distL;
-        side3 = '<font color=black> NO DIVIDE<br>CALCULATED DIVIDE <font color=blue>' + 
-          divide.toPrecision(sigFig).toString() + 
-          '<font color=black> for recharge to equal inflow from right' ;
-      }
-      else {
-        side3 = '<font color=black> NO DIVIDE<br>CALCULATED DIVIDE <font color=blue>' + 
-        divide.toPrecision(sigFig).toString() + 
-        '<font color=black> for recharge to equal inflow from left';
-      }
-    } else if (divide > distL){
-      if (rDay < 0){
-        //special case adjust divide calculation and direction when recharge is negative
-        divide = -1 * divide + distL;
-        side3 = '<font color=black> NO DIVIDE<br>CALCULATED DIVIDE <font color=blue>' + 
-          divide.toPrecision(sigFig).toString() + 
-          '<font color=black> for recharge to equal inflow from left';
-      }
-      else {
-        side3 = '<font color=black> NO DIVIDE<br>CALCULATED DIVIDE <font color=blue>' + 
-        divide.toPrecision(sigFig).toString() + 
-        '<font color=black> for recharge to equal inflow from right' ;
-      }
-    } else {
-      side3 = ' ';
-    }
-    // create label for the divide information
-    if (divideAdjusted > 0 && divideAdjusted < distL) { 
-      if (hMaxAdjusted === 0) {
-        result_Div = '<b><font color=blue><font size=3px> Groundwater Divide is at <font color=black> &nbsp &nbsp x = ' + 
-          divideAdjusted.toPrecision(sigFig).toString() + 
-          ' meters <font color=blue> &nbsp &nbsp with &nbsp &nbsp <font color=red> Head below aquifer bottom. <font color=black>'
-          + side3  + '<font color=black>';
-      }
-      else {
-        result_Div = '<b><font color=blue><font size=3px> Groundwater Divide is at <font color=black> &nbsp &nbsp x = ' + 
-        divideAdjusted.toPrecision(sigFig).toString() + 
-        ' meters <font color=blue> &nbsp &nbsp with &nbsp &nbsp <font color=black>Head = ' 
-        + hMaxAdjusted.toPrecision(sigFig).toString() +
-        ' meters' + side3  + '<font color=black>';
-      }
-    } else {
-      result_Div = '<b><font color=blue><font size=3px>' + side3  + '<font color=black>';
-    }
-  }
-
-  // prepare cautionary messages
-  modeler_Caution = '<u>A modeler\'s job is to determine whether results are useful in any way ' +
-                        'and, if not, what to do next.</b><br><br></u>';
-  // warn if adjusted hMax is above ground surface or below aquifer bottom
-  above = hMaxAdjusted - zGS;
-  // warning above surface
-  if (hMaxAdjusted > zGS) {
-    result_Error =  '<br><b><font color=red>ERROR!! &nbsp&nbsp WATER TABLE IS &nbsp&nbsp&nbsp&nbsp' +  
-        above.toPrecision(sigFig).toString() + ' m  &nbsp&nbsp&nbsp&nbsp  ABOVE GROUND SURFACE' +
-        '<br> ' + modeler_Caution;
-  } // warning if hMax below aquifer base
-  else if (hMaxAdjusted <= 0) {
-    result_Error =  '<br><b><font color=red>ERROR!! &nbsp&nbsp WATER TABLE IS BELOW AQUIFER BOTTOM' +
-        '<br><br>ASSUMPTIONS of NON-ZERO AQUIFER THICKNESS and HORIZONTAL FLOW are BROKEN<br><br>' + 
-        'WATER LEVELS and FLOW RATES are NOT RELIABLE<br></br>'
-        + modeler_Caution;
-    redFlagHead = 'Heads are negative.';
-  } else // water level is OK so no message
-  {
-    result_Error =  '<b>'; 
-  }
-
-  // set output format --- # of decimals and scientific notation or decimal format
-  let type_dec = true;
-  if (notation === 1){
-    type_dec = true;}
-  else if (notation === 2){
-    type_dec = false;
-  }
-
-  // put results in proper format #sig figs and decimal or scientific notation
-  let mmYR = 0;
-  let mDay = 0;
-  let textQtop = 0;
-  let textQleft = 0;
-  let textQright = 0;
-  if (type_dec === true){
-    mmYR = rYR.toPrecision(sigFig).toString();
-    mDay = rDay.toPrecision(sigFig).toString();
-    textQleft = qLeft.toPrecision(sigFig).toString();
-    textQtop = qTop.toPrecision(sigFig).toString();
-    textQright = qRight.toPrecision(sigFig).toString();
-  }
-  else {
-    mmYR = rYR.toExponential(sigFig).replace('e', ' x 10<sup>').toString() + '</sup>';
-    mDay = rDay.toExponential(sigFig).replace('e', ' x 10<sup>').toString() + '</sup>';
-    textQleft = qLeft.toExponential(sigFig).replace('e', ' x 10<sup>').toString() + '</sup>';
-    textQtop = qTop.toExponential(sigFig).replace('e', ' x 10<sup>').toString() + '</sup>';
-    textQright = qRight.toExponential(sigFig).replace('e', ' x 10<sup>').toString() + '</sup>';
-  }
-    
-  // define output flow arrows based on directions of system flow
-  let arrow_L = '\u{21E6}';
-  let arrow_T = '\u{21E9}';
-  let arrow_R = '\u{21E8}';
-
-  // create text recharge rate converted mm/yr to m/day
-  const result_Rch = '<font color=green><b>Recharge Rate (Precipitation-Runoff-Evapotranspiration) &nbsp&nbsp&nbsp&nbsp mm/YR = ' + mmYR +
-    ' &nbsp&nbsp&nbsp&nbsp m/DAY = '  + mDay + '</b><br>' + '<br>';
-   
-  // create text  for left top & right of model - determine the values and the arrow color and direction
-  results = '<font color=blue><b>Resulting Flow rates (Q) <br>(m<sup>3</sup>/day per meter distance perpendicular ' +
-    'to the cross section)</b><br>';
-  // left
-  if (qLeft < 0) {
-    result_L = '<font color=blue><b>Q left = ' + textQleft +  '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp';
-    arrow_L = '<br><font color=blue><font size=350px>' + '\u{21E6}' + '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp';
-  }
-  else if (qLeft > 0) {
-    result_L = '<font color=blue><b>Q left = ' + textQleft + '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp';
-    arrow_L = '<br><font color=blue><font size=350px>' + '\u{21E8}' + '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp';
-  } else if (qLeft === 0)  {
-    result_L = '<font color=black><b>Q left = ' + textQleft + '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp';
-    arrow_L = '<br><font color=black><font size=350px>' + '\u{2022}' + '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp';
-  }
-  // top
-  if (qTop < 0) {
-    result_T = '<font color=red><b>Q recharge = ' + textQtop + '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp';
-    arrow_T = '<font color=red><font size=350px>' + '\u{21E7}' + '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp';
-  } else if (qTop > 0) {
-    result_T = '<font color=blue><b>Q recharge = ' + textQtop + '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp';
-    arrow_T = '<font color=blue><font size=350px>' + '\u{21E9}' + '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp';
-  } else if (qTop === 0) {
-    result_T = '<font color=black><b>Q recharge = ' + textQtop + '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp';
-    arrow_T = '<font color=black><font size=350px>' + '\u{2022}' + '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp';
-  }
-  // right
-  if (qRight < 0) {
-    result_R = '<font color=blue><b>Q right = ' + textQright;
-    arrow_R = '<font color=blue><font size=50px>' + '\u{21E6}' + '</font size>';
-  } else if (qRight > 0) {
-    result_R = '<font color=blue><b>Q right = ' + textQright;
-    arrow_R = '<font color=blue><font size=50px>' + '\u{21E8}' + '</font size>';
-  } else if (qRight === 0) {
-    result_R = '<font color=black><b>Q right = ' + textQright;
-    arrow_R = '<font color=black><font size=50px>' + '\u{2022}' + '</font size>';
-  }
-
-  // create message that graphs follow
-  const graph_caption = '<font color=black><font size=3px>The results are plotted below</font size>';
-
-  // this prints the values and arrows and message about the divide then message that the graph follows
-  if (!stop) {
-    results_message.innerHTML = result_Rch + results + result_Error + result_L + result_T  + result_R +
-      arrow_L + arrow_T + arrow_R + '<br>' + result_Div + '<br>' + graph_caption;
-  } else {
-    results_message.innerHTML = result_Error;
-  }
-      
-  // generate the graphs of water level and flow rate
-  // h at x
-  let exp =
-      'Math.sqrt(((hLt * hLt) - ((hLt * hLt - hRt * hRt) * x / distL) + (rDay / kH) * (distL - x) * x))';
-    // q at x
-  let exp2 = '(kH * (hLt * hLt - hRt * hRt) / 2 / distL) - (rDay * (distL / 2 - x))';
-  // set functions for calculating graph values to 0 in the following cases
-  if (stop || distL <= 0 || zGS <= 0 || hLt <= 0 || hRt <= 0 || hLt > zGS || hRt > zGS || kH <= 0) {
-    exp = 'x * 0';
-    exp2 = 'x * 0';
-    results_message.innerHTML = ' ';
-  } 
-
-  // generate values for water levels
-  const xValues = [];
-  const yValues = [];
-  for (let x = 0; x <= distL; x += 0.01) {
-    xValues.push(x);
-    yValues.push(eval(exp));
-  }
-  xValues.unshift(0);
-  yValues.unshift(0);
-  xValues.push(distL);
-  if (stop) {
-    yValues.push(0);
-  } else {
-    yValues.push(hRt);
-  }
-
-  // generate values for flow rate
-  const xQvalues = [];
-  const yQvalues = [];
-  // chcek for water levels of NaN and adjust corresponding Flow rates
-  //let n = -1;
-  for (let x = 0; x <= distL; x += 0.01) {
-    n++;
-    xQvalues.push(x);
-    yQvalues.push(eval(exp2));
-    // if h at this x is NaN then make q = NaN
-    if (yValues[n] !== yValues[n]) {
-      yQvalues[n] = 1 / 0;
-    }
-  }
-  // get max min for y axis of flow graph
-  ymin = Math.min(yQvalues);
-  ymax = Math.max(yQvalues);
-
-  const Head = {
-    x: xValues,
-    y: yValues,
-    type: 'line'
-  };
-      
-  const Flow = {
-    x: xQvalues,
-    y: yQvalues,
-    xaxis: 'x2',
-    yaxis: 'y2',
-    type: 'line'
-  };
-      
-  const mydata = [Head, Flow];
-      
-  const layout = {
-    grid: {rows: 2, columns: 1, pattern: 'independent'},
-    showlegend: false,
-    title: 'BLUE: Water Table Elevation (m)<br>ORANGE: Flow (m<sup>3</sup>/day per meter) ',
-	    xaxis: {range: [0, distL], title: 'Distance Meters'}
-  };
-      
-  Plotly.newPlot('myPlot', mydata, layout);
-     
-});*/
-
-// Add these functions to your existing dfps.js file
-
-function generateGridData(d, F, Ka, b, Sy, Qw, t) {
-  const gridSize = 50;
-  const xRange = d * F;
-  const yRange = d * F;
-
-  let x = new Array(gridSize);
-  let y = new Array(gridSize);
-  let z = new Array(gridSize);
-
-  // Create coordinate grids
-  for (let i = 0; i < gridSize; i++) {
-    x[i] = -xRange / 2 + (xRange * i) / (gridSize - 1);
-    y[i] = -yRange / 2 + (yRange * i) / (gridSize - 1);
-    z[i] = new Array(gridSize);
-
-    for (let j = 0; j < gridSize; j++) {
-      // Calculate drawdown at each point
-      const distance = Math.sqrt(x[i] ** 2 + y[j] ** 2);
-      z[i][j] = calculateDrawdown(distance, t, Ka, b, Sy, Qw);
-    }
-  }
-
-  return { x, y, z };
-}
-
-function calculateDrawdown(r, t, Ka, b, Sy, Qw) {
-  // Convert Ka from cm/s to m/s
-  Ka = Ka * 0.01;
-  // Convert Qw from L/min to m³/s
-  Qw = Qw / (60 * 1000);
-
-  const T = Ka * b; // Transmissivity
-  const u = (r * r * Sy) / (4 * T * t * 86400); // Convert t to seconds
-
-  // Well function approximation (Theis solution)
-  const W = -Math.log(u) - 0.5772; // Simplified well function for u < 0.01
-
-  return (Qw / (4 * Math.PI * T)) * W;
-}
-
-function updateContourPlot(data) {
-  const { d, F, Ka, b, Sy, Qw, t } = data;
-  const gridData = generateGridData(d, F, Ka, b, Sy, Qw, t);
-
-  const contourData = [
-    {
-      type: "contour",
-      x: gridData.x,
-      y: gridData.y,
-      z: gridData.z,
-      colorscale: "Viridis",
-      contours: {
-        coloring: "heatmap",
-        showlabels: true,
-        labelfont: {
-          size: 12,
-          color: "white",
-        },
-      },
-      colorbar: {
-        title: "Drawdown (m)",
-        titleside: "right",
-      },
-    },
-  ];
-
-  const layout = {
-    title: "Groundwater Drawdown Contour Map",
-    xaxis: {
-      title: "Distance (m)",
-      scaleanchor: "y",
-      scaleratio: 1,
-    },
-    yaxis: {
-      title: "Distance (m)",
-    },
-    showlegend: false,
-    margin: { t: 50, r: 50, b: 50, l: 50 },
-  };
-
-  Plotly.newPlot("contourPlot", contourData, layout);
-}
-
-// Modify your existing form submission handler to include the contour plot
-document.getElementById("data_form").addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  // Get your existing form data
-  const formData = {
-    d: parseFloat(document.getElementById("disttoS").value),
-    F: parseFloat(document.getElementById("factor").value),
-    Ka: parseFloat(document.getElementById("conductivity").value),
-    b: parseFloat(document.getElementById("thickness").value),
-    Sy: parseFloat(document.getElementById("Sy").value),
-    Qw: parseFloat(document.getElementById("pumprate").value),
-    t: parseFloat(document.getElementById("pumptime").value),
-    // ... other form fields
-  };
-
-  // Update your existing plots
-  // ... your existing plot update code ...
-
-  // Update the contour plot
-  updateContourPlot(formData);
+  // Reset time index and display
+  currentTimeIndex = 0;
+  document.getElementById("currentTimeDisplay").innerText = `Time: 0 days`;
 });
