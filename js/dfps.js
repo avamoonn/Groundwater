@@ -545,3 +545,111 @@ data_form.addEventListener("reset", function () {
   Plotly.newPlot('myPlot', mydata, layout);
      
 });*/
+
+// Add these functions to your existing dfps.js file
+
+function generateGridData(d, F, Ka, b, Sy, Qw, t) {
+  const gridSize = 50;
+  const xRange = d * F;
+  const yRange = d * F;
+
+  let x = new Array(gridSize);
+  let y = new Array(gridSize);
+  let z = new Array(gridSize);
+
+  // Create coordinate grids
+  for (let i = 0; i < gridSize; i++) {
+    x[i] = -xRange / 2 + (xRange * i) / (gridSize - 1);
+    y[i] = -yRange / 2 + (yRange * i) / (gridSize - 1);
+    z[i] = new Array(gridSize);
+
+    for (let j = 0; j < gridSize; j++) {
+      // Calculate drawdown at each point
+      const distance = Math.sqrt(x[i] ** 2 + y[j] ** 2);
+      z[i][j] = calculateDrawdown(distance, t, Ka, b, Sy, Qw);
+    }
+  }
+
+  return { x, y, z };
+}
+
+function calculateDrawdown(r, t, Ka, b, Sy, Qw) {
+  // Convert Ka from cm/s to m/s
+  Ka = Ka * 0.01;
+  // Convert Qw from L/min to m³/s
+  Qw = Qw / (60 * 1000);
+
+  const T = Ka * b; // Transmissivity
+  const u = (r * r * Sy) / (4 * T * t * 86400); // Convert t to seconds
+
+  // Well function approximation (Theis solution)
+  const W = -Math.log(u) - 0.5772; // Simplified well function for u < 0.01
+
+  return (Qw / (4 * Math.PI * T)) * W;
+}
+
+function updateContourPlot(data) {
+  const { d, F, Ka, b, Sy, Qw, t } = data;
+  const gridData = generateGridData(d, F, Ka, b, Sy, Qw, t);
+
+  const contourData = [
+    {
+      type: "contour",
+      x: gridData.x,
+      y: gridData.y,
+      z: gridData.z,
+      colorscale: "Viridis",
+      contours: {
+        coloring: "heatmap",
+        showlabels: true,
+        labelfont: {
+          size: 12,
+          color: "white",
+        },
+      },
+      colorbar: {
+        title: "Drawdown (m)",
+        titleside: "right",
+      },
+    },
+  ];
+
+  const layout = {
+    title: "Groundwater Drawdown Contour Map",
+    xaxis: {
+      title: "Distance (m)",
+      scaleanchor: "y",
+      scaleratio: 1,
+    },
+    yaxis: {
+      title: "Distance (m)",
+    },
+    showlegend: false,
+    margin: { t: 50, r: 50, b: 50, l: 50 },
+  };
+
+  Plotly.newPlot("contourPlot", contourData, layout);
+}
+
+// Modify your existing form submission handler to include the contour plot
+document.getElementById("data_form").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  // Get your existing form data
+  const formData = {
+    d: parseFloat(document.getElementById("disttoS").value),
+    F: parseFloat(document.getElementById("factor").value),
+    Ka: parseFloat(document.getElementById("conductivity").value),
+    b: parseFloat(document.getElementById("thickness").value),
+    Sy: parseFloat(document.getElementById("Sy").value),
+    Qw: parseFloat(document.getElementById("pumprate").value),
+    t: parseFloat(document.getElementById("pumptime").value),
+    // ... other form fields
+  };
+
+  // Update your existing plots
+  // ... your existing plot update code ...
+
+  // Update the contour plot
+  updateContourPlot(formData);
+});
