@@ -102,12 +102,6 @@ async function testGraphsDisplay(driver) {
     const isQFractionPlotDisplayed = await qFractionPlot.isDisplayed();
     console.log("qFractionPlot is displayed:", isQFractionPlotDisplayed);
 
-    // Optional: check if the second graph placeholder is displayed (if implemented)
-    const secondGraphPlaceholder = await driver.findElement(
-      By.id("secondGraphPlaceholder")
-    );
-    const isSecondGraphDisplayed = await secondGraphPlaceholder.isDisplayed();
-    console.log("secondGraphPlaceholder is displayed:", isSecondGraphDisplayed);
   } catch (error) {
     console.error("Error occurred during graph display check:", error);
   }
@@ -147,6 +141,27 @@ async function testStreamflowGraph(driver) {
   }
 }
 
+async function testObsWellGraph(driver) {
+  try {
+    // Navigate to the DFPS page with graphs
+    await driver.get("http://192.168.56.1:5500/dfps.html");
+
+    // Check if the obsWell graph is displayed
+    const obsWellOne = await driver.findElement(By.id("obsWellOne"));
+    const isObsWell1Displayed = await obsWellOne.isDisplayed();
+    console.log("obsWell1 is displayed:", isObsWell1Displayed);
+
+    // Check if the obsWell graph is displayed
+    const obsWellTwo = await driver.findElement(By.id("obsWellTwo"));
+    const isObsWell2Displayed = await obsWellTwo.isDisplayed();
+    console.log("obsWell2 is displayed:", isObsWell2Displayed);
+
+    
+  } catch (error) {
+    console.error("Error occurred during graph display check:", error);
+  }
+}
+
 /**
  * Runs the navigation and graph display tests.
  */
@@ -166,6 +181,10 @@ async function runTests() {
 
     // Run streamflow graph test
     await testStreamflowGraph(driver);
+
+    // Run obsWell graph test
+    await testObsWellGraph(driver);
+
   } finally {
     await driver.quit();
   }
