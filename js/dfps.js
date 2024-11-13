@@ -2,7 +2,6 @@
 
 import {
   calculateQFraction,
-  calculateLogarithmicTimeSteps,
   calculateStreamLeakage,
   calculateStreamDischarge,
 } from "./calculations.js";
@@ -23,7 +22,7 @@ let params = {};
 // Listen to form submission
 data_form.addEventListener("submit", function (e) {
   e.preventDefault();
-
+  
   // Get input values with proper unit conversions
   const data = new FormData(this);
   const d = Number(data.get("in_d")); // meters
@@ -34,6 +33,10 @@ data_form.addEventListener("submit", function (e) {
   const Qs = Number(data.get("in_Qs")); // m³/s
   const Qw = Number(data.get("in_Qw")) / (60 * 1000); // L/min to m³/s
   const t = Number(data.get("in_t")); // days
+  const ox1 = Number(data.get('in_ox1'));
+  const oy1 = Number(data.get('in_oy1'));
+  const ox2 = Number(data.get('in_ox2'));
+  const oy2 = Number(data.get('in_oy2'));
 
   // Convert hydraulic conductivity from cm/s to m/day
   const KaInMeterPerDay = Ka * 0.01 * 86400; // cm/s to m/day
@@ -86,6 +89,15 @@ data_form.addEventListener("submit", function (e) {
       return calculateStreamDischarge(Qs, QstreamLeakage);
     });
 
+    const drawdownOne = timeIncrements.map(time => 
+      calculateDrawdown(0, 0, time, Qw, Ka, Sy, d, ox1, oy1)
+    );
+    console.log(drawdownOne);
+  
+    const drawdownTwo = timeIncrements.map(time => 
+      calculateDrawdown(0, 0, time, Qw, Ka, Sy, d, ox2, oy2)
+    );
+    
     // Plot Qfraction graph
     Plotly.newPlot(
       "qFractionPlot",
@@ -137,6 +149,39 @@ data_form.addEventListener("submit", function (e) {
         },
       }
     );
+    Plotly.newPlot('obsWellOne', [{
+        x: timeIncrements,
+        y: drawdownOne,
+        mode: 'lines+markers',
+        type: 'scatter',
+        name: 'Drawdown at Well 1',
+        line: {shape : "spline"},
+        marker: { color: 'blue', size: 6 }
+    }], {
+        title: 'Drawdown vs Time (Well 1)',
+        xaxis: { title: 'Time (days)' },
+        yaxis: { title: 'Drawdown (meters)',  type: 'log' },
+        displayModeBar: false, // Hide the mode bar
+        showlegend: false,      // Hide the legend
+    }
+  );
+    // Plot for the second observation well
+    Plotly.newPlot('obsWellTwo', [{
+        x: timeIncrements,
+        y: drawdownTwo,
+        mode: 'lines+markers',
+        type: 'scatter',
+        name: 'Drawdown at Well 2',
+        line: {shape : "spline"},
+        marker: { color: 'blue', size: 6 }
+    }], {
+        title: 'Drawdown vs Time (Well 2)',
+        xaxis: { title: 'Time (days)' },
+        yaxis: { title: 'Drawdown (meters)',  type: 'log' },
+        displayModeBar: false, // Hide the mode bar
+        showlegend: false   
+    }
+  );
 
     // Initialize current time index and update plots
     currentTimeIndex = 0;
@@ -419,6 +464,10 @@ data_form.addEventListener("reset", function () {
   Plotly.purge("crossSectionWEPlot");
   Plotly.purge("crossSectionSNPlot");
   Plotly.purge("contourPlot");
+  Plotly.purge("obsWellOne");
+  Plotly.purge("obsWellTwo");
+
+  
 
   // Reset time index and display
   currentTimeIndex = 0;

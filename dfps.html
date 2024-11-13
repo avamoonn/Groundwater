@@ -144,7 +144,7 @@
             flex-wrap: nowrap;
         }
 
-        #qFractionPlot, #streamflowPlot, #crossSectionWEPlot, #crossSectionSNPlot {
+        #qFractionPlot, #streamflowPlot, #crossSectionWEPlot, #crossSectionSNPlot, #obsWellOne, #obsWellTwo {
             flex: 1;
             min-width: 300px;
             height: 400px;
@@ -268,6 +268,26 @@
                         <label for="t">Pumping duration time, <b>t</b> (days)</label>
                         <input type="number" step="any" id="pumptime" name="in_t" value="365.25" placeholder="Enter Pumping Duration" required>
                     </div>
+                    <div>
+                        <label for="t">Pumping duration time, <b>t</b> (days)</label>
+                        <input type="number" step="any" id="pumptime" name="in_t" value="365.25" placeholder="Enter Pumping Duration" required>
+                    </div>
+                    <div>
+                        <label for="ox1">Observation Well 1, <b>ox1</b> (meters)</label>
+                        <input type="number" step="any" id="ox1" name="in_ox1" value="-200" placeholder="Enter x-coordinate for Observation Well 1" required>
+                    </div>
+                    <div>
+                        <label for="oy1">Observation Well 1, <b>oy1</b> (meters)</label>
+                        <input type="number" step="any" id="oy1" name="in_oy1" value="45" placeholder="Enter y-coordinate for Observation Well 1" required>
+                    </div>
+                    <div>
+                        <label for="ox2">Observation Well 2, <b>ox2</b> (meters)</label>
+                        <input type="number" step="any" id="ox2" name="in_ox2" value="-100" placeholder="Enter x-coordinate for Observation Well 2" required>
+                    </div>
+                    <div>
+                        <label for="oy2">Observation Well 2, <b>oy2</b> (meters)</label>
+                        <input type="number" step="any" id="oy2" name="in_oy2" value="-50" placeholder="Enter y-coordinate for Observation Well 2" required>
+                    </div>
                     <div id="btn_wrapper">
                         <button type="submit"><b>Submit</b></button>
                         <button type="reset"><b>Reset</b></button>
@@ -298,6 +318,12 @@
         <div class="graph-row">
             <div id="crossSectionWEPlot"></div>
             <div id="crossSectionSNPlot"></div>
+        </div>
+
+        <!-- Graphs Row 3: Observation Well Plots -->
+        <div class="graph-row">
+            <div id="obsWellOne"></div>
+            <div id="obsWellTwo"></div>
         </div>
 
         <!-- Contour Plot -->
