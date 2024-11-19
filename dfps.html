@@ -4,12 +4,12 @@
     <!-- Meta Tags and Title -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pumping Well Depletion of a Fully Penetrating Stream</title>
-    <link rel="icon" type="image/x-icon" href="img/dfps.jpg">
+    <title>Depletion Fully Penetrating Stream</title>
+    <link rel="icon" type="image/x-icon" href="img/wtr.jpg">
 
     <!-- External CSS and Fonts -->
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/w3.css">dfps
+    <link rel="stylesheet" href="css/w3.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Merriweather&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
 
@@ -144,7 +144,7 @@
             flex-wrap: nowrap;
         }
 
-        #qFractionPlot, #streamflowPlot, #crossSectionWEPlot, #crossSectionSNPlot, #obsWellOne, #obsWellTwo {
+        #qFractionPlot, #streamflowPlot, #crossSectionWEPlot, #crossSectionSNPlot {
             flex: 1;
             min-width: 300px;
             height: 400px;
@@ -204,6 +204,11 @@
                 min-width: unset;
             }
         }
+
+        /* Added style to handle the missing data point at the well location */
+        .js-plotly-plot .plotly .scatter .points path[opacity="0"] {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -217,7 +222,10 @@
         <a href="index.html" class="w3-bar-item w3-button w3-padding-large">DFPS-Home</a>
         <a href="about.html" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">About</a>
         <a href="theory-dfps.html" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Theory</a>
+        <a href="example-dfps.html" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Example Application</a>
         <a href="how-to-use-dfps.html" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">How to Use</a>
+        <a href="exercise-dfps.html" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Exercise</a>
+        <a href="further-exploration-dfps.html" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Further Exploration</a>
         <a href="https://gw-project.org/" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">The Groundwater Project</a>
     </div>
 </div>
@@ -225,67 +233,45 @@
 <!-- Main Content -->
 <main id="data">
     <div id="data_div">
-        <h2>Pumping Well Depletion of a Fully Penetrating Stream (DFPS)</h2>
+        <h2>Depletion Fully Penetrating Stream</h2>
 
         <!-- Form and Image -->
         <div class="top-row" style="display: flex; flex-wrap: wrap; gap: 30px;">
             <!-- Form Section -->
             <div class="form-container" style="flex: 1; min-width: 300px;">
                 <form id="data_form" method="POST" action="">
-                    <h4><b>Submit Inputs:</b> example values are provided as defaults 
-                        <font color="red">input values are in typical units then converted to consistent units for calculation</font></h4>
+                    <h4><b>Submit Inputs:</b> example values are provided as defaults</h4>
                     <div>
-                        <label for="d">Distance to stream, <b>d</b><font color="red"> (m)</font></label>
+                        <label for="d">Distance to stream, <b>d</b> (m)</label>
                         <input type="number" step="any" id="disttoS" name="in_d" value="50" placeholder="Enter Distance to Stream" required>
                     </div>
                     <div>
-                        <label for="F">Factor for map size, <b>F</b> <font color="red"> (:) </font></label>
+                        <label for="F">Factor for map size, <b>F</b> (:)</label>
                         <input type="number" step="any" id="factor" name="in_F" value="4" placeholder="Factor" required>
                     </div>
                     <div>
-                        <label for="Ka">Aquifer hydraulic conductivity, <b>K<sub>a</sub></b>, <font color="red"> (cm/s)</font></label>
-                        <input type="number" step="any" id="conductivity" name="in_Ka" value=".01" placeholder="Hydraulic Conductivity" required>
+                        <label for="Ka">Aquifer hydraulic conductivity, <b>K<sub>a</sub></b>, (cm/s)</label>
+                        <input type="number" step="any" id="conductivity" name="in_Ka" value=".001" placeholder="Hydraulic Conductivity" required>
                     </div>
                     <div>
-                        <label for="b">Aquifer thickness, <b>b</b> <font color="red"> (m)</font></label>
+                        <label for="b">Aquifer thickness, <b>b</b> (m)</label>
                         <input type="number" step="any" id="thickness" name="in_b" value="10" placeholder="Aquifer Thickness" required>
                     </div>
                     <div>
-                        <label for="Sy">Specific yield, <b>S<sub>y</sub></b> <font color="red"> (:) </font></label>
+                        <label for="Sy">Specific yield, <b>S<sub>y</sub></b> (:)</label>
                         <input type="number" step="any" id="Sy" name="in_Sy" value="0.15" placeholder="Specific Yield" required>
                     </div>
                     <div>
-                        <label for="Qs">Streamflow rate, <b>Q<sub>s</sub></b> <font color="red">(m&sup3;/s)</font></label>
+                        <label for="Qs">Streamflow rate, <b>Q<sub>s</sub></b> (m&sup3;/s)</label>
                         <input type="number" step="any" id="streamrate" name="in_Qs" value="3" placeholder="Streamflow Rate" required>
                     </div>
                     <div>
-                        <label for="Qw">Pumping rate, <b>Q<sub>w</sub></b> <font color="red">(liters/min)</font></label>
+                        <label for="Qw">Pumping rate, <b>Q<sub>w</sub></b> (liters/min)</label>
                         <input type="number" id="pumprate" name="in_Qw" value="2000" placeholder="Pumping Rate" required>
                     </div>
                     <div>
-                        <label for="t">Pumping duration time, <b>t</b> <font color="red">(days)</font></label>
+                        <label for="t">Pumping duration time, <b>t</b> (days)</label>
                         <input type="number" step="any" id="pumptime" name="in_t" value="365.25" placeholder="Enter Pumping Duration" required>
-                    </div>
-<!--                     <div>
-                        <label for="t">Number of time increments, <b>t</b> <font color="red">(:)</font></label>
-                        <input type="number" step="any" id="Num_increments" name="in_n" value="10" placeholder="NUmber of time increments" required>
-                    </div>
--->                    
-                    <div>
-                        <label for="ox1">Observation Well 1, <b>ox1</b> <font color="red">(m)</font></label>
-                        <input type="number" step="any" id="ox1" name="in_ox1" value="20" placeholder="Enter x-coordinate for Observation Well 1" required>
-                    </div>
-                    <div>
-                        <label for="oy1">Observation Well 1, <b>oy1</b><font color="red">(m)</font></label>
-                        <input type="number" step="any" id="oy1" name="in_oy1" value="20" placeholder="Enter y-coordinate for Observation Well 1" required>
-                    </div>
-                    <div>
-                        <label for="ox2">Observation Well 2, <b>ox2</b> <font color="red">(m)</font></label>
-                        <input type="number" step="any" id="ox2" name="in_ox2" value="-100" placeholder="Enter x-coordinate for Observation Well 2" required>
-                    </div>
-                    <div>
-                        <label for="oy2">Observation Well 2, <b>oy2</b> <font color="red">(m)</font></label>
-                        <input type="number" step="any" id="oy2" name="in_oy2" value="-40" placeholder="Enter y-coordinate for Observation Well 2" required>
                     </div>
                     <div id="btn_wrapper">
                         <button type="submit"><b>Submit</b></button>
@@ -296,9 +282,8 @@
 
             <!-- Image Section -->
             <div class="image-container" style="flex: 1; min-width: 300px;">
-                <img src="img/DFPSconceptualCrossAndPlan.png" alt="DFPS conceptual model cross section and plan views">
+                <img src="img/dfps.png" alt="Water Table Recharge flow domain">
             </div>
-            
         </div>
 
         <!-- Graphs Row 1: Q Fraction and Streamflow Plots -->
@@ -318,12 +303,6 @@
         <div class="graph-row">
             <div id="crossSectionWEPlot"></div>
             <div id="crossSectionSNPlot"></div>
-        </div>
-
-        <!-- Graphs Row 3: Observation Well Plots -->
-        <div class="graph-row">
-            <div id="obsWellOne"></div>
-            <div id="obsWellTwo"></div>
         </div>
 
         <!-- Contour Plot -->
@@ -350,7 +329,7 @@
                 </p>
                 <p class="w3-text-light-grey">
                     <a href="https://gw-project.org/terms-of-use/">The Groundwater Project Terms of Use</a>
-                    &nbsp;&nbsp;&nbsp;&nbsp;The user of DFPS assumes all responsibility for how the program is used.
+                    &nbsp;&nbsp;&nbsp;&nbsp;The user of this tool assumes all responsibility for how the program is used.
                 </p>
             </div>
         </div>

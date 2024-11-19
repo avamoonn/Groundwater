@@ -1,21 +1,29 @@
 // calculations.js
 
 /**
- * Contains all functions for DFPS calculations
- */
-
-/**
  * Complementary Error Function (erfc)
  *
  * @param {number} x - The input value.
  * @returns {number} - The complementary error function value.
  */
 export function erfc(x) {
+  return 1 - erf(x);
+}
+
+/**
+ * Error Function (erf)
+ *
+ * Approximation using numerical methods.
+ *
+ * @param {number} x - The input value.
+ * @returns {number} - The error function value.
+ */
+function erf(x) {
   // Save the sign of x
   const sign = x >= 0 ? 1 : -1;
   x = Math.abs(x);
 
-  // Constants for the approximation
+  // Constants
   const a1 = 0.254829592;
   const a2 = -0.284496736;
   const a3 = 1.421413741;
@@ -23,89 +31,18 @@ export function erfc(x) {
   const a5 = 1.061405429;
   const p = 0.3275911;
 
-  // Abramowitz and Stegun formula 7.1.26
-  const t = 1.0 / (1.0 + p * x);
-  const poly =
-    a1 +
-    a2 * t +
-    a3 * Math.pow(t, 2) +
-    a4 * Math.pow(t, 3) +
-    a5 * Math.pow(t, 4);
-  const y = poly * t * Math.exp(-x * x);
+  // Approximation
+  const t = 1 / (1 + p * x);
+  const y =
+    1 - ((((a5 * t + a4) * t + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
 
-  return sign === 1 ? y : 2 - y;
-}
-
-/**
- * Well Function W(u)
- *
- * Approximates the well function using a series expansion for u < 1
- * and an asymptotic expansion for u >= 1.
- * Reference: Hydrogeology textbooks and numerical methods.
- *
- * @param {number} u - The input value.
- * @returns {number} - The well function value.
- */
-export function W(u) {
-  if (u === 0) {
-    return 0;
-  } else if (u < 1) {
-    // Series expansion for u < 1
-    const eulerMascheroni = 0.5772156649;
-    let sum = eulerMascheroni - Math.log(u);
-    const term = u;
-    let n = 1;
-    const maxIterations = 100;
-    const tolerance = 1e-10;
-
-    while (Math.abs(term / n) > tolerance && n < maxIterations) {
-      sum += (Math.pow(-1, n + 1) * Math.pow(u, n)) / n;
-      n++;
-    }
-
-    return sum;
-  } else {
-    // Asymptotic expansion for u >= 1
-    // W(u) ≈ exp(-u) / u * (1 - 1/u + 2/u² - 6/u³ + ...)
-    let sum = 0;
-    const maxIterations = 10;
-    const tolerance = 1e-10;
-    for (let n = 0; n < maxIterations; n++) {
-      const term = ((-1) ** n * factorial(n)) / Math.pow(u, n + 1);
-      sum += term;
-      if (Math.abs(term) < tolerance) {
-        break;
-      }
-    }
-    return Math.exp(-u) * sum;
-  }
-}
-
-/**
- * Factorial Function
- *
- * Computes the factorial of a non-negative integer n.
- *
- * @param {number} n - The input integer.
- * @returns {number} - The factorial of n.
- */
-export function factorial(n) {
-  if (n < 0) {
-    throw new Error("Factorial is not defined for negative numbers.");
-  }
-  if (n === 0 || n === 1) return 1;
-  let result = 1;
-  for (let i = 2; i <= n; i++) {
-    result *= i;
-  }
-  return result;
+  return sign * y;
 }
 
 /**
  * Calculate Stream Depletion Fraction (Qfraction) Over Time
  *
- * Equation 2.1:
- * Qfraction = erfc( (d² * Sy) / (4 * T * t) )
+ * Qfraction = erfc( d / (2 * sqrt(T * t / Sy)) )
  *
  * @param {number} d - Distance from well to stream (meters).
  * @param {number} Sy - Specific yield (dimensionless).
@@ -117,24 +54,26 @@ export function calculateQFraction(d, Sy, T, t) {
   if (t <= 0) {
     throw new Error("Time 't' must be greater than 0.");
   }
-  const argument = (d * d * Sy) / (4 * T * t);
+  const argument = d / (2 * Math.sqrt((T * t) / Sy));
   return erfc(argument);
 }
 
 /**
  * Calculate Drawdown at Location (x, y) and Time t
  *
- * Equation 2.4:
- * s(x, y, t) = (Qw / (4πT)) * (W(u) - W(u'))
+ * s(x, y, t) = (Qw / (4πT)) * [ W(u) + W(u') ]
+ *
  * where:
  *   u = (r² * Sy) / (4 * T * t)
- *   u' = ((2d - r)² * Sy) / (4 * T * t)
+ *   u' = (r'² * Sy) / (4 * T * t)
  *   r = sqrt((x - xwell)² + (y - ywell)²)
+ *   r' = sqrt((x - xImage)² + (y - ywell)²)
+ *   xImage = xwell + 2d (location of image well)
  *
  * @param {number} x - X-coordinate of the grid point (meters).
  * @param {number} y - Y-coordinate of the grid point (meters).
  * @param {number} t - Time since pumping began (days).
- * @param {number} Qw - Pumping rate (m³/s).
+ * @param {number} Qw - Pumping rate (m³/day).
  * @param {number} T - Transmissivity (m²/day).
  * @param {number} Sy - Specific yield (dimensionless).
  * @param {number} d - Distance from well to stream (meters).
@@ -147,176 +86,56 @@ export function calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell) {
     throw new Error("Time 't' must be greater than 0.");
   }
 
-  const r = calculateDistance(x, y, xwell, ywell);
-  const u = (r * r * Sy) / (4 * T * t);
-  const uPrime = ((2 * d - r) * (2 * d - r) * Sy) / (4 * T * t);
+  const rSquared = (x - xwell) ** 2 + (y - ywell) ** 2;
+  const u = (rSquared * Sy) / (4 * T * t);
 
-  const W_u = W(u);
-  const W_uPrime = W(uPrime);
+  const xImage = xwell + 2 * d; // Image well x-coordinate
+  const rPrimeSquared = (x - xImage) ** 2 + (y - ywell) ** 2;
+  const uPrime = (rPrimeSquared * Sy) / (4 * T * t);
 
-  const drawdown = (Qw / (4 * Math.PI * T)) * (W_u - W_uPrime);
+  const W_u = wellFunction(u);
+  const W_uPrime = wellFunction(uPrime);
+
+  const drawdown = (Qw / (4 * Math.PI * T)) * (W_u + W_uPrime);
 
   return drawdown;
 }
 
 /**
- * Calculate Straight-Line Distance r to the Well
+ * Well Function W(u)
  *
- * Equation 2.4 (part of grid calculations):
- * r = sqrt((xgrid - xwell)² + (ygrid - ywell)²)
+ * Approximation using exponential integral.
  *
- * @param {number} xgrid - X-coordinate of the grid point (meters).
- * @param {number} ygrid - Y-coordinate of the grid point (meters).
- * @param {number} xwell - X-coordinate of the well (meters).
- * @param {number} ywell - Y-coordinate of the well (meters).
- * @returns {number} - Distance r (meters).
+ * @param {number} u - The input value.
+ * @returns {number} - The well function value.
  */
-export function calculateDistance(xgrid, ygrid, xwell, ywell) {
-  return Math.sqrt(Math.pow(xgrid - xwell, 2) + Math.pow(ygrid - ywell, 2));
-}
-
-/**
- * Calculate Logarithmic Time Steps
- *
- * This function calculates logarithmically spaced time steps.
- *
- * @param {number} t - Total time (days).
- * @param {number} n - Number of increments.
- * @returns {number[]} - Array of cumulative time steps.
- */
-export function calculateLogarithmicTimeSteps(t, n) {
-  const timeSteps = [];
-  const base = 2.5;
-
-  const firstStep = t * (1.5 / (Math.pow(base, n) - 1));
-
-  let cumulativeTime = firstStep;
-  timeSteps.push(cumulativeTime);
-
-  for (let i = 1; i < n; i++) {
-    const nextStep = firstStep * Math.pow(base, i);
-    cumulativeTime += nextStep;
-    timeSteps.push(cumulativeTime);
-  }
-
-  // Adjust the final step to exactly match the total time 't'
-  timeSteps[timeSteps.length - 1] = t;
-
-  return timeSteps;
-}
-
-/**
- * Calculate velocity using Darcy's Law
- *
- * @param {number} hmax - The maximum hydraulic head.
- * @param {number} hmin - The minimum hydraulic head.
- * @param {number} Ka - Hydraulic conductivity.
- * @param {number} L - The grid cell side length.
- * @returns {number} - Velocity (m/s).
- */
-export function calculateVelocity(hmax, hmin, Ka, L) {
-  return ((hmax - hmin) * Ka) / (0.02 * L);
-}
-
-/**
- * Creates a velocity grid for groundwater flow simulation.
- *
- * @param {number} gridSize - The number of grid points along one dimension (gridSize x gridSize grid).
- * @param {number} Ka - The hydraulic conductivity of the aquifer.
- * @returns {Array<Array<{x: number, y: number, velocity: number}>>} A 2D array representing the velocity grid.
- */
-export function createVelocityGrid(gridSize, Ka) {
-  const grid = [];
-  const L = 100 / (gridSize - 1);
-
-  for (let i = 0; i < gridSize; i++) {
-    const row = [];
-    for (let j = 0; j < gridSize; j++) {
-      const xgrid = i * L;
-      const ygrid = j * L;
-      const r = Math.sqrt((xgrid - 50) ** 2 + (ygrid - 50) ** 2);
-
-      const hmax = 10 - 0.01 * r;
-      const hmin = 5 - 0.005 * r;
-
-      // Calculate velocity using Darcy's Law
-      const v = calculateVelocity(hmax, hmin, Ka, L);
-
-      row.push({
-        x: xgrid,
-        y: ygrid,
-        velocity: v,
-      });
+export function wellFunction(u) {
+  if (u === 0) {
+    return 0;
+  } else if (u < 1) {
+    // Use series expansion
+    const eulerMascheroni = 0.5772156649;
+    let sum = -Math.log(u) + eulerMascheroni;
+    let term = u;
+    let n = 1;
+    while (term > 1e-8) {
+      sum -= term / n;
+      n++;
+      term *= -u;
     }
-    grid.push(row);
+    return sum;
+  } else {
+    // Use approximation for large u
+    return Math.exp(-u) / u;
   }
-  return grid;
-}
-
-/**
- * Displays a velocity grid in an HTML table format.
- *
- * This function retrieves the hydraulic conductivity value from an input element,
- * creates a velocity grid using the specified grid size and hydraulic conductivity,
- * and then displays the grid in a table format within a specified result div.
- *
- * The table cells contain the coordinates and velocity at each grid point.
- *
- * @function
- * @name displayVelocityGrid
- * @returns {void}
- */
-export function displayVelocityGrid() {
-  const gridSize = 21;
-  const Ka = parseFloat(document.getElementById("conductivity").value);
-  const grid = createVelocityGrid(gridSize, Ka);
-
-  const resultDiv = document.getElementById("result_message");
-  resultDiv.innerHTML = "<h4>Velocity Grid:</h4>";
-
-  let table = '<table border="1">';
-  for (let i = 0; i < grid.length; i++) {
-    table += "<tr>";
-    for (let j = 0; j < grid[i].length; j++) {
-      const point = grid[i][j];
-      table += `<td>(${point.x.toFixed(2)}, ${point.y.toFixed(
-        2
-      )}) <br> V: ${point.velocity.toFixed(4)} m/s</td>`;
-    }
-    table += "</tr>";
-  }
-  table += "</table>";
-
-  resultDiv.innerHTML += table;
-}
-
-/**
- * Calculate Stream Flow Rate (Q)
- *
- * Calculates the flow rate across a cross-sectional area of the stream,
- * using hydraulic conductivity, hydraulic gradient, and cross-sectional area.
- *
- * @param {number} Ka - Hydraulic conductivity of the stream bed (m/day).
- * @param {number} gradient - Hydraulic gradient (dimensionless).
- * @param {number} area - Cross-sectional area of the stream (m²).
- * @returns {number} - Stream flow rate (Q) in cubic meters per day (m³/day).
- */
-export function calculateStreamFlowRate(Ka, gradient, area) {
-  if (Ka <= 0 || gradient <= 0 || area <= 0) {
-    throw new Error("All parameters must be positive and non-zero.");
-  }
-
-  // Darcy's Law: Q = Ka * gradient * area
-  const Q = Ka * gradient * area;
-  return Q; // Stream flow rate in m³/day
 }
 
 /**
  * Calculate Stream Leakage
  *
- * @param {number} Qw - Pumping rate
+ * @param {number} Qw - Pumping rate (m³/day)
  * @param {number} Qfraction - Stream depletion fraction
- * @returns {number} - Stream leakage rate
+ * @returns {number} - Stream leakage rate (m³/day)
  */
 export function calculateStreamLeakage(Qw, Qfraction) {
   return Qw * Qfraction;
@@ -325,10 +144,39 @@ export function calculateStreamLeakage(Qw, Qfraction) {
 /**
  * Calculate Stream Discharge
  *
- * @param {number} Qs - Initial stream discharge
- * @param {number} QstreamLeakage - Stream leakage rate
- * @returns {number} - Remaining stream discharge
+ * @param {number} Qs - Initial stream discharge (m³/day)
+ * @param {number} QstreamLeakage - Stream leakage rate (m³/day)
+ * @returns {number} - Remaining stream discharge (m³/day)
  */
 export function calculateStreamDischarge(Qs, QstreamLeakage) {
   return Qs - QstreamLeakage;
+}
+
+/**
+ * Calculate Logarithmic Time Steps
+ *
+ * This function calculates logarithmically spaced time steps.
+ *
+ * @param {number} totalTime - Total time (days).
+ * @param {number} n - Number of increments.
+ * @param {number} multiplier - Multiplier for time steps.
+ * @returns {number[]} - Array of cumulative time steps.
+ */
+export function calculateLogTimeSteps(totalTime, n, multiplier) {
+  let times = [];
+  let time =
+    (totalTime * (multiplier - 1)) / (Math.pow(multiplier, n) - 1 || 1);
+  let cumulativeTime = time;
+  times.push(cumulativeTime);
+
+  for (let i = 1; i < n; i++) {
+    time *= multiplier;
+    cumulativeTime += time;
+    times.push(cumulativeTime);
+  }
+
+  // Ensure the last time step is exactly totalTime
+  times[times.length - 1] = totalTime;
+
+  return times;
 }
