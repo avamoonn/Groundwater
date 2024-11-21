@@ -58,8 +58,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 <div class="w3-row-padding  w3-sand w3-margin-bottom w3-container">
   <div class="w3-content  w3-center"><div class="w3-whole"><w3-center>
       <h1>How to Use DFPS</h1>
-      <iframe width="350" src="https://youtube.com/embed/xZz0V1fV5H8" frameborder="0" allowfullscreen>
-     </iframe>
+
   </div>
 </div>
 
@@ -79,130 +78,54 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
       </div>
     </div>
   </div>
+ <!-- Explanation of Outputs -->
+<a id="results"></a>
+<div class="w3-row-padding w3-sand w3-container">
+  <div class="w3-content">
+    <h3>Explanation of Outputs</h3>
+    <div class="w3-whole">
+      <p class="w3-text-dark-grey">The interactive outputs include several graphs and visualizations to illustrate the effects of groundwater pumping on streams and aquifers over time.</p>
 
-  <!-- Results -->
-  <a id="results"><a/>
-  <div class="w3-row-padding w3-sand w3-container">
-    <div class="w3-content">
-      <h3>Explanation of Outputs</h3>
-      <div class="w3-whole">
-        <p class="w3-text-dark-grey">The net recharge is precipitation minus runoff minus evapotranspiration 
-          and is shown in millimeters per year, then converted to meters per day.</p>
-        <div class="w3-container w3-center">
-          <img src="img/RechargeRate.jpg" alt="Display of calucalted recharge rate" class="w3-image">
-        </div>
-        <p class="w3-text-dark-grey">Next, flow to the left, top, and right boundaries is printed in cubic 
-          meters per day per meter of length “into the drawing”. That is, flow to or from each meter of land 
-          at the surface and each meter along the bank of the water bodies represented by the constant heads. 
-          Negative values represent flow to the left or up. Positive values represent flow to the right or down. 
-          </p> 
-        <div class="w3-container w3-center">
-          <img src="img/FlowRates.jpg" alt="Display of calucalted flow rates" class="w3-image">
-        </div>
-        <p class="w3-text-dark-grey"></p>In the instance shown above, the volumetric budget balances, 
-        with the flow in at the surface being equal to the sum of outflow to the left and right water bodies. 
-        <br><br>
-        That is, 0.01369 = 0.003245 + 0.01044. It is important to recognize that for this analytical model,
-        the sign of the flow rate indicates the direction of flow with positive being to the right and down, 
-        not flow into and out of the system as 
-        is the protocol for numerical models.
-        </p>
-        <p class="w3-text-dark-grey">This is followed by the distance to the groundwater divide from the left boundary  
-          along with the head at that location.</p>
-          <div class="w3-container w3-center">
-            <img src="img/Divide2.jpg" alt="Display of calucalted divide loaction and head" class="w3-image">
-          </div>
-        <p class="w3-text-dark-grey">Below that, graphs of the water table elevation and the flow rate are displayed 
-            with elevation of the water table in blue and flow rate in orange. On a computer, hovering the 
-            cursor over the line of the graph indicates the y value at each x value. On a mobile device, 
-            lightly touching the curve provides the y value, while dragging your finger on the graph shifts 
-            and resizes it. If the adjusted view is not useful, you can return to the original view by 
-            pushing submit again.</p>
-            <div class="w3-container w3-center">
-              <img src="img/Graphs2.jpg" alt="Display of graphs of water table elevation and flow rate as a function of x" 
-              class="w3-image">
-            </div>
-        <p class="w3-text-dark-grey">If unreasonable values are input, messages are provided to draw 
-            attention to input errors and to the possibility that the results are unexpected or unreasonable. 
-            For example, a negative value for a head at a boundary presents a physical impossibility because 
-            it means the thickness of the aquifer at the boundary is less than zero so no flow could occur. 
-            Thus, if -8 is entered for the head on the right, rather than getting results, a message appears 
-            in red indicating the head must be greater than zero. Results are not printed and the graphs 
-            show zero for every value of x. If I correct the error and press submit, the results are displayed.
-            </p>
-            <div class="w3-container w3-center">
-              <img src="img/HrMustBeGtr0.jpg" alt="Display of error message for Hr -8" 
-              class="w3-image">
-            </div>
-            <br>
-            <div class="w3-container w3-center">
-              <img src="img/GraphsHr-8.jpg" alt="Display of graphs for Hr -8" 
-              class="w3-image">
-            </div>
-        <p class="w3-text-dark-grey">If a combination of values is entered that results in the water 
-              table being higher than the land surface (in this case K=0.01 is changed to K=0.001), 
-              a red message appears indicating the difference between the maximum water table elevation
-              and the ground surface elevation (as entered on the form). In this case about 8 meters (19.9-12). 
-              Given that only one value is input for surface elevation, the 
-              modeler may want to use something less than the maximum surface elevation given its only 
-              purpose is to raise a red flag when the water table is high.
-              </p>
-              <div class="w3-container w3-center">
-                <img src="img/HighWaterTableMsg.jpg" alt="Display of high water table message for K 0.001" 
-                class="w3-image">
-              </div>
-        <p class="w3-text-dark-grey">If the net recharge is quite small (say 1mm/yr), a divide will not 
-              develop. The results will explain that the divide is calculated outside the domain at a 
-              distance equal to what would be required to accumulate sufficient recharge to equal the 
-              inflow at the boundary. This is a logical result mathematically but does not have physical 
-              significance.
-              </p>
-              <div class="w3-container w3-center">
-                <img src="img/NoDivideMsg.jpg" alt="Display of no divide message for small recharge" 
-                class="w3-image">
-              </div>
-              <br>
-              <div class="w3-container w3-center">
-                <img src="img/GraphsNoDivide.jpg" alt="Display of graphs for no divide" 
-                class="w3-image">
-              </div>
-        <p class="w3-text-dark-grey">If a combination of values results in the water table being below the 
-              aquifer bottom, error messages are printed. In this case net recharge is entered as -600, 
-              so groundwater is discharging up through the surface at a rate 
-              so high that it cannot be supported given the properties that were input for the aquifer. Although the 
-              mathematics show balanced flow, the situation is not physically possible. The results are not valid 
-              because the assumptions made to develop the equations are broken. 
-              That is, uniform flow cannot occur at the surface given that nearly half the aquifer is dry at the 
-              values required to support the flow and the flow cannot be viewed as approximately horizontal.
-              </p>
-              <p>Negative recharge is always shown in red to draw attention to it in case it is an input error.</p>
-              <div class="w3-container w3-center">
-                <img src="img/BelowBottomMsg.jpg" alt="Display of water table below aquifer bottom" 
-                class="w3-image">
-              </div>
-              <br>
-              <div class="w3-container w3-center">
-                <img src="img/GraphsBelowBottom.jpg" alt="Display of graphs for water table below aquifer bottom" 
-                class="w3-image">
-              </div>
-        <p class="w3-text-dark-grey">If a net negative recharge can be supported by the system, 
-          no error messages are printed and the water table has a concave form. In this case, -200, 
-          groundwater discharges up through the 
-          surface and is balanced by inflow from the water bodies. 
-          </p>
-          <div class="w3-container w3-center">
-            <img src="img/ResultsNetNegativeRecharge2.jpg" alt="Results for net negative recharge" 
-            class="w3-image">
-          </div>
-          <br>
-          <div class="w3-container w3-center">
-            <img src="img/GraphsNetNegativeRecharge2.jpg" alt="Display of graphs for  net negative recharge" 
-            class="w3-image">
-          </div>
-          <br>
+      <h4 class="w3-text-dark-grey">1. Stream Depletion Fraction (Qfraction) vs. Time</h4>
+      <p class="w3-text-dark-grey">This graph shows the fraction of the pumping rate being drawn from the stream over time. Initially, groundwater provides most of the pumping demand, but as time progresses, the stream contributes a higher fraction. This reflects the increasing hydraulic connectivity between the well and the stream.</p>
+      <div class="w3-container w3-center">
+        <img src="img/qfraction.png" alt="Stream Depletion Fraction Graph" class="w3-image" style="max-width: 50%; height: auto;">
       </div>
+
+      <h4 class="w3-text-dark-grey">2. Stream Flow Rate (Discharge) vs. Time</h4>
+      <p class="w3-text-dark-grey">This graph displays the decreasing discharge of the stream as more water is drawn into the well. The stream's flow stabilizes at a reduced rate over time, showing the hydraulic response to prolonged pumping.</p>
+      <div class="w3-container w3-center">
+        <img src="img/streamflow.png" alt="Stream Flow Rate Graph" class="w3-image" style="max-width: 50%; height: auto;">
+      </div>
+
+      <h4 class="w3-text-dark-grey">3. Drawdown vs. Time (Observation Wells 1 and 2)</h4>
+      <p class="w3-text-dark-grey">These graphs illustrate the lowering of the water table at two specific observation wells over time. The drawdown is influenced by proximity to the pumping well and the transmissivity of the aquifer.</p>
+      <div class="w3-container w3-center">
+        <img src="img/Well1Drawdown.jpg" alt="Observation Well 1 Drawdown" class="w3-image" style="max-width: 50%; height: auto;">
+      </div>
+      <div class="w3-container w3-center">
+        <img src="img/Well2Drawdown.jpg" alt="Observation Well 2 Drawdown" class="w3-image" style="max-width: 50%; height: auto;">
+      </div>
+
+      <h4 class="w3-text-dark-grey">4. W-E and S-N Cross-Sections of Drawdown</h4>
+      <p class="w3-text-dark-grey">These cross-sectional graphs show the spatial variation in drawdown along west-east and south-north axes at selected times. They provide a detailed look at how drawdown changes across the aquifer in relation to the well and the stream.</p>
+      <div class="w3-container w3-center">
+        <img src="img/CrossSectionWE.jpg" alt="W-E Cross-Section of Drawdown" class="w3-image" style="max-width: 50%; height: auto;">
+      </div>
+      <div class="w3-container w3-center">
+        <img src="img/CrossSectionSN.jpg" alt="S-N Cross-Section of Drawdown" class="w3-image" style="max-width: 50%; height: auto;">
+      </div>
+
+      <h4 class="w3-text-dark-grey">5. Contour Map of Drawdown</h4>
+      <p class="w3-text-dark-grey">The contour map represents the spatial distribution of drawdown across the entire aquifer at a specific time. It uses color coding to show the magnitude of drawdown, with closer proximity to the well showing higher drawdown values.</p>
+      <div class="w3-container w3-center">
+        <img src="img/ContourMap.jpg" alt="Contour Map of Drawdown" class="w3-image" style="max-width: 50%; height: auto;">
+      </div>
+
+      <p class="w3-text-dark-grey">These visualizations, combined, provide a comprehensive understanding of groundwater dynamics, emphasizing the interaction between pumping wells, aquifers, and streams. If input errors occur, the tool provides helpful messages to ensure results are reliable and meaningful.</p>
     </div>
   </div>
+</div>
 
 
 <!-- Footer -->
