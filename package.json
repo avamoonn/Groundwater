@@ -10,6 +10,7 @@
     "test:e2e:headless": "node ui_test/ui.spec.js --headless"
   },
   "dependencies": {
+    "mathjs": "^14.0.0",
     "mocha": "10.7.3"
   },
   "devDependencies": {
