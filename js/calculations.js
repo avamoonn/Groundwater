@@ -101,10 +101,10 @@ export function calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell) {
     return null;
   }
 
-  const u = (r ** 2 * Sy) / (4 * T * t);
+  const u = (r * Sy) / (4 * T * t);
   const xImage = xwell + 2 * d; // Image well x-coordinate
   const rPrime = Math.sqrt((x - xImage) ** 2 + (y - ywell) ** 2);
-  const uPrime = (rPrime ** 2 * Sy) / (4 * T * t);
+  const uPrime = (rPrime * Sy) / (4 * T * t);
   console.log(`Computed u: ${u}, uPrime: ${uPrime}`);
 
   if (u <= 0 || uPrime <= 0 || isNaN(u) || isNaN(uPrime)) {
