@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+<title>How to Use DFPS (Pumping Well Depletion of a Fully Penetrating Stream)</title>
+<link rel="icon" type="image/x-icon" href="img/dfpshowto.jpg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+  h1 {
+    margin-bottom: 0;
+}
+.w3-row-padding {
+    padding-top: 0;
+}
+body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
+.w3-bar,h1,button {font-family: "Montserrat", sans-serif}
+body {
+    margin: 0; /* Removes default margin from the body */
+    padding: 0; /* Removes default padding from the body */
+}
+h1 {
+    margin: 0; /* Removes any margin from the title */
+    padding: 20px 0; /* Optional: Adjusts padding for spacing */
+    text-align: center; /* Ensures title is centered */
+}
+
+.w3-container {
+    margin: 0; /* Ensures no extra margins between sections */
+    padding: 0; /* Ensures no extra padding between sections */
+}
+.w3-row-padding:first-of-type {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+</style>
+<script src="js/script.js"></script>
+</head>
+<body>
+
+<!-- Navbar on big screens-->
+<div class="w3-top">
+  <div class="w3-bar custom-black w3-card w3-left-align w3-large">
+<a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-indigo w3-large custom-black" href="javascript:void(0);" onclick="menuToggle()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+    <a href="index.html" class="w3-bar-item w3-button w3-padding-large">DFPS-Home</a>
+    <a href="about.html" target="DFPSabout" class="w3-bar-item w3-button w3-hide-small w3-padding-large">About</a>
+    <a href="theory-dfps.html" target="DFPStheory" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Theory</a>
+    <a href="how-to-use-dfps.html" target="DFPShowto" class="w3-bar-item w3-button w3-hide-small w3-padding-large">How to Use</a>
+    <a href="https://gw-project.org/" target="DFPSgwporg" class="w3-bar-item w3-button w3-hide-small w3-padding-large">The Groundwater Project</a>
+  </div>
+
+  <!-- Navbar on small screens -->
+  <div id="navSmall" class="w3-bar-block custom-black w3-hide w3-hide-large w3-hide-medium w3-large">
+    <a href="about.html" target="DFPSabout" class="w3-bar-item w3-button w3-padding-large">About</a>
+    <a href="theory-dfps.html" target="DFPStheory" class="w3-bar-item w3-button w3-padding-large">Theory</a>
+    <a href="how-to-use-dfps.html" target="DFPShowto" class="w3-bar-item w3-button w3-padding-large">How to Use</a>
+    <a href="https://gw-project.org/" target="DFPSgwporg" class="w3-bar-item w3-button w3-padding-large">The Groundwater Project</a>
+  </div>
+
+<!-- RUN -->
+<header class="w3-container custom-blue w3-center">
+  <div class="w3-bar">
+    <button class="w3-button w3-green w3-padding-large w3-large w3-margin w3-round-xlarge" onclick="window.open('dfps.html',)">Run DFPS (Pumping Well Depletion of a Fully Penetrating Stream)</button>
+  </div>
+</header>
+</div>
+
+<br><br><br><br><br>
+
+<!-- Title -->
+<div class="w3-margin-top w3-sand w3-container">
+  <div class="w3-content w3-center">
+      <h1>How to Use DFPS</h1>
+  </div>
+</div>
+
+<!-- Getting Started-->
+<div class="w3-row-padding w3-sand w3-container">
+  <div class="w3-content">
+      <h3>Getting Started</h3>
+      <p class="w3-text-dark-grey">To use DFPS, click the Green Run DFPS Button. Then, use the form to enter appropriate values. Use the specified units provided on the input page, and the website will make necessary conversions.</p>
+      <div class="w3-container w3-center">
+        <img src="img/Form.jpg" alt="Input form for DFPS" class="w3-image">
+      </div>
+      <p class="w3-text-dark-grey">Press Submit, and results will appear below the input form.</p>
+  </div>
+</div>
+
+<!-- Results -->
+<div class="w3-row-padding w3-sand w3-container">
+  <div class="w3-content">
+      <h3>Explanation of Outputs</h3>
+
+      <!-- Graph Explanations -->
+      <div class="w3-row-padding">
+        <h4>Fraction of Pumping Over Time</h4>
+        <p class="w3-text-dark-grey">This is a time-series graph showing the fraction of pumped water that is sourced from the stream over time. It tracks how quickly and to what extent the stream contributes to the well's water demand.</p>
+        <div class="w3-container w3-center">
+          <img src="img/fraction_pumping.png" alt="Fraction of Pumping Over Time" class="w3-image">
+        </div>
+      </div>
+
+      <div class="w3-row-padding">
+        <h4>Stream Flow Rate Over Time</h4>
+        <p class="w3-text-dark-grey">It is a graph of the stream's discharge rate as it changes due to pumping. It demonstrates how pumping reduces the stream's flow over time.</p>
+        <div class="w3-container w3-center">
+          <img src="img/StreamFlowPlaceholder.jpg" alt="Stream Flow Rate Over Time" class="w3-image">
+        </div>
+      </div>
+
+      <div class="w3-row-padding">
+        <h4>Drawdown at Observation Well 1</h4>
+        <div class="w3-container w3-center">
+          <img src="img/DrawdownWell1Placeholder.jpg" alt="Drawdown at Observation Well 1" class="w3-image">
+        </div>
+      </div>
+
+      <div class="w3-row-padding">
+        <h4>Drawdown at Observation Well 2</h4>
+        <p class="w3-text-dark-grey">Both Drawdown at Observation Well 1 and 2 are time-series graphs showing how drawdown evolves at specific observation wells. They analyze the temporal impact of pumping at different locations.</p>
+        <div class="w3-container w3-center">
+          <img src="img/DrawdownWell2Placeholder.jpg" alt="Drawdown at Observation Well 2" class="w3-image">
+        </div>
+      </div>
+
+      <div class="w3-row-padding">
+        <h4>W-E Cross-Section of Drawdown</h4>
+        <p class="w3-text-dark-grey">This graph is a longitudinal cross-sectional graph showing drawdown along a horizontal line passing through the well. It illustrates the impact of pumping in one direction to better understand lateral effects.</p>
+        <div class="w3-container w3-center">
+          <img src="img/CrossSectionWEPlaceholder.jpg" alt="W-E Cross-Section of Drawdown" class="w3-image">
+        </div>
+      </div>
+
+      <div class="w3-row-padding">
+        <h4>S-N Cross-Section of Drawdown</h4>
+        <p class="w3-text-dark-grey">This is a longitudinal cross-section graph showing drawdown along a vertical line beneath the stream. It focuses on the interaction between the pumping well and the stream.</p>
+        <div class="w3-container w3-center">
+          <img src="img/CrossSectionSNPlaceholder.jpg" alt="S-N Cross-Section of Drawdown" class="w3-image">
+        </div>
+      </div>
+
+      <div class="w3-row-padding">
+        <h4>Contour Map of Drawdown</h4>
+        <p class="w3-text-dark-grey">This displays the spatial distribution of drawdown, the drop in groundwater level, in a square domain surrounding the well. It allows for visualization of how pumping from the well affects groundwater levels in the vicinity, including the near stream.</p>
+        <div class="w3-container w3-center">
+          <img src="img/ContourMapPlaceholder.jpg" alt="Contour Map of Drawdown" class="w3-image">
+        </div>
+      </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="w3-container custom-dark-grey w3-padding-32">  
+  <div class="w3-row-padding w3-margin-bottom w3-container">
+    <div class="w3-content">
+      <p class="w3-text-light-grey"><a href="https://gw-project.org/privacy-policy/">The Groundwater Project Privacy Policy</a></p>
+      <p class="w3-text-light-grey"><a href="https://gw-project.org/terms-of-use/">The Groundwater Project Terms of Use</a></p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
