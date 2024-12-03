@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+<title>Theory: Pumping Well Depletion of a Fully Penetrating Stream</title>
+<link rel="icon" type="image/x-icon" href="img/dfpstheory.jpg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
+.w3-bar,h1,button {font-family: "Montserrat", sans-serif}
+</style>
+<script src="js/script.js"></script>
+</head>
+<body>
+
+<!-- Navbar on big screens-->
+<div class="w3-top">
+  <div class="w3-bar custom-black w3-card w3-left-align w3-large">
+<a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-indigo w3-large custom-black" href="javascript:void(0);" onclick="menuToggle()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+    <a href="index.html" class="w3-bar-item w3-button w3-padding-large">DFPS-Home</a>
+    <a href="about.html" target="DFPSabout" class="w3-bar-item w3-button w3-hide-small w3-padding-large">About</a>
+    <a href="theory-dfps.html" target="DFPStheory" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Theory</a>
+    <a href="how-to-use-dfps.html" target="DFPShowto" class="w3-bar-item w3-button w3-hide-small w3-padding-large">How to Use</a>
+    <a href="https://gw-project.org/" target="DFPSgwporg" class="w3-bar-item w3-button w3-hide-small w3-padding-large">The Groundwater Project</a>
+  </div>
+
+  <!-- Navbar on small screens -->
+  <div id="navSmall" class="w3-bar-block custom-black w3-hide w3-hide-large w3-hide-medium w3-large">
+    <a href="about.html" target="DFPSabout" class="w3-bar-item w3-button w3-padding-large">About</a>
+    <a href="theory-dfps.html" target="DFPStheory" class="w3-bar-item w3-button w3-padding-large">Theory</a>
+    <a href="how-to-use-dfps.html" target="DFPShowto" class="w3-bar-item w3-button w3-padding-large">How to Use</a>
+    <a href="https://gw-project.org/" target="DFPSgwporg" class="w3-bar-item w3-button w3-padding-large">The Groundwater Project</a>
+  </div>
+
+<!-- RUN -->
+<header class="w3-container custom-blue w3-center">
+  <div class="w3-bar">
+    <button class="w3-button w3-green w3-padding-large w3-large w3-margin w3-round-xlarge" onclick="window.open('dfps.html',)">Run DFPS (Pumping Well Depletion of a Fully Penetrating Stream)</button>
+  </div>
+</header>
+</div>
+
+  <br><br><br><br><br><br><br><br>
+
+<!-- Title -->
+<div class="w3-margin-top w3-container">
+  <div class="w3-content">
+      <h1>Theory underlying DFPS (Pumping Well Depletion of a Fully Penetrating Stream)</h1>
+    </div>
+  <br>
+</div>
+
+<!-- This Model -->
+<a id="ConceptualModel"></a>
+<div class="w3-row-padding w3-container">
+  <div class="w3-content">
+    <h3>The Conceptual Model for DFPS (Pumping Well Depletion of a Fully Penetrating Stream)</h3>
+    <div class="w3-whole">
+      <p class="w3-text-dark-grey">
+        When a water well drilled into an aquifer is pumped, the well water level declines and groundwater 
+        moves into the well 
+        lowering the water level in the aquifer adjacent to the well, which causes water further from the 
+        well to move toward the well, which in turn lowers the water level more. This creates what we 
+        call a cone of depression in the water levels around the well. If there is a stream nearby, the
+        decline of groundwater level induces flow from the stream into the aquifer. A schematic of the situation
+        is shown here.
+      </p>
+      <div class="w3-container w3-center">
+        <img src="img/DFPSConceptualModelx.5.png" alt="Pumping Well Depletion of a Fully Penetrating Stream cross section conceptual model" class="w3-image">
+      </div>
+      <ul>
+      <li><p class="w3-text-dark-grey">The aquifer is of infinite extent, has an impermeable base,
+        and the groundwater system is static before pumping starts.</p></li>
+      <li><p class="w3-text-dark-grey">The stream fully penetrates the aquifer and has a constant stage 
+        (i.e., the head along the stream does not change in space or time). 
+      </p></li>
+      <li><p class="w3-text-dark-grey">When pumping begins water is removed from storage. Ultimately a 
+        steady state is reached when there is no further change in aquifer storage and all the pumped 
+        water seeps into the aquifer from the stream.</li>
+      <li><p class="w3-text-dark-grey">
+        It is assumed that the flow of the stream is significantly larger
+        than the pumping rate of the well. This means that when all the pumped water is replaced by 
+        inflow from the stream to the aquifer, the stage of the stream does not change.
+      </p></li>
+      </ul>
+      <p class="w3-text-dark-grey">
+        This is illustrated below by the plan view presentation of equipotential lines labeled in meters and flow vectors for a case
+        with a stream stage of 100 meters. The labeled blue lines are equipotential lines and the red arrows are logarithmically 
+        scaled groundwater velocity vectors. 
+      </p>
+      
+      <div class="w3-container w3-center">
+        <img src="img/planviewdfpsx0.5.png" alt="Pumping Well Depletion of a Fully Penetrating Stream plan view of equipotential lines and flow lines" class="w3-image">
+      </div>
+
+      <p class="w3-text-dark-grey">Given values of 
+        <ul>
+        <li><p class="w3-text-dark-grey">well location relative to the stream</p></li>
+        <li><p class="w3-text-dark-grey">well pumping rate</p></li>
+        <li><p class="w3-text-dark-grey">aquifer hydraulic conductivity, thickness, and storativity</p></li>
+        <li><p class="w3-text-dark-grey">stream discharge (flow rate)</p></li>
+        </ul>
+        the model describes transient flow in a homogeneous porous material, solving for: </p>
+        <ul>
+        <li><p class="w3-text-dark-grey">drawdown around the pumping well</p></li>
+        <li><p class="w3-text-dark-grey">the fraction of pumping depleted from the stream, and</p></li>
+        <li><p class="w3-text-dark-grey">the stream flow rate</p></li>
+        </ul>
+        the model displays: </p>
+        <ul>
+        <li><p class="w3-text-dark-grey">fraction of pumping depleted from the stream versus time</p></li>
+        <li><p class="w3-text-dark-grey">stream flow rate versus time</p></li>
+        <li><p class="w3-text-dark-grey">profiles of drawdown through the well in the East-West and South-North directions</p></li>
+        <li><p class="w3-text-dark-grey">drawdown versus time in two observation wells at user selected locations</p></li>
+        <li><p class="w3-text-dark-grey">a plan view map of the drawdown values and velocity vectors to illustrate the flow pattern</p></li>
+        </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Governing Equations -->
+<a id="MathematicalModel"></a>
+<div class="w3-row-padding w3-container">
+  <div class="w3-content"><h3>The Mathematical Model</h3>
+    <p class="w3-text-dark-grey">
+      The Theis equation is used to describe the water level decline, s, in the aquifer at any distance, r, from a well that pumps 
+      at a constant rate, Q, at any time after pumping begins, t. An image well is used to represent the stream boundary. 
+      Image well methodology is discussed in Section 11.2 of 
+      <a href="https://gw-project.org/books/an-introduction-to-hydraulic-testing-in-hydrogeology-basic-pumping-slug-and-packer-methods/" > 
+      An Introduction to Hydraulic Testing in Hydrogeology</a>.
+      It is assumed the pumping rate, Q, is 
+      constant and the aquifer is homogeneous and isotropic (i.e., has the same properties at all locations 
+      and the properties are the same regardless of the direction of flow). The aquifer properties 
+      that determine the amount of drawdown are Transmissivity, T, 
+      and storativity, S. T is the product of hydraulic conductivity, K, and the thickness of the aquifer, b. 
+      Hydraulic conductivity describes the ease with which water moves through the aquifer and is analogous to 
+      the electrical conductivity of an object for the flow of current. Storativity describes the amount of 
+      water the aquifer can store for a given change in water level. It is equivalent to capacitance in an 
+      electrical circuit that describes the amount of charge that can be stored for a given voltage change. 
+      There are many places to read about the Theis equation, one is Section 8.1 of the PDF that can be 
+      downloaded free-of-charge from the Groundwater Project here: 
+      <a href="https://gw-project.org/books/an-introduction-to-hydraulic-testing-in-hydrogeology-basic-pumping-slug-and-packer-methods/" > 
+        An Introduction to Hydraulic Testing in Hydrogeology</a>.
+    </p>
+    <p class="w3-text-dark-grey">The Theis equation is solved as follows. </p>
+      <div class="w3-container w3-center">
+        <img src="img/Theis.png" alt="Theis equation" class="w3-image">
+      </div>
+      <p>The symbols are: s=drawdown, Qw=pumping rate, t=time, T=transmissivity, S=storativity, and x,y,z are 3-D Cartesian 
+        coordinates. For DFPS the equation is simplified to represent steady, one-dimensional flow in the x direction. It is
+        designed for confined conditions but can be applied to unconfined systems when the drawdown is small relative to 
+        the aquifer thickness (e.g., &lt;25%).
+    </p>
+    <p class="w3-text-dark-grey">The DFPS equations for calculating stream depletion is discussed in: 
+      Jenkins, C. T., 1968, Techniques for computing rate and volume of stream depletion by wells: 
+      Ground water, v. 6, no. 2, p. 37–46, <a href="https://doi:10.1111/j.1745-6584.1968.tb01641.x" > doi:10.1111/j.1745-6584.1968.tb01641.x</a> 
+       <p class="w3-text-dark-grey">The fraction of pumping that seeps into the aquifer from the stream is calculated as follows:</p>
+    <div class="w3-whole">
+      <div class="w3-container w3-center">
+        <img src="img/Qfraction.png" alt="Equation describing the fraction of pumping that is depleted from the stream" class="w3-image">
+      </div>
+       </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="w3-container custom-dark-grey w3-padding-32">  
+  <div class="w3-row-padding w3-margin-bottom w3-container">
+    <div class="w3-content">
+      <div class="w3-whole">
+      <p class="w3-text-light-grey"><a href="https://gw-project.org/privacy-policy/" > The Groundwater Project Privacy Policy</a> 
+        &nbsp;&nbsp;&nbsp;&nbsp; This interactive educational tool does not collect any data.</p>
+      <p class="w3-text-light-grey"><a href="https://gw-project.org/terms-of-use/" > The Groundwater Project Terms of Use</a>
+          &nbsp;&nbsp;&nbsp;&nbsp; The user of DFPS assumes all responsibility for how the program is used.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
