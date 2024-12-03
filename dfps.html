@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta Tags and Title -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pumping Well Depletion of a Fully Penetrating Stream</title>
+    <link rel="icon" type="image/x-icon" href="img/dfps.jpg">
+
+    <!-- External CSS and Fonts -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/w3.css">dfps
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Merriweather&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+
+    <!-- Plotly.js Library -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script type="module" src="js/dfps.js"></script>
+
+    <!-- Custom Styles -->
+    <style>
+        /* General Styles */
+        body, h1, h2, h3, h4, h5, h6 { font-family: "Lato", sans-serif; }
+        .w3-bar, h1, button { font-family: "Montserrat", sans-serif; }
+
+/* Time Controls Styling */
+        #timeControls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #timeControls input {
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-right: 10px;
+        }
+
+        #timeControls button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #2ecc71;
+            color: white;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #timeControls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Main Container */
+        #data_div {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            padding: 30px;
+            max-width: 100%;
+            box-sizing: border-box;
+            background-color: #f5f7fa;
+        }
+
+        /* Form Styling */
+        .form-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container h4 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .form-container form {
+            display: grid;
+            gap: 15px;
+        }
+
+        .form-container div {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-container label {
+            color: #34495e;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-container input {
+            padding: 8px 12px;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-container input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        /* Button Styling */
+        #btn_wrapper {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        #btn_wrapper button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #btn_wrapper button[type="submit"] {
+            background-color: #3498db;
+            color: white;
+        }
+
+        #btn_wrapper button[type="reset"] {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        #btn_wrapper button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Image Container */
+        .image-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        /* Graph Styling */
+        .graph-row {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .graph-row.full-width {
+            flex-wrap: nowrap;
+        }
+
+        #qFractionPlot, #streamflowPlot, #crossSectionWEPlot, #crossSectionSNPlot, #obsWellOne, #obsWellTwo {
+            flex: 1;
+            min-width: 300px;
+            height: 400px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #contourPlot {
+            flex: 1 1 100%;
+            min-width: 300px;
+            height: 500px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Time Controls Styling */
+        #timeControls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #timeControls button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #2ecc71;
+            color: white;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #timeControls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #currentTimeDisplay {
+            font-size: 1.2rem;
+            color: #34495e;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .graph-row {
+                flex-direction: column;
+            }
+            #qFractionPlot, #streamflowPlot, #crossSectionWEPlot, #crossSectionSNPlot, #contourPlot {
+                width: 100%;
+                min-width: unset;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="w3-top">
+    <div class="w3-bar custom-black w3-card w3-left-align w3-large">
+        <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-indigo w3-large custom-black" href="javascript:void(0);" onclick="menuToggle()" title="Toggle Navigation Menu">
+            <i class="fa fa-bars"></i>
+        </a>
+        <a href="index.html" class="w3-bar-item w3-button w3-padding-large">DFPS-Home</a>
+        <a href="about.html" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">About</a>
+        <a href="theory-dfps.html" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">Theory</a>
+        <a href="how-to-use-dfps.html" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">How to Use</a>
+        <a href="https://gw-project.org/" target="_blank" class="w3-bar-item w3-button w3-hide-small w3-padding-large">The Groundwater Project</a>
+    </div>
+</div>
+
+<!-- Main Content -->
+<main id="data">
+    <div id="data_div">
+        <h2>Pumping Well Depletion of a Fully Penetrating Stream (DFPS)</h2>
+
+        <!-- Form and Image -->
+        <div class="top-row" style="display: flex; flex-wrap: wrap; gap: 30px;">
+            <!-- Form Section -->
+            <div class="form-container" style="flex: 1; min-width: 300px;">
+                <form id="data_form" method="POST" action="">
+                    <h4><b>Submit Inputs:</b> example values are provided as defaults 
+                        <font color="red">input values are in typical units then converted to consistent units for calculation</font></h4>
+                    <div>
+                        <label for="d">Distance to stream, <b>d</b><font color="red"> (m)</font></label>
+                        <input type="number" step="any" id="disttoS" name="in_d" value="50" placeholder="Enter Distance to Stream" required>
+                    </div>
+                    <div>
+                        <label for="F">Factor for map size, <b>F</b> <font color="red"> (:) </font></label>
+                        <input type="number" step="any" id="factor" name="in_F" value="4" placeholder="Factor" required>
+                    </div>
+                    <div>
+                        <label for="Ka">Aquifer hydraulic conductivity, <b>K<sub>a</sub></b>, <font color="red"> (cm/s)</font></label>
+                        <input type="number" step="any" id="conductivity" name="in_Ka" value=".01" placeholder="Hydraulic Conductivity" required>
+                    </div>
+                    <div>
+                        <label for="b">Aquifer thickness, <b>b</b> <font color="red"> (m)</font></label>
+                        <input type="number" step="any" id="thickness" name="in_b" value="10" placeholder="Aquifer Thickness" required>
+                    </div>
+                    <div>
+                        <label for="Sy">Specific yield, <b>S<sub>y</sub></b> <font color="red"> (:) </font></label>
+                        <input type="number" step="any" id="Sy" name="in_Sy" value="0.15" placeholder="Specific Yield" required>
+                    </div>
+                    <div>
+                        <label for="Qs">Streamflow rate, <b>Q<sub>s</sub></b> <font color="red">(m&sup3;/s)</font></label>
+                        <input type="number" step="any" id="streamrate" name="in_Qs" value="3" placeholder="Streamflow Rate" required>
+                    </div>
+                    <div>
+                        <label for="Qw">Pumping rate, <b>Q<sub>w</sub></b> <font color="red">(liters/min)</font></label>
+                        <input type="number" id="pumprate" name="in_Qw" value="2000" placeholder="Pumping Rate" required>
+                    </div>
+                    <div>
+                        <label for="t">Pumping duration time, <b>t</b> <font color="red">(days)</font></label>
+                        <input type="number" step="any" id="pumptime" name="in_t" value="365.25" placeholder="Enter Pumping Duration" required>
+                    </div>
+<!--                     <div>
+                        <label for="t">Number of time increments, <b>t</b> <font color="red">(:)</font></label>
+                        <input type="number" step="any" id="Num_increments" name="in_n" value="10" placeholder="NUmber of time increments" required>
+                    </div>
+-->                    
+                    <div>
+                        <label for="ox1">Observation Well 1, <b>ox1</b> <font color="red">(m)</font></label>
+                        <input type="number" step="any" id="ox1" name="in_ox1" value="20" placeholder="Enter x-coordinate for Observation Well 1" required>
+                    </div>
+                    <div>
+                        <label for="oy1">Observation Well 1, <b>oy1</b><font color="red">(m)</font></label>
+                        <input type="number" step="any" id="oy1" name="in_oy1" value="20" placeholder="Enter y-coordinate for Observation Well 1" required>
+                    </div>
+                    <div>
+                        <label for="ox2">Observation Well 2, <b>ox2</b> <font color="red">(m)</font></label>
+                        <input type="number" step="any" id="ox2" name="in_ox2" value="-100" placeholder="Enter x-coordinate for Observation Well 2" required>
+                    </div>
+                    <div>
+                        <label for="oy2">Observation Well 2, <b>oy2</b> <font color="red">(m)</font></label>
+                        <input type="number" step="any" id="oy2" name="in_oy2" value="-40" placeholder="Enter y-coordinate for Observation Well 2" required>
+                    </div>
+                    <div id="btn_wrapper">
+                        <button type="submit"><b>Submit</b></button>
+                        <button type="reset"><b>Reset</b></button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Image Section -->
+            <div class="image-container" style="flex: 1; min-width: 300px;">
+                <img src="img/DFPSconceptualCrossAndPlan.png" alt="DFPS conceptual model cross section and plan views">
+            </div>
+            
+        </div>
+
+        <!-- Graphs Row 1: Q Fraction and Streamflow Plots -->
+        <div class="graph-row">
+            <div id="qFractionPlot"></div>
+            <div id="streamflowPlot"></div>
+        </div>
+
+        <!-- Time Controls -->
+        <div id="timeControls">
+            <button id="prevTime">Previous Time</button>
+            <span id="currentTimeDisplay">Time: 0 days</span>
+            <button id="nextTime">Next Time</button>
+        </div>
+
+        <!-- Graphs Row 2: Cross-Section Plots -->
+        <div class="graph-row">
+            <div id="crossSectionWEPlot"></div>
+            <div id="crossSectionSNPlot"></div>
+        </div>
+
+        <!-- Graphs Row 3: Observation Well Plots -->
+        <div class="graph-row">
+            <div id="obsWellOne"></div>
+            <div id="obsWellTwo"></div>
+        </div>
+
+        <!-- Contour Plot -->
+        <div class="graph-row full-width">
+            <div id="contourPlot"></div>
+        </div>
+
+        <!-- Messages -->
+        <p id="negative_value_message" style="text-align: center;"></p>
+        <p id="error_message1" style="text-align: center;"></p>
+        <p id="error_message2" style="text-align: center;"></p>
+        <p id="result_message" style="text-align: center;"></p>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="w3-container custom-dark-grey w3-padding-32">
+    <div class="w3-row-padding w3-margin-bottom w3-container">
+        <div class="w3-content">
+            <div class="w3-whole">
+                <p class="w3-text-light-grey">
+                    <a href="https://gw-project.org/privacy-policy/">The Groundwater Project Privacy Policy</a>
+                    &nbsp;&nbsp;&nbsp;&nbsp;This interactive educational tool does not collect any data.
+                </p>
+                <p class="w3-text-light-grey">
+                    <a href="https://gw-project.org/terms-of-use/">The Groundwater Project Terms of Use</a>
+                    &nbsp;&nbsp;&nbsp;&nbsp;The user of DFPS assumes all responsibility for how the program is used.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
