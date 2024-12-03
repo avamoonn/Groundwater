@@ -15,20 +15,14 @@ export function erfc(x) {
   const sign = x >= 0 ? 1 : -1;
   x = Math.abs(x);
 
-  // Constants for the approximation
-  const a1 = 0.254829592;
-  const a2 = -0.284496736;
-  const a3 = 1.421413741;
-  const a4 = -1.453152027;
-  const a5 = 1.061405429;
-  const p = 0.3275911;
+  // A fairly good approximation is:
+  // erfc(β) ≈ 2/π * arctan(2β / (1 + β^4))
+  const numerator = 2 * x;
+  const denominator = 1 + Math.pow(x, 4);
 
-  // Abramowitz and Stegun formula 7.1.26
-  const t = 1.0 / (1.0 + p * x);
-  const poly = a1 * t + a2 * t ** 2 + a3 * t ** 3 + a4 * t ** 4 + a5 * t ** 5;
-  const y = poly * Math.exp(-x * x);
+  const result = (2 / Math.PI) * Math.atan(numerator / denominator);
 
-  return sign === 1 ? y : 2 - y;
+  return sign === 1 ? result : 2 - result;
 }
 
 /**
@@ -45,11 +39,10 @@ export function W(u) {
     console.log(
       "Error: u must be positive for the well function. Returning 0."
     );
-    return 0; // Return a default value for invalid u
+    return 0;
   }
 
-  console.log(`Calculating well function W(u) for u=${u}`);
-
+  // Coefficients from the document
   const a0 = -0.57721566;
   const a1 = 0.99999193;
   const a2 = -0.24991055;
@@ -57,13 +50,22 @@ export function W(u) {
   const a4 = -0.00976004;
   const a5 = 0.00107857;
 
+  // Handle very small u values differently
+  if (u < 1e-3) {
+    // For very small u, use a different approximation
+    const lnU = Math.log(u);
+    return -lnU + a0;
+  }
+
   const lnU = Math.log(u);
-  const series = a1 * u + a2 * u ** 2 + a3 * u ** 3 + a4 * u ** 4 + a5 * u ** 5;
+  const series =
+    a1 * u +
+    a2 * Math.pow(u, 2) +
+    a3 * Math.pow(u, 3) +
+    a4 * Math.pow(u, 4) +
+    a5 * Math.pow(u, 5);
 
-  const result = -lnU + a0 + series;
-  console.log(`W(u): ${result} (lnU=${lnU}, series=${series})`);
-
-  return result;
+  return -lnU + a0 + series;
 }
 
 /**
@@ -81,46 +83,26 @@ export function calculateQFraction(d, Sy, T, t) {
  * Calculate Drawdown at Location (x, y) and Time t
  */
 export function calculateDrawdown(x, y, t, Qw, T, Sy, d, xwell, ywell) {
-  if (t <= 0) {
-    console.log("Error: Time 't' must be greater than 0.");
-    throw new Error("Time 't' must be greater than 0.");
-  }
-
-  console.log(`\nCalculating drawdown at (${x}, ${y}) for t=${t} days`);
-  console.log(
-    `Inputs: Qw=${Qw}, T=${T}, Sy=${Sy}, d=${d}, xwell=${xwell}, ywell=${ywell}`
-  );
-
   const r = Math.sqrt((x - xwell) ** 2 + (y - ywell) ** 2);
-  console.log(`Distance to well (r): ${r}`);
 
-  if (r === 0) {
-    console.log(
-      "Drawdown cannot be calculated at the well location (r = 0). Returning null."
-    );
-    return null;
-  }
+  // Compute u and u' using the document's exact formula
+  const u = (r * r) / ((4 * T * t) / Sy);
 
-  const u = (r * Sy) / (4 * T * t);
-  const xImage = xwell + 2 * d; // Image well x-coordinate
+  // Image well calculation
+  const xImage = xwell + 2 * d;
   const rPrime = Math.sqrt((x - xImage) ** 2 + (y - ywell) ** 2);
-  const uPrime = (rPrime * Sy) / (4 * T * t);
-  console.log(`Computed u: ${u}, uPrime: ${uPrime}`);
+  const uPrime = (rPrime * rPrime) / ((4 * T * t) / Sy);
 
-  if (u <= 0 || uPrime <= 0 || isNaN(u) || isNaN(uPrime)) {
-    console.log(
-      `Invalid values for u or uPrime: u=${u}, uPrime=${uPrime}. Returning null.`
-    );
-    return null;
-  }
+  console.log(`Computed u: ${u}, uPrime: ${uPrime}`);
 
   const Wu = W(u);
   const WuPrime = W(uPrime);
-  console.log(`Well function results: Wu=${Wu}, WuPrime=${WuPrime}`);
 
   const drawdown = (Qw / (4 * Math.PI * T)) * (Wu - WuPrime);
-  console.log(`Final drawdown: ${drawdown}`);
+  console.log(`\nCalculating drawdown at (${x}, ${y}) for t=${t} days`);
+  console.log(`Well function results: Wu=${Wu}, WuPrime=${WuPrime}`);
 
+  console.log(`Final drawdown: ${drawdown}`);
   return drawdown;
 }
 
