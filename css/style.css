@@ -7,6 +7,32 @@
 */
 
 /*Index Page Styling*/
+h1 {
+    margin: 0; /* Remove margins from the title */
+    padding: 20px 0; /* Optional: Adjust padding for spacing */
+    text-align: center;
+}
+
+.w3-row-padding {
+    margin: 0; /* Remove margins from the row container */
+    padding: 0; /* Remove paddings from the row container */
+}
+
+.w3-row-padding:first-of-type {
+    margin-top: 0 !important; /* Ensure no extra margin for the first row */
+    padding-top: 0 !important; /* Ensure no extra padding for the first row */
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    margin-bottom: 0;
+}
+
+
 #enter{
     display: flex;
     flex-direction: column;
