@@ -94,7 +94,8 @@ data_form.addEventListener("submit", function (e) {
     const streamflowValues = timeIncrements.map((time, index) => {
       const Qfraction = fractionPumpingValues[index];
       const QstreamLeakage = calculateStreamLeakage(params.Qw, Qfraction);
-      return calculateStreamDischarge(Qs, QstreamLeakage);
+      const QstreamLeakageInM3PerSec = QstreamLeakage / 86400;
+      return calculateStreamDischarge(Qs, QstreamLeakageInM3PerSec);
     });
 
     const drawdownOne = timeIncrements.map((time) =>

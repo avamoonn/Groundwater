@@ -73,7 +73,7 @@ export function calculateQFraction(d, Sy, T, t) {
   if (t <= 0) {
     throw new Error("Time 't' must be greater than 0.");
   }
-  const argument = (d * d * Sy) / (4 * T * t);
+  const argument = Math.sqrt((d * d * Sy) / (4 * T * t));
   return erfc(argument);
 }
 
@@ -146,6 +146,7 @@ export function calculateLogTimeSteps(totalTime, n, multiplier) {
  * Calculate Stream Leakage
  */
 export function calculateStreamLeakage(Qw, Qfraction) {
+  // Qw is in m³/day, need to convert result to m³/s
   return Qw * Qfraction;
 }
 
@@ -153,5 +154,6 @@ export function calculateStreamLeakage(Qw, Qfraction) {
  * Calculate Stream Discharge
  */
 export function calculateStreamDischarge(Qs, QstreamLeakage) {
+  // Qs is in m³/s, QstreamLeakage should be in m³/s
   return Qs - QstreamLeakage;
 }
