@@ -269,6 +269,7 @@ function updatePlots() {
   // Generate data for cross-sections and contour map
   updateCrossSectionPlots(currentTime);
   updateContourPlot(currentTime);
+  updateVectorFieldPlot(currentTime);
 }
 
 // Function to update cross-section plots
@@ -451,6 +452,130 @@ function updateContourPlot(currentTime) {
   );
 }
 
+function updateVectorFieldPlot(currentTime) {
+  const { d, F, Qw, T, Sy, xwell, ywell } = params;
+
+  // Define grid for vectors
+  const xStart = -3 * d;
+  const xEnd = d;
+  const yStart = -2 * d;
+  const yEnd = 2 * d;
+  const gridSize = 15; // Number of points in each direction
+
+  // Create arrays for vector field
+  const x = [];
+  const y = [];
+  const drawdownValues = [];
+
+  // Generate grid points and calculate vectors
+  for (let i = 0; i < gridSize; i++) {
+    for (let j = 0; j < gridSize; j++) {
+      const xPos = xStart + ((xEnd - xStart) * i) / (gridSize - 1);
+      const yPos = yStart + ((yEnd - yStart) * j) / (gridSize - 1);
+
+      // Calculate drawdown at this point
+      const s =
+        calculateDrawdown(
+          xPos,
+          yPos,
+          currentTime,
+          Qw,
+          T,
+          Sy,
+          d,
+          xwell,
+          ywell
+        ) || 0;
+
+      x.push(xPos);
+      y.push(yPos);
+      drawdownValues.push(-s); // Invert drawdown for plotting
+    }
+  }
+
+  // Create contour lines
+  const contourData = {
+    type: "contour",
+    x: x,
+    y: y,
+    z: drawdownValues,
+    colorscale: "Blues",
+    contours: {
+      coloring: "lines",
+      showlabels: true,
+      labelfont: {
+        size: 12,
+        color: "blue",
+      },
+    },
+    line: {
+      color: "blue",
+      width: 2,
+    },
+    showscale: false,
+  };
+
+  // Create vector field using annotations
+  const annotations = [];
+  const vectorScale = 0.4; // Adjust this to change arrow size
+
+  for (let i = 0; i < gridSize; i++) {
+    for (let j = 0; j < gridSize; j++) {
+      const xPos = xStart + ((xEnd - xStart) * i) / (gridSize - 1);
+      const yPos = yStart + ((yEnd - yStart) * j) / (gridSize - 1);
+
+      // Calculate vector components (pointing towards well)
+      const dx = xwell - xPos;
+      const dy = ywell - yPos;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance > 0) {
+        // Normalize and scale the vector
+        const ux = (dx / distance) * vectorScale * d;
+        const uy = (dy / distance) * vectorScale * d;
+
+        annotations.push({
+          x: xPos,
+          y: yPos,
+          ax: xPos + ux,
+          ay: yPos + uy,
+          xref: "x",
+          yref: "y",
+          axref: "x",
+          ayref: "y",
+          showarrow: true,
+          arrowhead: 2,
+          arrowsize: 1,
+          arrowwidth: 1,
+          arrowcolor: "red",
+        });
+      }
+    }
+  }
+
+  // Plot layout
+  const layout = {
+    title: `Flow Field and Drawdown Contours at t=${currentTime.toFixed(
+      2
+    )} days`,
+    xaxis: {
+      title: "x (m)",
+      range: [xStart, xEnd],
+    },
+    yaxis: {
+      title: "y (m)",
+      range: [yStart, yEnd],
+      scaleanchor: "x",
+      scaleratio: 1,
+    },
+    showlegend: false,
+    annotations: annotations,
+  };
+
+  // Create the plot
+  Plotly.react("vectorFieldPlot", [contourData], layout);
+}
+
 // Listen to form reset button
 data_form.addEventListener("reset", function () {
   // Clear any messages when the form is reset
@@ -467,6 +592,7 @@ data_form.addEventListener("reset", function () {
   Plotly.purge("contourPlot");
   Plotly.purge("obsWellOne");
   Plotly.purge("obsWellTwo");
+  Plotly.purge("vectorFieldPlot");
 
   // Reset time index and display
   currentTimeIndex = 0;
