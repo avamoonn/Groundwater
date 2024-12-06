@@ -6,6 +6,8 @@ import {
   calculateStreamDischarge,
   calculateDrawdown,
   calculateLogTimeSteps,
+  testWellFunction,
+  testDrawdown,
 } from "./calculations.js";
 
 const data_form = document.querySelector("#data_form");
@@ -39,6 +41,10 @@ data_form.addEventListener("submit", function (e) {
   const oy1 = Number(data.get("in_oy1"));
   const ox2 = Number(data.get("in_ox2"));
   const oy2 = Number(data.get("in_oy2"));
+
+  // Run test functions
+  testWellFunction();
+  testDrawdown();
 
   // Convert hydraulic conductivity from cm/s to m/day
   const KaInMeterPerDay = Ka * 0.01 * 86400; // cm/s to m/day
@@ -374,8 +380,8 @@ function updateContourPlot(currentTime) {
 
   const xStart = -3 * d;
   const xEnd = d;
-  const yStart = -3 * d;
-  const yEnd = d;
+  const yStart = -2 * d;
+  const yEnd = 2 * d;
   const numPoints = 50;
 
   const xValues = [];
